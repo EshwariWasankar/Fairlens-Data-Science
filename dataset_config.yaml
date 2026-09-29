@@ -1,0 +1,65 @@
+compas:
+  name: "COMPAS Recidivism (ProPublica)"
+  file_name: "compas-scores-two-years.csv"
+  url: "https://raw.githubusercontent.com/propublica/compas-analysis/master/compas-scores-two-years.csv"
+  target_column: "two_year_recid"
+  favorable_target_value: 0 # 0 = No recidivism (favorable outcome)
+  target_label_map:
+    0: "No Recidivism (Favorable)"
+    1: "Recidivism (Unfavorable)"
+  protected_attributes:
+    race:
+      privileged: "Caucasian"
+      unprivileged: "African-American"
+    sex:
+      privileged: "Male"
+      unprivileged: "Female"
+  default_protected_attribute: "race"
+  immutable_features: ["age", "race", "sex", "c_charge_degree", "age_cat"]
+  actionable_features: ["priors_count", "days_b_screening_arrest"]
+
+german_credit:
+  name: "German Credit Data (Statlog)"
+  file_name: "german_credit.csv"
+  uci_id: 144
+  target_column: "credit_risk"
+  favorable_target_value: 1 # 1 = Good Credit (favorable outcome)
+  target_label_map:
+    1: "Good Credit (Favorable)"
+    0: "Bad Credit (Unfavorable)"
+  protected_attributes:
+    sex:
+      privileged: "male"
+      unprivileged: "female"
+    age_group:
+      privileged: "older (>25)"
+      unprivileged: "young (<=25)"
+    foreign_worker:
+      privileged: "no"
+      unprivileged: "yes"
+  default_protected_attribute: "sex"
+  immutable_features: ["sex", "age", "age_group", "foreign_worker", "personal_status_sex"]
+  actionable_features: ["duration_in_month", "credit_amount", "savings_account", "employment_duration", "installment_rate"]
+
+adult_income:
+  name: "Adult Census Income"
+  file_name: "adult_income.csv"
+  uci_id: 2
+  target_column: "income"
+  favorable_target_value: 1 # 1 = >50K (favorable outcome)
+  target_label_map:
+    1: ">50K (Favorable)"
+    0: "<=50K (Unfavorable)"
+  protected_attributes:
+    sex:
+      privileged: "Male"
+      unprivileged: "Female"
+    race:
+      privileged: "White"
+      unprivileged: "Black"
+    age_group:
+      privileged: "prime_age (25-60)"
+      unprivileged: "young (<25)"
+  default_protected_attribute: "sex"
+  immutable_features: ["sex", "race", "age", "age_group", "native_country"]
+  actionable_features: ["education_num", "hours_per_week", "capital_gain", "capital_loss", "workclass", "occupation"]
