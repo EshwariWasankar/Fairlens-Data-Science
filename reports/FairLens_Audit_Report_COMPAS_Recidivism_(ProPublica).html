@@ -1,0 +1,196 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>FairLens Algorithmic Fairness Audit Report - COMPAS Recidivism (ProPublica)</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #0f172a;
+                color: #f8fafc;
+                margin: 0;
+                padding: 40px;
+                line-height: 1.6;
+            }
+            .container {
+                max-width: 900px;
+                margin: 0 auto;
+                background: #1e293b;
+                padding: 40px;
+                border-radius: 12px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+                border: 1px solid #334155;
+            }
+            .header {
+                border-bottom: 2px solid #3b82f6;
+                padding-bottom: 20px;
+                margin-bottom: 30px;
+            }
+            h1 { color: #60a5fa; margin: 0 0 10px 0; font-size: 28px; }
+            .subtitle { color: #94a3b8; font-size: 14px; margin: 0; }
+            .section {
+                margin-bottom: 35px;
+            }
+            h2 {
+                color: #38bdf8;
+                font-size: 20px;
+                border-left: 4px solid #3b82f6;
+                padding-left: 10px;
+                margin-top: 0;
+            }
+            .card-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            .card {
+                background: #0f172a;
+                padding: 15px;
+                border-radius: 8px;
+                border: 1px solid #334155;
+                text-align: center;
+            }
+            .card-val { font-size: 22px; font-weight: bold; color: #60a5fa; }
+            .card-lbl { font-size: 12px; color: #94a3b8; margin-top: 5px; }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 15px;
+                background: #0f172a;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            th {
+                background: #334155;
+                color: #f8fafc;
+                text-align: left;
+                padding: 12px;
+                font-size: 13px;
+            }
+            .insight-box {
+                background: rgba(59, 130, 246, 0.1);
+                border-left: 4px solid #3b82f6;
+                padding: 15px;
+                border-radius: 4px;
+                margin-top: 15px;
+                color: #e2e8f0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>FairLens Algorithmic Fairness Audit Report</h1>
+                <p class="subtitle">Dataset under audit: <strong>COMPAS Recidivism (ProPublica)</strong> | Protected Attribute: <strong>race</strong> | Generated: 2026-09-28 01:08:59</p>
+            </div>
+
+            <div class="section">
+                <h2>1. Executive Audit Summary</h2>
+                <div class="insight-box">
+                    In the COMPAS Recidivism (ProPublica) dataset, the overall favorable outcome (approval) rate is 45.5%. A historical base-rate outcome disparity of 26.5 percentage points was observed across different 'race' demographic groups before any algorithmic scoring model was applied. Mutual Information proxy analysis revealed that feature 'priors_count' exhibits the highest demographic leakage with respect to protected attribute 'race' (MI = 0.0329, categorized as 'Moderate Proxy Risk'). Even when 'race' is excluded from model training, features like 'priors_count' silently encode demographic identity. The baseline unmitigated classifier exhibits a Demographic Parity difference of 0.555 (95% Bootstrap CI: [0.185, 1.000]). This disparity is statistically significant (CI excludes zero), confirming systematic demographic bias. Applying 'Reweighing' mitigation reduced the Demographic Parity disparity from 0.555 to 0.554 (a 0.2% reduction, 95% CI: [0.185, 1.000]). Paired hypothesis testing confirmed this improvement is not statistically significant (p = 0.9103). The associated accuracy/F1 trade-off cost was 0.0 percentage points.
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>2. Dataset KPIs & Disparity Signal</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-val">6,172</div>
+                        <div class="card-lbl">Total Records</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-val">45.5%</div>
+                        <div class="card-lbl">Base Approval Rate</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-val">26.5%</div>
+                        <div class="card-lbl">Demographic Outcome Gap</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>3. Top Indirect Proxy Features</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature Name</th>
+                            <th>Mutual Information</th>
+                            <th>Correlation</th>
+                            <th>Proxy Risk Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; font-weight: 600;">priors_count</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">0.0329</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">-0.1989</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; color: #f59e0b; font-weight: bold;">Moderate Proxy Risk</td>
+            </tr>
+            
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; font-weight: 600;">age</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">0.0244</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">0.1328</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; color: #10b981; font-weight: bold;">Low Proxy Risk</td>
+            </tr>
+            
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; font-weight: 600;">target</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">0.0094</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">-0.1286</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; color: #10b981; font-weight: bold;">Low Proxy Risk</td>
+            </tr>
+            
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; font-weight: 600;">c_charge_degree</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">0.0077</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">-0.0866</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; color: #10b981; font-weight: bold;">Low Proxy Risk</td>
+            </tr>
+            
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; font-weight: 600;">days_b_screening_arrest</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">0.0035</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">-0.0480</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; color: #10b981; font-weight: bold;">Low Proxy Risk</td>
+            </tr>
+            
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2>4. Baseline vs Mitigated Model Fairness Comparison</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric Name</th>
+                            <th>Baseline Value (95% CI)</th>
+                            <th>Mitigated Value (Reweighing)</th>
+                            <th>Statistical Significance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #334155;">Demographic Parity Difference</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #334155;">0.555 [0.185, 1.000]</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #334155;">0.554</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #334155; color: #10b981; font-weight: bold;">Not Significant</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #334155;">Equalized Odds Difference</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #334155;">0.520</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #334155;">0.516</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #334155;">Evaluated</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+    </html>
+    

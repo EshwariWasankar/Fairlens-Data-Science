@@ -1,0 +1,196 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <title>FairLens Algorithmic Fairness Audit Report - German Credit Data (Statlog)</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #0f172a;
+                color: #f8fafc;
+                margin: 0;
+                padding: 40px;
+                line-height: 1.6;
+            }
+            .container {
+                max-width: 900px;
+                margin: 0 auto;
+                background: #1e293b;
+                padding: 40px;
+                border-radius: 12px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+                border: 1px solid #334155;
+            }
+            .header {
+                border-bottom: 2px solid #3b82f6;
+                padding-bottom: 20px;
+                margin-bottom: 30px;
+            }
+            h1 { color: #60a5fa; margin: 0 0 10px 0; font-size: 28px; }
+            .subtitle { color: #94a3b8; font-size: 14px; margin: 0; }
+            .section {
+                margin-bottom: 35px;
+            }
+            h2 {
+                color: #38bdf8;
+                font-size: 20px;
+                border-left: 4px solid #3b82f6;
+                padding-left: 10px;
+                margin-top: 0;
+            }
+            .card-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            .card {
+                background: #0f172a;
+                padding: 15px;
+                border-radius: 8px;
+                border: 1px solid #334155;
+                text-align: center;
+            }
+            .card-val { font-size: 22px; font-weight: bold; color: #60a5fa; }
+            .card-lbl { font-size: 12px; color: #94a3b8; margin-top: 5px; }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 15px;
+                background: #0f172a;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            th {
+                background: #334155;
+                color: #f8fafc;
+                text-align: left;
+                padding: 12px;
+                font-size: 13px;
+            }
+            .insight-box {
+                background: rgba(59, 130, 246, 0.1);
+                border-left: 4px solid #3b82f6;
+                padding: 15px;
+                border-radius: 4px;
+                margin-top: 15px;
+                color: #e2e8f0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>FairLens Algorithmic Fairness Audit Report</h1>
+                <p class="subtitle">Dataset under audit: <strong>German Credit Data (Statlog)</strong> | Protected Attribute: <strong>sex</strong> | Generated: 2026-09-28 16:10:37</p>
+            </div>
+
+            <div class="section">
+                <h2>1. Executive Audit Summary</h2>
+                <div class="insight-box">
+                    In the German Credit Data (Statlog) dataset, the overall favorable outcome (approval) rate is 0.0%. A historical base-rate outcome disparity of 0.0 percentage points was observed across different 'sex' demographic groups before any algorithmic scoring model was applied. Mutual Information proxy analysis revealed that feature 'personal_status_sex' exhibits the highest demographic leakage with respect to protected attribute 'sex' (MI = 0.6196, categorized as 'High Proxy Risk'). Even when 'sex' is excluded from model training, features like 'personal_status_sex' silently encode demographic identity. The baseline unmitigated classifier exhibits a Demographic Parity difference of 0.043 (95% Bootstrap CI: [0.002, 0.123]). This disparity is within expected statistical noise bounds. Applying 'Reweighing' mitigation reduced the Demographic Parity disparity from 0.043 to 0.000 (a 100.0% reduction, 95% CI: [0.000, 0.000]). Paired hypothesis testing confirmed this improvement is not statistically significant (p = 1.0). The associated accuracy/F1 trade-off cost was -81.8 percentage points.
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>2. Dataset KPIs & Disparity Signal</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-val">1,000</div>
+                        <div class="card-lbl">Total Records</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-val">0.0%</div>
+                        <div class="card-lbl">Base Approval Rate</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-val">0.0%</div>
+                        <div class="card-lbl">Demographic Outcome Gap</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>3. Top Indirect Proxy Features</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature Name</th>
+                            <th>Mutual Information</th>
+                            <th>Correlation</th>
+                            <th>Proxy Risk Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; font-weight: 600;">personal_status_sex</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">0.6196</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">-1.0000</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; color: #ef4444; font-weight: bold;">High Proxy Risk</td>
+            </tr>
+            
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; font-weight: 600;">num_dependents</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">0.0391</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">0.2034</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; color: #f59e0b; font-weight: bold;">Moderate Proxy Risk</td>
+            </tr>
+            
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; font-weight: 600;">employment_duration</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">0.0302</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">-0.1872</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; color: #f59e0b; font-weight: bold;">Moderate Proxy Risk</td>
+            </tr>
+            
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; font-weight: 600;">credit_history</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">0.0288</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">-0.0940</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; color: #10b981; font-weight: bold;">Low Proxy Risk</td>
+            </tr>
+            
+            <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; font-weight: 600;">purpose</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">0.0287</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155;">-0.1005</td>
+                <td style="padding: 10px; border-bottom: 1px solid #334155; color: #10b981; font-weight: bold;">Low Proxy Risk</td>
+            </tr>
+            
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2>4. Baseline vs Mitigated Model Fairness Comparison</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric Name</th>
+                            <th>Baseline Value (95% CI)</th>
+                            <th>Mitigated Value (Reweighing)</th>
+                            <th>Statistical Significance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #334155;">Demographic Parity Difference</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #334155;">0.043 [0.002, 0.123]</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #334155;">0.000</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #334155; color: #10b981; font-weight: bold;">Not Significant</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border-bottom: 1px solid #334155;">Equalized Odds Difference</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #334155;">0.108</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #334155;">0.000</td>
+                            <td style="padding: 10px; border-bottom: 1px solid #334155;">Evaluated</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+    </html>
+    

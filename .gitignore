@@ -1,52 +1,37 @@
-# Byte-compiled / optimized / DLL files
+# Python cache and compiled files
 __pycache__/
 *.py[cod]
-*$py.class
+*.pyc
 
-# C extensions
-*.so
+# Virtual environments
+venv/
+.venv/
+.env
 
-# Distribution / packaging
+# ML / local run artifacts
+mlruns/
+
+# Generated reports (keep templates if present)
+reports/generated/*
+!reports/templates/
+
+# Regenerable processed data
+data/processed/*
+
+# Local editor settings
+.vscode/
+.idea/
+
+# Standard Python packaging extras
 .Python
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 
-# Virtual Environments
-venv/
-env/
-ENV/
-env.bak/
-venv.bak/
-
-# IDE & Editor settings
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Testing & Coverage
+# Local test/cache output
 .pytest_cache/
 .coverage
 htmlcov/
-
-# Local database & temp outputs
-*.db
 *.log
-
-# Keep data/raw and verified benchmarks tracked, but ignore temporary dynamic outputs if any
-# reports/generated dynamic artifacts can be ignored if required, but let's keep generated markdown standard
-reports/generated/*.pdf
-reports/generated/*.html

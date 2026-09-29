@@ -1,0 +1,169 @@
+/* Import Google Fonts: Inter (UI) & IBM Plex Mono (Tabular/Numeric) */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #f3f4f6;
+    background-color: #0b0f19;
+}
+
+/* Main Container Background */
+.stApp {
+    background-color: #0b0f19;
+}
+
+/* Monospace font utility for numbers and figures */
+.tabular-figure, .kpi-val, code {
+    font-family: 'IBM Plex Mono', monospace !important;
+}
+
+/* Header Component */
+.main-header {
+    background-color: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+}
+
+.main-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #f9fafb;
+    letter-spacing: -0.3px;
+    margin: 0 0 6px 0;
+    text-transform: uppercase;
+}
+
+.main-subtitle {
+    font-size: 13px;
+    color: #9ca3af;
+    margin: 0;
+}
+
+/* Institutional Flat KPI Metric Cards */
+.kpi-card {
+    background-color: #111827;
+    border: 1px solid #1f2937;
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+}
+
+.kpi-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.kpi-val {
+    font-size: 26px;
+    font-weight: 600;
+    color: #f9fafb;
+    margin-bottom: 4px;
+}
+
+.kpi-subtext {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* Status Badges */
+.status-badge-green {
+    background-color: rgba(5, 150, 105, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(5, 150, 105, 0.3);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-badge-red {
+    background-color: rgba(220, 38, 38, 0.12);
+    color: #ef4444;
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.status-badge-amber {
+    background-color: rgba(217, 119, 6, 0.12);
+    color: #f59e0b;
+    border: 1px solid rgba(217, 119, 6, 0.3);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* Callout Component */
+.insight-card {
+    background-color: #111827;
+    border: 1px solid #1f2937;
+    border-left: 4px solid #2563eb;
+    border-radius: 4px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    color: #e5e7eb;
+    font-size: 13.5px;
+    line-height: 1.6;
+}
+
+.insight-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #60a5fa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+/* Tab Navigation Overhaul */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 4px;
+    background-color: #111827;
+    padding: 4px;
+    border-radius: 6px;
+    border: 1px solid #1f2937;
+}
+
+.stTabs [data-baseweb="tab"] {
+    height: 40px;
+    border-radius: 4px;
+    color: #9ca3af;
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.stTabs [aria-selected="true"] {
+    background-color: #1f2937 !important;
+    color: #f9fafb !important;
+    font-weight: 600;
+    border-bottom: 2px solid #2563eb !important;
+}
+
+/* Data Tables */
+.stDataFrame {
+    border: 1px solid #1f2937;
+    border-radius: 6px;
+}
+
+/* Sidebar Section Titles */
+.sidebar-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
