@@ -3,6 +3,44 @@ import pandas as pd
 from typing import Dict, Any, Tuple, Optional
 from src.fairness.metrics import compute_fairness_metrics
 
+# Group-rate column behind each "simple" gap metric (EO is a max of two gaps, so it has no single sign).
+_SIGNED_RATE_COLS = {
+    "demographic_parity_diff": "selection_rate",
+    "equal_opportunity_diff": "tpr",
+    "predictive_parity_diff": "precision",
+}
+
+
+def _rates_by_group(group_rates) -> Dict[str, Dict[str, float]]:
+    return {str(r["group"]): r for r in group_rates}
+
+
+def _reference_pair(point_m: Dict[str, Any], rate_col: str, privileged_group, unprivileged_group, min_group_count: int = 30):
+    """Fixes the two groups whose gap is tested, oriented so the full-sample gap is >= 0.
+
+    Mirrors compute_fairness_metrics: explicit privileged/unprivileged pair, else privileged vs the
+    largest other group, else the highest- vs lowest-rate group (n >= min_group_count).
+    """
+    rates = _rates_by_group(point_m["group_rates"])
+    if len(rates) < 2:
+        return None
+    valid = {g: r for g, r in rates.items() if r["count"] >= min_group_count}
+    if len(valid) < 2:
+        valid = rates
+    p, u = (str(privileged_group) if privileged_group is not None else None,
+            str(unprivileged_group) if unprivileged_group is not None else None)
+    if p in rates and u in rates:
+        a, b = p, u
+    elif p in valid:
+        others = [g for g in valid if g != p]
+        a, b = p, max(others, key=lambda g: valid[g]["count"])
+    else:
+        a = max(valid, key=lambda g: valid[g][rate_col])
+        b = min(valid, key=lambda g: valid[g][rate_col])
+    if rates[a][rate_col] < rates[b][rate_col]:
+        a, b = b, a
+    return a, b
+
 def compute_bootstrap_confidence_intervals(
     y_true: np.ndarray,
     y_pred: np.ndarray,
@@ -18,6 +56,10 @@ def compute_bootstrap_confidence_intervals(
     y_true = np.asarray(y_true)
     y_pred = np.asarray(y_pred)
     s = np.asarray(s)
+
+    # Point estimate on the full (non-resampled) test set. The bootstrap mean of an
+    # absolute difference is biased upward, so it must not be reported as the metric value.
+    point_m = compute_fairness_metrics(y_true, y_pred, s, privileged_group, unprivileged_group)
 
     if len(y_true) > 3000:
         sub_idx = np.random.choice(len(y_true), size=3000, replace=False)
@@ -40,6 +82,8 @@ def compute_bootstrap_confidence_intervals(
         }
 
     dp_list, eo_list, eopp_list, pp_list = [], [], [], []
+    pairs = {m: _reference_pair(point_m, col, privileged_group, unprivileged_group) for m, col in _SIGNED_RATE_COLS.items()}
+    signed = {m: [] for m in _SIGNED_RATE_COLS}
 
     for _ in range(n_bootstraps):
         boot_idx = np.random.choice(n_samples, size=n_samples, replace=True)
@@ -52,6 +96,11 @@ def compute_bootstrap_confidence_intervals(
         eo_list.append(m["equalized_odds_diff"])
         eopp_list.append(m["equal_opportunity_diff"])
         pp_list.append(m["predictive_parity_diff"])
+        boot_rates = _rates_by_group(m["group_rates"])
+        for metric_name, col in _SIGNED_RATE_COLS.items():
+            pair = pairs[metric_name]
+            if pair and pair[0] in boot_rates and pair[1] in boot_rates:
+                signed[metric_name].append(boot_rates[pair[0]][col] - boot_rates[pair[1]][col])
 
     alpha = (1.0 - ci_level) / 2.0
     lower_pct = alpha * 100.0
@@ -70,11 +119,24 @@ def compute_bootstrap_confidence_intervals(
         ci_high = float(np.percentile(dist, upper_pct))
         mean_val = float(np.mean(dist))
         results[metric_name] = {
-            "val": np.round(mean_val, 4),
+            "val": np.round(float(point_m[metric_name]), 4),
+            "bootstrap_mean": np.round(mean_val, 4),
             "ci_low": np.round(ci_low, 4),
             "ci_high": np.round(ci_high, 4),
             "bootstrap_distribution": dist
         }
+        # Significance must use the SIGNED gap: a CI on |gap| essentially never contains 0,
+        # so "CI excludes zero" on the absolute metric is not a valid test.
+        sdist = signed.get(metric_name)
+        if sdist:
+            s_low = float(np.percentile(sdist, lower_pct))
+            s_high = float(np.percentile(sdist, upper_pct))
+            results[metric_name].update({
+                "signed_ci_low": np.round(s_low, 4),
+                "signed_ci_high": np.round(s_high, 4),
+                "reference_groups": list(pairs[metric_name]),
+                "is_significant": bool(s_low > 0),
+            })
 
     return results
 

@@ -56,10 +56,11 @@ Small subgroups ($n < 10$, e.g., Native American $n=2$ in COMPAS) can artificial
 
 ---
 
-## 4. Statistical Validation: 500-Resample Bootstrap & Paired Hypothesis Testing
+## 4. Statistical Validation: 500-Resample Bootstrap & Paired Difference Testing
 
-- **95% Confidence Intervals**: 500 bootstrap resamples with replacement generated on test set predictions to estimate $2.5^{\text{th}}$ and $97.5^{\text{th}}$ percentile interval bounds $[CI_{\text{low}}, CI_{\text{high}}]$.
-- **Paired Hypothesis Significance Testing**: **Wilcoxon Signed-Rank Test** executed on paired bootstrap distributions comparing baseline vs mitigated models on identical test set partitions ($p < 0.05$ flags statistically significant bias reduction).
+- **95% Confidence Intervals**: 500 bootstrap resamples with replacement on test-set predictions give the $2.5^{\text{th}}$–$97.5^{\text{th}}$ percentile interval $[CI_{\text{low}}, CI_{\text{high}}]$. The reported metric value is the full-test-set **point estimate** (the bootstrap mean of an absolute gap is biased upward and is stored separately as `bootstrap_mean`).
+- **Disparity Significance**: Because a CI of $|\text{gap}|$ almost never contains 0, significance is tested on the **signed** gap between two fixed reference groups (privileged vs unprivileged, or the highest- vs lowest-rate group). A disparity is significant iff the signed 95% CI excludes 0.
+- **Paired Significance Testing**: Paired bootstrap resampling of the disparity difference $\Delta = \text{Metric}_{\text{baseline}} - \text{Metric}_{\text{mitigated}}$ on identical resampled test rows across 1,000 iterations. A mitigation is certified as statistically significant if and only if the empirical 95% confidence interval strictly excludes zero ($CI_{\text{low}} > 0$).
 
 ---
 
@@ -67,7 +68,7 @@ Small subgroups ($n < 10$, e.g., Native American $n=2$ in COMPAS) can artificial
 
 1. **Pre-Processing (Reweighing)**: Re-balances training instances using sample weights:
    $$W(s, y) = \frac{P(S=s) \cdot P(Y=y)}{P(S=s, Y=y)}$$
-2. **In-Processing (Exponentiated Gradient)**: Solves a constrained optimization problem minimizing prediction loss subject to demographic parity bounds ($\epsilon = 0.01$).
+2. **In-Processing (Exponentiated Gradient)**: Solves a constrained optimization problem minimizing prediction loss subject to demographic parity tolerance bounds ($\epsilon$). The optimal $\epsilon$ is selected **on the validation split** to maximize fairness gain subject to accuracy loss $\le 5.0$ percentage points vs the unmitigated baseline (with minimal-accuracy-loss fallback); the test split is never used for selection. EG and Threshold Optimizer predictions are randomized in Fairlearn and are seeded (`random_state=42`) for reproducibility.
 3. **Post-Processing (Threshold Optimizer)**: Adjusts group-specific decision thresholds to equalize outcome rates.
 
 ---

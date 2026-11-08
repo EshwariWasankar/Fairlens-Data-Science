@@ -40,4 +40,5 @@ def test_toggling_protected_attribute_drops_derived_columns():
     # Toggle to age_group
     p_age = preprocess_dataset(df_clean, target_col="credit_risk", protected_col="age_group")
     assert "age_group" not in p_age.X_train.columns
+    assert "age" not in p_age.X_train.columns
 

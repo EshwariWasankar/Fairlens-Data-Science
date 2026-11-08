@@ -2,6 +2,17 @@ import shap
 import numpy as np
 import pandas as pd
 from typing import Dict, Any, List, Tuple, Optional
+from sklearn.pipeline import Pipeline
+
+
+def _unwrap(model: Any, X: pd.DataFrame) -> Tuple[Any, Any]:
+    """For a (scaler -> estimator) Pipeline, return the estimator and transformed X."""
+    if isinstance(model, Pipeline):
+        X_t = model[:-1].transform(X)
+        if hasattr(X, "columns"):
+            X_t = pd.DataFrame(X_t, columns=X.columns, index=X.index)
+        return model[-1], X_t
+    return model, X
 
 def compute_global_shap_importance(
     model: Any,
@@ -13,6 +24,7 @@ def compute_global_shap_importance(
         feature_names = list(X_sample.columns)
         
     try:
+        model, X_sample = _unwrap(model, X_sample)
         # Check model type
         model_name = type(model).__name__.lower()
         if "randomforest" in model_name or "xgb" in model_name or "decisiontree" in model_name:
@@ -67,14 +79,16 @@ def compute_local_shap_explanation(
     single_record = X_sample.iloc[[record_index]]
     
     try:
+        model, X_model = _unwrap(model, X_sample)
+        model_record = X_model.iloc[[record_index]]
         model_name = type(model).__name__.lower()
         if "randomforest" in model_name or "xgb" in model_name or "decisiontree" in model_name:
             explainer = shap.TreeExplainer(model)
-            shap_vals = explainer.shap_values(single_record)
+            shap_vals = explainer.shap_values(model_record)
             base_val = explainer.expected_value
         else:
-            explainer = shap.Explainer(model, X_sample)
-            exp_res = explainer(single_record)
+            explainer = shap.Explainer(model, X_model)
+            exp_res = explainer(model_record)
             shap_vals = exp_res.values
             base_val = exp_res.base_values
 

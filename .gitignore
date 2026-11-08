@@ -35,3 +35,9 @@ dist/
 .coverage
 htmlcov/
 *.log
+
+# Generated run artifacts (rebuilt by `python master_eval.py` / the dashboard)
+models/*.joblib
+data/fairlens.db
+reports/*.html
+reports/*.pdf

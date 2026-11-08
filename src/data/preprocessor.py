@@ -72,6 +72,12 @@ def preprocess_dataset(
     # Drop outlier flag columns from training features to avoid noise
     drop_cols.extend([c for c in df_proc.columns if c.endswith('_outlier_flag')])
 
+    # Dynamic proxy column dropping based on protected attribute
+    if protected_col == 'age_group':
+        drop_cols.append('age')
+    if protected_col == 'sex':
+        drop_cols.append('personal_status_sex')
+
     X_raw = df_proc.drop(columns=list(set(drop_cols)), errors='ignore')
 
     # One-hot encode categoricals in X_raw

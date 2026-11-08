@@ -18,17 +18,23 @@ def compute_proxy_leakage(
     # Target and protected attribute
     s_raw = df_calc[protected_col]
     
-    # Drop target and protected attribute (and any ID columns)
-    drop_cols = [protected_col, target_col, 'two_year_recid', 'credit_risk', 'income', 'id', 'name', 'fnlwgt']
+    # Drop target and protected attribute (and any ID columns or direct proxy leaks)
+    drop_cols = [protected_col, target_col, 'two_year_recid', 'credit_risk', 'income', 'id', 'name', 'fnlwgt', 'personal_status_sex']
     drop_cols.extend([c for c in df_calc.columns if c.endswith('_outlier_flag')])
+
+    # Dynamic proxy column dropping based on protected attribute
+    if protected_col == 'age_group':
+        drop_cols.append('age')
+    if protected_col == 'sex':
+        drop_cols.append('personal_status_sex')
     
     features_df = df_calc.drop(columns=list(set(drop_cols)), errors='ignore')
     
     # Convert categorical features to numeric codes for MI calculation
     encoded_features = pd.get_dummies(features_df, drop_first=False)
     
-    # Convert protected attribute to integer codes if categorical
-    if s_raw.dtype == 'object' or isinstance(s_raw.dtype, pd.CategoricalDtype):
+    # Convert protected attribute to integer codes if categorical or string
+    if s_raw.dtype == 'object' or isinstance(s_raw.dtype, (pd.CategoricalDtype, pd.StringDtype)) or pd.api.types.is_string_dtype(s_raw):
         s_encoded = s_raw.astype('category').cat.codes
     else:
         s_encoded = s_raw.astype(int)

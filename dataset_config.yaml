@@ -7,6 +7,11 @@ compas:
   target_label_map:
     0: "No Recidivism (Favorable)"
     1: "Recidivism (Unfavorable)"
+  outcome_labels:            # dashboard / report wording for model decisions
+    subject: "Defendant"
+    favorable: "Low Risk (No Recidivism Predicted)"
+    unfavorable: "High Risk (Recidivism Predicted)"
+    favorable_rate: "No-Recidivism Rate"
   protected_attributes:
     race:
       privileged: "Caucasian"
@@ -27,6 +32,11 @@ german_credit:
   target_label_map:
     1: "Good Credit (Favorable)"
     0: "Bad Credit (Unfavorable)"
+  outcome_labels:
+    subject: "Applicant"
+    favorable: "Approved (Good Credit)"
+    unfavorable: "Rejected (Bad Credit)"
+    favorable_rate: "Approval Rate"
   protected_attributes:
     sex:
       privileged: "male"
@@ -50,6 +60,11 @@ adult_income:
   target_label_map:
     1: ">50K (Favorable)"
     0: "<=50K (Unfavorable)"
+  outcome_labels:
+    subject: "Individual"
+    favorable: "Income >50K"
+    unfavorable: "Income <=50K"
+    favorable_rate: ">50K Income Rate"
   protected_attributes:
     sex:
       privileged: "Male"

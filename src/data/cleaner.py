@@ -53,6 +53,16 @@ def clean_dataset(df: pd.DataFrame, dataset_key: str) -> pd.DataFrame:
         if 'age' in cleaned_df.columns and 'age_group' not in cleaned_df.columns:
             cleaned_df['age_group'] = cleaned_df['age'].apply(lambda a: "older (>25)" if a > 25 else "young (<=25)")
 
+        # Ensure 'sex' is extracted from personal_status_sex if not already present
+        if 'sex' not in cleaned_df.columns and 'personal_status_sex' in cleaned_df.columns:
+            cleaned_df['sex'] = cleaned_df['personal_status_sex'].apply(
+                lambda val: 'female' if str(val).strip() in ['A92', 'A95', 'female'] else 'male'
+            )
+
+        # Explicitly drop personal_status_sex to eliminate 1.0/-1.0 proxy leakage with sex
+        if 'personal_status_sex' in cleaned_df.columns:
+            cleaned_df.drop(columns=['personal_status_sex'], inplace=True, errors='ignore')
+
     elif dataset_key == "adult_income":
         target_col = DATASET_CONFIGS["adult_income"]["target_column"]
         if target_col in cleaned_df.columns:

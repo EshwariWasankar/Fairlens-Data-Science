@@ -7,7 +7,7 @@ from src.data.cleaner import clean_dataset
 from src.data.preprocessor import preprocess_dataset, PreprocessedData
 from src.analysis.eda import get_dataset_kpis, get_group_disparity_table, get_numeric_correlation_matrix
 from src.analysis.proxy import compute_proxy_leakage
-from src.models.trainer import train_model, get_model_input_data
+from src.models.trainer import train_model, get_model_input_data, raw_feature_model
 from src.models.evaluator import evaluate_predictive_performance
 from src.fairness.metrics import compute_fairness_metrics
 from src.fairness.bootstrap import compute_bootstrap_confidence_intervals, compute_paired_bootstrap_difference
@@ -56,12 +56,14 @@ def run_fairlens_pipeline(
     )
 
     # 4. Exploratory Data Analysis
-    kpis = get_dataset_kpis(df_clean, target_col=target_col, protected_col=protected_col)
-    disparity_table = get_group_disparity_table(df_clean, target_col=target_col, protected_col=protected_col)
+    eda_target = 'target' if 'target' in df_clean.columns else target_col
+    fav_value = int(DATASET_CONFIGS.get(dataset_key, {}).get("favorable_target_value", 1))
+    kpis = get_dataset_kpis(df_clean, target_col=eda_target, protected_col=protected_col, favorable_value=fav_value)
+    disparity_table = get_group_disparity_table(df_clean, target_col=eda_target, protected_col=protected_col, favorable_value=fav_value)
     corr_matrix = get_numeric_correlation_matrix(df_clean)
 
     # 5. Proxy Feature Leakage Analysis
-    proxy_df = compute_proxy_leakage(df_clean, protected_col=protected_col, target_col=target_col)
+    proxy_df = compute_proxy_leakage(df_clean, protected_col=protected_col, target_col=eda_target)
     log_proxy_analysis_results(dataset_key, protected_col, proxy_df)
 
     # Extract privileged and unprivileged demographic categories from config if present
@@ -129,7 +131,20 @@ def run_fairlens_pipeline(
 
     # b) In-processing: Exponentiated Gradient
     try:
-        eg_model = train_exponentiated_gradient_model(data, model_type=model_type, constraint="demographic_parity")
+        # Use selected optimal epsilon from verified benchmark selection
+        # Epsilon chosen on the validation set by master_eval.py (single source of truth)
+        selected_eps = 0.01
+        try:
+            import json
+            from src.config import DATA_DIR
+            with open(DATA_DIR / "verified_benchmark_results.json", encoding="utf-8") as fh:
+                selected_eps = float(json.load(fh).get("selected_epsilons", {}).get(dataset_key, 0.01))
+        except Exception:
+            pass
+
+        eg_model = train_exponentiated_gradient_model(
+            data, model_type=model_type, constraint="demographic_parity", eps=selected_eps, dataset_key=dataset_key
+        )
         X_test_in = data.X_test_scaled if model_type == "logistic_regression" else data.X_test
         y_pred_eg = eg_model.predict(X_test_in)
         eg_pred_metrics = evaluate_predictive_performance(eg_model, X_test_in, y_test)
@@ -158,17 +173,16 @@ def run_fairlens_pipeline(
     try:
         to_model = train_threshold_optimizer_model(baseline_model, data, model_type=model_type)
         X_test_in = data.X_test_scaled if model_type == "logistic_regression" else data.X_test
-        y_pred_to = to_model.predict(X_test_in, sensitive_features=s_test)
+        y_pred_to = to_model.predict(X_test_in, sensitive_features=s_test, random_state=42)
         
         class ThresholdWrapper:
             def __init__(self, tm, sf):
                 self.tm = tm
                 self.sf = sf
             def predict(self, X):
-                return self.tm.predict(X, sensitive_features=self.sf)
+                return self.tm.predict(X, sensitive_features=self.sf, random_state=42)
             def predict_proba(self, X):
-                preds = self.predict(X)
-                return np.column_stack([1 - preds, preds])
+                return np.asarray(self.tm._pmf_predict(X, sensitive_features=self.sf), dtype=np.float64)
 
         to_wrapper = ThresholdWrapper(to_model, s_test)
         to_pred_metrics = evaluate_predictive_performance(to_wrapper, X_test_in, y_test)
@@ -194,7 +208,7 @@ def run_fairlens_pipeline(
         print(f"Threshold Optimizer mitigation error: {e}")
 
     # 9. Global Explainability (SHAP)
-    shap_importance = compute_global_shap_importance(baseline_model, data.X_test, data.feature_names)
+    shap_importance = compute_global_shap_importance(raw_feature_model(baseline_model, model_type, data.scaler), data.X_test, data.feature_names)
 
     # 10. Plain Language Insights
     primary_mitigation = mitigations.get("Reweighing", list(mitigations.values())[0] if mitigations else {})

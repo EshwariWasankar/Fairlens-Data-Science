@@ -47,6 +47,18 @@ def train_model(
 
     return model, mean_cv_f1
 
+def raw_feature_model(model: Any, model_type: str, scaler: Any) -> Any:
+    """Returns a model that accepts RAW (unscaled) feature frames.
+
+    Logistic regression is fit on StandardScaler output, so feeding it raw X (as SHAP local
+    explanations and DiCE recourse did) silently produces wrong predictions. Wrapping it with the
+    already-fitted training scaler fixes that; tree models are returned unchanged.
+    """
+    if model_type != "logistic_regression":
+        return model
+    from sklearn.pipeline import Pipeline
+    return Pipeline([("scaler", scaler), ("model", model)])
+
 def get_model_input_data(model_type: str, data: PreprocessedData, split: str = "test") -> Tuple[Any, pd.Series, pd.Series]:
     """Retrieves appropriate feature matrix (scaled vs raw) based on model type and requested split."""
     if split == "train":

@@ -22,3 +22,26 @@ def load_dataset_configs():
         return yaml.safe_load(f)
 
 DATASET_CONFIGS = load_dataset_configs()
+
+
+_DEFAULT_OUTCOME_LABELS = {
+    "subject": "Individual",
+    "favorable": "Favorable (1)",
+    "unfavorable": "Unfavorable (0)",
+    "favorable_rate": "Favorable Outcome Rate",
+}
+
+
+def get_outcome_labels(dataset_key: str) -> dict:
+    """Dataset-specific wording for model decisions plus which label value is favorable.
+
+    Keeps the UI from hard-coding credit language ("REJECTED") for datasets such as COMPAS,
+    where label 1 means recidivism (unfavorable).
+    """
+    cfg = DATASET_CONFIGS.get(dataset_key, {})
+    labels = {**_DEFAULT_OUTCOME_LABELS, **cfg.get("outcome_labels", {})}
+    fav = int(cfg.get("favorable_target_value", 1))
+    labels["favorable_value"] = fav
+    labels["unfavorable_value"] = 1 - fav
+    labels["by_value"] = {fav: labels["favorable"], 1 - fav: labels["unfavorable"]}
+    return labels

@@ -10,7 +10,8 @@ def generate_counterfactual_explanation(
     record: pd.Series,
     actionable_features: Optional[List[str]] = None,
     immutable_features: Optional[List[str]] = None,
-    total_CFs: int = 2
+    total_CFs: int = 2,
+    desired_class: int = 1
 ) -> Dict[str, Any]:
     """Generates actionable counterfactual recourse suggestions for rejected applicants using DiCE or recourse search."""
     record_df = pd.DataFrame([record])
@@ -40,7 +41,7 @@ def generate_counterfactual_explanation(
         cf = exp.generate_counterfactuals(
             record_df,
             total_CFs=total_CFs,
-            desired_class=1,
+            desired_class=desired_class,
             features_to_vary=features_to_vary
         )
         

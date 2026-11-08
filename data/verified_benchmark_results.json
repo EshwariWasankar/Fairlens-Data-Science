@@ -23,12 +23,12 @@
         "std": 0.0152
       },
       "random_forest": {
-        "mean": 0.8369,
-        "std": 0.0115
+        "mean": 0.8372,
+        "std": 0.0116
       },
       "xgboost": {
-        "mean": 0.8213,
-        "std": 0.0163
+        "mean": 0.8211,
+        "std": 0.0164
       }
     },
     "compas": {
@@ -37,8 +37,8 @@
         "std": 0.012
       },
       "random_forest": {
-        "mean": 0.6316,
-        "std": 0.0161
+        "mean": 0.6317,
+        "std": 0.0158
       },
       "xgboost": {
         "mean": 0.6253,
@@ -51,8 +51,8 @@
         "std": 0.0085
       },
       "random_forest": {
-        "mean": 0.6225,
-        "std": 0.0111
+        "mean": 0.6223,
+        "std": 0.011
       },
       "xgboost": {
         "mean": 0.7048,
@@ -70,95 +70,175 @@
       "demographic_parity": [
         {
           "eps": 0.005,
-          "accuracy": "71.00%",
-          "f1": "0.8210",
-          "dp_diff": "0.0009",
-          "eo_diff": "0.0215",
-          "eopp_diff": "0.0000",
-          "pp_diff": "0.0814"
+          "accuracy": "70.50%",
+          "accuracy_raw": 0.705,
+          "f1": "0.8162",
+          "dp_diff": "0.0208",
+          "dp_diff_raw": 0.0208,
+          "eo_diff": "0.0478",
+          "eopp_diff": "0.0200",
+          "pp_diff": "0.0833",
+          "class_counts": {
+            "0": 19,
+            "1": 181
+          },
+          "val_accuracy_raw": 0.72,
+          "val_dp_diff_raw": 0.0065
         },
         {
           "eps": 0.01,
-          "accuracy": "71.00%",
-          "f1": "0.8210",
-          "dp_diff": "0.0009",
-          "eo_diff": "0.0215",
-          "eopp_diff": "0.0000",
-          "pp_diff": "0.0814"
+          "accuracy": "70.50%",
+          "accuracy_raw": 0.705,
+          "f1": "0.8162",
+          "dp_diff": "0.0208",
+          "dp_diff_raw": 0.0208,
+          "eo_diff": "0.0478",
+          "eopp_diff": "0.0200",
+          "pp_diff": "0.0833",
+          "class_counts": {
+            "0": 19,
+            "1": 181
+          },
+          "val_accuracy_raw": 0.72,
+          "val_dp_diff_raw": 0.0065
         },
         {
           "eps": 0.02,
-          "accuracy": "71.00%",
-          "f1": "0.8210",
-          "dp_diff": "0.0009",
-          "eo_diff": "0.0215",
-          "eopp_diff": "0.0000",
-          "pp_diff": "0.0814"
+          "accuracy": "70.50%",
+          "accuracy_raw": 0.705,
+          "f1": "0.8162",
+          "dp_diff": "0.0208",
+          "dp_diff_raw": 0.0208,
+          "eo_diff": "0.0478",
+          "eopp_diff": "0.0200",
+          "pp_diff": "0.0833",
+          "class_counts": {
+            "0": 19,
+            "1": 181
+          },
+          "val_accuracy_raw": 0.72,
+          "val_dp_diff_raw": 0.0065
         },
         {
           "eps": 0.05,
-          "accuracy": "71.00%",
-          "f1": "0.8210",
-          "dp_diff": "0.0009",
-          "eo_diff": "0.0215",
-          "eopp_diff": "0.0000",
-          "pp_diff": "0.0814"
+          "accuracy": "70.50%",
+          "accuracy_raw": 0.705,
+          "f1": "0.8162",
+          "dp_diff": "0.0208",
+          "dp_diff_raw": 0.0208,
+          "eo_diff": "0.0478",
+          "eopp_diff": "0.0200",
+          "pp_diff": "0.0833",
+          "class_counts": {
+            "0": 19,
+            "1": 181
+          },
+          "val_accuracy_raw": 0.72,
+          "val_dp_diff_raw": 0.0065
         },
         {
           "eps": 0.1,
-          "accuracy": "71.00%",
-          "f1": "0.8210",
-          "dp_diff": "0.0009",
-          "eo_diff": "0.0215",
-          "eopp_diff": "0.0000",
-          "pp_diff": "0.0814"
+          "accuracy": "69.50%",
+          "accuracy_raw": 0.695,
+          "f1": "0.8123",
+          "dp_diff": "0.0082",
+          "dp_diff_raw": 0.0082,
+          "eo_diff": "0.0311",
+          "eopp_diff": "0.0100",
+          "pp_diff": "0.0677",
+          "class_counts": {
+            "0": 15,
+            "1": 185
+          },
+          "val_accuracy_raw": 0.705,
+          "val_dp_diff_raw": 0.0549
         }
       ],
       "equalized_odds": [
         {
           "eps": 0.005,
-          "accuracy": "69.00%",
-          "f1": "0.8098",
-          "dp_diff": "0.0152",
-          "eo_diff": "0.0350",
-          "eopp_diff": "0.0350",
-          "pp_diff": "0.0677"
+          "accuracy": "72.00%",
+          "accuracy_raw": 0.72,
+          "f1": "0.8250",
+          "dp_diff": "0.0281",
+          "dp_diff_raw": 0.0281,
+          "eo_diff": "0.1005",
+          "eopp_diff": "0.0100",
+          "pp_diff": "0.0976",
+          "class_counts": {
+            "0": 20,
+            "1": 180
+          },
+          "val_accuracy_raw": 0.715,
+          "val_dp_diff_raw": 0.0049
         },
         {
           "eps": 0.01,
-          "accuracy": "69.50%",
-          "f1": "0.8123",
-          "dp_diff": "0.0369",
-          "eo_diff": "0.0478",
-          "eopp_diff": "0.0450",
-          "pp_diff": "0.0776"
+          "accuracy": "72.00%",
+          "accuracy_raw": 0.72,
+          "f1": "0.8250",
+          "dp_diff": "0.0281",
+          "dp_diff_raw": 0.0281,
+          "eo_diff": "0.1005",
+          "eopp_diff": "0.0100",
+          "pp_diff": "0.0976",
+          "class_counts": {
+            "0": 20,
+            "1": 180
+          },
+          "val_accuracy_raw": 0.715,
+          "val_dp_diff_raw": 0.0049
         },
         {
           "eps": 0.02,
-          "accuracy": "71.00%",
-          "f1": "0.8210",
-          "dp_diff": "0.0009",
-          "eo_diff": "0.0502",
-          "eopp_diff": "0.0350",
-          "pp_diff": "0.0559"
+          "accuracy": "72.00%",
+          "accuracy_raw": 0.72,
+          "f1": "0.8250",
+          "dp_diff": "0.0281",
+          "dp_diff_raw": 0.0281,
+          "eo_diff": "0.1005",
+          "eopp_diff": "0.0100",
+          "pp_diff": "0.0976",
+          "class_counts": {
+            "0": 20,
+            "1": 180
+          },
+          "val_accuracy_raw": 0.715,
+          "val_dp_diff_raw": 0.0049
         },
         {
           "eps": 0.05,
-          "accuracy": "71.00%",
-          "f1": "0.8210",
-          "dp_diff": "0.0152",
-          "eo_diff": "0.0350",
-          "eopp_diff": "0.0350",
-          "pp_diff": "0.0677"
+          "accuracy": "72.00%",
+          "accuracy_raw": 0.72,
+          "f1": "0.8250",
+          "dp_diff": "0.0281",
+          "dp_diff_raw": 0.0281,
+          "eo_diff": "0.1005",
+          "eopp_diff": "0.0100",
+          "pp_diff": "0.0976",
+          "class_counts": {
+            "0": 20,
+            "1": 180
+          },
+          "val_accuracy_raw": 0.715,
+          "val_dp_diff_raw": 0.0049
         },
         {
           "eps": 0.1,
-          "accuracy": "70.50%",
-          "f1": "0.8173",
-          "dp_diff": "0.0152",
-          "eo_diff": "0.0250",
-          "eopp_diff": "0.0250",
-          "pp_diff": "0.0756"
+          "accuracy": "72.00%",
+          "accuracy_raw": 0.72,
+          "f1": "0.8250",
+          "dp_diff": "0.0281",
+          "dp_diff_raw": 0.0281,
+          "eo_diff": "0.1005",
+          "eopp_diff": "0.0100",
+          "pp_diff": "0.0976",
+          "class_counts": {
+            "0": 20,
+            "1": 180
+          },
+          "val_accuracy_raw": 0.715,
+          "val_dp_diff_raw": 0.0049
         }
       ]
     },
@@ -166,95 +246,175 @@
       "demographic_parity": [
         {
           "eps": 0.005,
-          "accuracy": "59.76%",
-          "f1": "0.4062",
-          "dp_diff": "0.0714",
-          "eo_diff": "0.0571",
-          "eopp_diff": "0.0465",
-          "pp_diff": "0.0704"
+          "accuracy": "59.43%",
+          "accuracy_raw": 0.5943,
+          "f1": "0.4339",
+          "dp_diff": "0.0491",
+          "dp_diff_raw": 0.0491,
+          "eo_diff": "0.0402",
+          "eopp_diff": "0.0402",
+          "pp_diff": "0.1300",
+          "class_counts": {
+            "0": 912,
+            "1": 323
+          },
+          "val_accuracy_raw": 0.5761750405186385,
+          "val_dp_diff_raw": 0.0392
         },
         {
           "eps": 0.01,
-          "accuracy": "59.03%",
-          "f1": "0.3874",
-          "dp_diff": "0.0249",
-          "eo_diff": "0.0211",
-          "eopp_diff": "0.0077",
-          "pp_diff": "0.0862"
+          "accuracy": "60.40%",
+          "accuracy_raw": 0.604,
+          "f1": "0.3910",
+          "dp_diff": "0.0281",
+          "dp_diff_raw": 0.0281,
+          "eo_diff": "0.0376",
+          "eopp_diff": "0.0376",
+          "pp_diff": "0.1783",
+          "class_counts": {
+            "0": 994,
+            "1": 241
+          },
+          "val_accuracy_raw": 0.5907617504051864,
+          "val_dp_diff_raw": 0.0736
         },
         {
           "eps": 0.02,
-          "accuracy": "59.68%",
-          "f1": "0.4043",
-          "dp_diff": "0.0500",
-          "eo_diff": "0.0496",
-          "eopp_diff": "0.0133",
-          "pp_diff": "0.0687"
+          "accuracy": "60.08%",
+          "accuracy_raw": 0.6008,
+          "f1": "0.4053",
+          "dp_diff": "0.0374",
+          "dp_diff_raw": 0.0374,
+          "eo_diff": "0.0647",
+          "eopp_diff": "0.0647",
+          "pp_diff": "0.2039",
+          "class_counts": {
+            "0": 968,
+            "1": 267
+          },
+          "val_accuracy_raw": 0.580226904376013,
+          "val_dp_diff_raw": 0.053
         },
         {
           "eps": 0.05,
-          "accuracy": "59.76%",
-          "f1": "0.4160",
-          "dp_diff": "0.0619",
-          "eo_diff": "0.0946",
-          "eopp_diff": "0.0169",
-          "pp_diff": "0.0312"
+          "accuracy": "60.49%",
+          "accuracy_raw": 0.6049,
+          "f1": "0.4492",
+          "dp_diff": "0.0262",
+          "dp_diff_raw": 0.0262,
+          "eo_diff": "0.0341",
+          "eopp_diff": "0.0341",
+          "pp_diff": "0.1733",
+          "class_counts": {
+            "0": 911,
+            "1": 324
+          },
+          "val_accuracy_raw": 0.5769854132901134,
+          "val_dp_diff_raw": 0.0526
         },
         {
           "eps": 0.1,
-          "accuracy": "58.95%",
-          "f1": "0.3810",
-          "dp_diff": "0.0785",
-          "eo_diff": "0.0724",
-          "eopp_diff": "0.0527",
-          "pp_diff": "0.0658"
+          "accuracy": "60.89%",
+          "accuracy_raw": 0.6089,
+          "f1": "0.3831",
+          "dp_diff": "0.0401",
+          "dp_diff_raw": 0.0401,
+          "eo_diff": "0.0346",
+          "eopp_diff": "0.0346",
+          "pp_diff": "0.1314",
+          "class_counts": {
+            "0": 1014,
+            "1": 221
+          },
+          "val_accuracy_raw": 0.5810372771474879,
+          "val_dp_diff_raw": 0.0381
         }
       ],
       "equalized_odds": [
         {
           "eps": 0.005,
-          "accuracy": "61.54%",
-          "f1": "0.4740",
-          "dp_diff": "0.1177",
-          "eo_diff": "0.1456",
-          "eopp_diff": "0.0371",
-          "pp_diff": "0.0328"
+          "accuracy": "61.38%",
+          "accuracy_raw": 0.6138,
+          "f1": "0.4682",
+          "dp_diff": "0.0901",
+          "dp_diff_raw": 0.0901,
+          "eo_diff": "0.0733",
+          "eopp_diff": "0.0733",
+          "pp_diff": "0.0939",
+          "class_counts": {
+            "0": 900,
+            "1": 335
+          },
+          "val_accuracy_raw": 0.5948136142625607,
+          "val_dp_diff_raw": 0.0708
         },
         {
           "eps": 0.01,
-          "accuracy": "61.54%",
-          "f1": "0.4728",
-          "dp_diff": "0.1083",
-          "eo_diff": "0.1312",
-          "eopp_diff": "0.0341",
-          "pp_diff": "0.0147"
+          "accuracy": "61.13%",
+          "accuracy_raw": 0.6113,
+          "f1": "0.4521",
+          "dp_diff": "0.0933",
+          "dp_diff_raw": 0.0933,
+          "eo_diff": "0.1006",
+          "eopp_diff": "0.1006",
+          "pp_diff": "0.1325",
+          "class_counts": {
+            "0": 921,
+            "1": 314
+          },
+          "val_accuracy_raw": 0.5810372771474879,
+          "val_dp_diff_raw": 0.0621
         },
         {
           "eps": 0.02,
-          "accuracy": "60.73%",
-          "f1": "0.4653",
-          "dp_diff": "0.1225",
-          "eo_diff": "0.1189",
-          "eopp_diff": "0.0855",
-          "pp_diff": "0.0449"
+          "accuracy": "60.08%",
+          "accuracy_raw": 0.6008,
+          "f1": "0.4353",
+          "dp_diff": "0.0965",
+          "dp_diff_raw": 0.0965,
+          "eo_diff": "0.0832",
+          "eopp_diff": "0.0705",
+          "pp_diff": "0.0690",
+          "class_counts": {
+            "0": 924,
+            "1": 311
+          },
+          "val_accuracy_raw": 0.5956239870340356,
+          "val_dp_diff_raw": 0.0771
         },
         {
           "eps": 0.05,
           "accuracy": "61.21%",
-          "f1": "0.4730",
-          "dp_diff": "0.1390",
-          "eo_diff": "0.1351",
-          "eopp_diff": "0.0914",
-          "pp_diff": "0.0130"
+          "accuracy_raw": 0.6121,
+          "f1": "0.4501",
+          "dp_diff": "0.0870",
+          "dp_diff_raw": 0.087,
+          "eo_diff": "0.0644",
+          "eopp_diff": "0.0644",
+          "pp_diff": "0.0793",
+          "class_counts": {
+            "0": 926,
+            "1": 309
+          },
+          "val_accuracy_raw": 0.5850891410048622,
+          "val_dp_diff_raw": 0.0708
         },
         {
           "eps": 0.1,
-          "accuracy": "60.57%",
-          "f1": "0.4546",
-          "dp_diff": "0.1351",
-          "eo_diff": "0.1279",
-          "eopp_diff": "0.0975",
-          "pp_diff": "0.0308"
+          "accuracy": "62.51%",
+          "accuracy_raw": 0.6251,
+          "f1": "0.4815",
+          "dp_diff": "0.1011",
+          "dp_diff_raw": 0.1011,
+          "eo_diff": "0.0799",
+          "eopp_diff": "0.0702",
+          "pp_diff": "0.0635",
+          "class_counts": {
+            "0": 904,
+            "1": 331
+          },
+          "val_accuracy_raw": 0.593192868719611,
+          "val_dp_diff_raw": 0.0842
         }
       ]
     },
@@ -262,151 +422,710 @@
       "demographic_parity": [
         {
           "eps": 0.005,
-          "accuracy": "84.23%",
-          "f1": "0.5951",
-          "dp_diff": "0.0127",
-          "eo_diff": "0.2996",
-          "eopp_diff": "0.2996",
-          "pp_diff": "0.2999"
+          "accuracy": "84.36%",
+          "accuracy_raw": 0.8436,
+          "f1": "0.5979",
+          "dp_diff": "0.0145",
+          "dp_diff_raw": 0.0145,
+          "eo_diff": "0.2946",
+          "eopp_diff": "0.2946",
+          "pp_diff": "0.2963",
+          "class_counts": {
+            "0": 5544,
+            "1": 964
+          },
+          "val_accuracy_raw": 0.8435530966651299,
+          "val_dp_diff_raw": 0.0235
         },
         {
           "eps": 0.01,
-          "accuracy": "84.05%",
-          "f1": "0.5900",
-          "dp_diff": "0.0113",
-          "eo_diff": "0.3104",
-          "eopp_diff": "0.3104",
-          "pp_diff": "0.2837"
+          "accuracy": "84.27%",
+          "accuracy_raw": 0.8427,
+          "f1": "0.5946",
+          "dp_diff": "0.0111",
+          "dp_diff_raw": 0.0111,
+          "eo_diff": "0.3041",
+          "eopp_diff": "0.3041",
+          "pp_diff": "0.3002",
+          "class_counts": {
+            "0": 5550,
+            "1": 958
+          },
+          "val_accuracy_raw": 0.8444751805747657,
+          "val_dp_diff_raw": 0.0207
         },
         {
           "eps": 0.02,
-          "accuracy": "84.39%",
-          "f1": "0.5997",
-          "dp_diff": "0.0078",
-          "eo_diff": "0.3158",
-          "eopp_diff": "0.3158",
-          "pp_diff": "0.2956"
+          "accuracy": "84.28%",
+          "accuracy_raw": 0.8428,
+          "f1": "0.5945",
+          "dp_diff": "0.0118",
+          "dp_diff_raw": 0.0118,
+          "eo_diff": "0.2949",
+          "eopp_diff": "0.2949",
+          "pp_diff": "0.3058",
+          "class_counts": {
+            "0": 5553,
+            "1": 955
+          },
+          "val_accuracy_raw": 0.8446288612263716,
+          "val_dp_diff_raw": 0.0232
         },
         {
           "eps": 0.05,
-          "accuracy": "84.28%",
-          "f1": "0.5971",
-          "dp_diff": "0.0122",
-          "eo_diff": "0.3006",
-          "eopp_diff": "0.3006",
-          "pp_diff": "0.2975"
+          "accuracy": "84.36%",
+          "accuracy_raw": 0.8436,
+          "f1": "0.5970",
+          "dp_diff": "0.0118",
+          "dp_diff_raw": 0.0118,
+          "eo_diff": "0.3019",
+          "eopp_diff": "0.3019",
+          "pp_diff": "0.3015",
+          "class_counts": {
+            "0": 5550,
+            "1": 958
+          },
+          "val_accuracy_raw": 0.8438604579683417,
+          "val_dp_diff_raw": 0.0214
         },
         {
           "eps": 0.1,
-          "accuracy": "84.05%",
-          "f1": "0.5910",
-          "dp_diff": "0.0157",
-          "eo_diff": "0.2811",
-          "eopp_diff": "0.2811",
-          "pp_diff": "0.3027"
+          "accuracy": "84.31%",
+          "accuracy_raw": 0.8431,
+          "f1": "0.5969",
+          "dp_diff": "0.0106",
+          "dp_diff_raw": 0.0106,
+          "eo_diff": "0.3053",
+          "eopp_diff": "0.3053",
+          "pp_diff": "0.3033",
+          "class_counts": {
+            "0": 5543,
+            "1": 965
+          },
+          "val_accuracy_raw": 0.8437067773167358,
+          "val_dp_diff_raw": 0.0184
         }
       ],
       "equalized_odds": [
         {
           "eps": 0.005,
-          "accuracy": "85.49%",
-          "f1": "0.6355",
-          "dp_diff": "0.1042",
-          "eo_diff": "0.0214",
-          "eopp_diff": "0.0214",
-          "pp_diff": "0.1496"
+          "accuracy": "85.25%",
+          "accuracy_raw": 0.8525,
+          "f1": "0.6259",
+          "dp_diff": "0.1056",
+          "dp_diff_raw": 0.1056,
+          "eo_diff": "0.0159",
+          "eopp_diff": "0.0007",
+          "pp_diff": "0.1519",
+          "class_counts": {
+            "0": 5510,
+            "1": 998
+          },
+          "val_accuracy_raw": 0.8526202551098817,
+          "val_dp_diff_raw": 0.1148
         },
         {
           "eps": 0.01,
           "accuracy": "85.59%",
-          "f1": "0.6378",
-          "dp_diff": "0.1044",
-          "eo_diff": "0.0142",
-          "eopp_diff": "0.0136",
-          "pp_diff": "0.1549"
+          "accuracy_raw": 0.8559,
+          "f1": "0.6347",
+          "dp_diff": "0.1061",
+          "dp_diff_raw": 0.1061,
+          "eo_diff": "0.0152",
+          "eopp_diff": "0.0067",
+          "pp_diff": "0.1440",
+          "class_counts": {
+            "0": 5508,
+            "1": 1000
+          },
+          "val_accuracy_raw": 0.8558475487936069,
+          "val_dp_diff_raw": 0.1146
         },
         {
           "eps": 0.02,
-          "accuracy": "85.43%",
-          "f1": "0.6345",
-          "dp_diff": "0.1079",
-          "eo_diff": "0.0203",
-          "eopp_diff": "0.0203",
-          "pp_diff": "0.1296"
+          "accuracy": "85.53%",
+          "accuracy_raw": 0.8553,
+          "f1": "0.6335",
+          "dp_diff": "0.1065",
+          "dp_diff_raw": 0.1065,
+          "eo_diff": "0.0162",
+          "eopp_diff": "0.0074",
+          "pp_diff": "0.1407",
+          "class_counts": {
+            "0": 5506,
+            "1": 1002
+          },
+          "val_accuracy_raw": 0.8546181035807592,
+          "val_dp_diff_raw": 0.1139
         },
         {
           "eps": 0.05,
-          "accuracy": "85.69%",
-          "f1": "0.6393",
-          "dp_diff": "0.1116",
-          "eo_diff": "0.0181",
-          "eopp_diff": "0.0163",
-          "pp_diff": "0.1483"
+          "accuracy": "85.59%",
+          "accuracy_raw": 0.8559,
+          "f1": "0.6347",
+          "dp_diff": "0.1109",
+          "dp_diff_raw": 0.1109,
+          "eo_diff": "0.0177",
+          "eopp_diff": "0.0133",
+          "pp_diff": "0.1366",
+          "class_counts": {
+            "0": 5508,
+            "1": 1000
+          },
+          "val_accuracy_raw": 0.8547717842323651,
+          "val_dp_diff_raw": 0.1141
         },
         {
           "eps": 0.1,
-          "accuracy": "85.69%",
-          "f1": "0.6401",
-          "dp_diff": "0.1107",
-          "eo_diff": "0.0192",
-          "eopp_diff": "0.0069",
-          "pp_diff": "0.1259"
+          "accuracy": "85.54%",
+          "accuracy_raw": 0.8554,
+          "f1": "0.6351",
+          "dp_diff": "0.1093",
+          "dp_diff_raw": 0.1093,
+          "eo_diff": "0.0166",
+          "eopp_diff": "0.0063",
+          "pp_diff": "0.1465",
+          "class_counts": {
+            "0": 5497,
+            "1": 1011
+          },
+          "val_accuracy_raw": 0.855540187490395,
+          "val_dp_diff_raw": 0.1134
         }
       ]
     }
+  },
+  "selected_epsilons": {
+    "german_credit": 0.005,
+    "compas": 0.01,
+    "adult_income": 0.1
+  },
+  "epsilon_selection_tables": {
+    "german_credit": [
+      {
+        "Epsilon": 0.005,
+        "Val Accuracy": "72.00%",
+        "Val Accuracy Loss (pp)": "+1.50",
+        "Val DP Diff": "0.0065",
+        "Val Fairness Gain (DP reduction)": "+0.0283",
+        "Test Accuracy": "70.50%",
+        "Test DP Diff": "0.0208",
+        "Acc Loss <= 5pp": true,
+        "Selected": "YES (Chosen)"
+      },
+      {
+        "Epsilon": 0.01,
+        "Val Accuracy": "72.00%",
+        "Val Accuracy Loss (pp)": "+1.50",
+        "Val DP Diff": "0.0065",
+        "Val Fairness Gain (DP reduction)": "+0.0283",
+        "Test Accuracy": "70.50%",
+        "Test DP Diff": "0.0208",
+        "Acc Loss <= 5pp": true,
+        "Selected": "No"
+      },
+      {
+        "Epsilon": 0.02,
+        "Val Accuracy": "72.00%",
+        "Val Accuracy Loss (pp)": "+1.50",
+        "Val DP Diff": "0.0065",
+        "Val Fairness Gain (DP reduction)": "+0.0283",
+        "Test Accuracy": "70.50%",
+        "Test DP Diff": "0.0208",
+        "Acc Loss <= 5pp": true,
+        "Selected": "No"
+      },
+      {
+        "Epsilon": 0.05,
+        "Val Accuracy": "72.00%",
+        "Val Accuracy Loss (pp)": "+1.50",
+        "Val DP Diff": "0.0065",
+        "Val Fairness Gain (DP reduction)": "+0.0283",
+        "Test Accuracy": "70.50%",
+        "Test DP Diff": "0.0208",
+        "Acc Loss <= 5pp": true,
+        "Selected": "No"
+      },
+      {
+        "Epsilon": 0.1,
+        "Val Accuracy": "70.50%",
+        "Val Accuracy Loss (pp)": "+3.00",
+        "Val DP Diff": "0.0549",
+        "Val Fairness Gain (DP reduction)": "-0.0201",
+        "Test Accuracy": "69.50%",
+        "Test DP Diff": "0.0082",
+        "Acc Loss <= 5pp": true,
+        "Selected": "No"
+      }
+    ],
+    "compas": [
+      {
+        "Epsilon": 0.005,
+        "Val Accuracy": "57.62%",
+        "Val Accuracy Loss (pp)": "+8.67",
+        "Val DP Diff": "0.0392",
+        "Val Fairness Gain (DP reduction)": "+0.2146",
+        "Test Accuracy": "59.43%",
+        "Test DP Diff": "0.0491",
+        "Acc Loss <= 5pp": false,
+        "Selected": "No"
+      },
+      {
+        "Epsilon": 0.01,
+        "Val Accuracy": "59.08%",
+        "Val Accuracy Loss (pp)": "+7.21",
+        "Val DP Diff": "0.0736",
+        "Val Fairness Gain (DP reduction)": "+0.1802",
+        "Test Accuracy": "60.40%",
+        "Test DP Diff": "0.0281",
+        "Acc Loss <= 5pp": false,
+        "Selected": "YES (Chosen)"
+      },
+      {
+        "Epsilon": 0.02,
+        "Val Accuracy": "58.02%",
+        "Val Accuracy Loss (pp)": "+8.27",
+        "Val DP Diff": "0.0530",
+        "Val Fairness Gain (DP reduction)": "+0.2008",
+        "Test Accuracy": "60.08%",
+        "Test DP Diff": "0.0374",
+        "Acc Loss <= 5pp": false,
+        "Selected": "No"
+      },
+      {
+        "Epsilon": 0.05,
+        "Val Accuracy": "57.70%",
+        "Val Accuracy Loss (pp)": "+8.59",
+        "Val DP Diff": "0.0526",
+        "Val Fairness Gain (DP reduction)": "+0.2012",
+        "Test Accuracy": "60.49%",
+        "Test DP Diff": "0.0262",
+        "Acc Loss <= 5pp": false,
+        "Selected": "No"
+      },
+      {
+        "Epsilon": 0.1,
+        "Val Accuracy": "58.10%",
+        "Val Accuracy Loss (pp)": "+8.18",
+        "Val DP Diff": "0.0381",
+        "Val Fairness Gain (DP reduction)": "+0.2157",
+        "Test Accuracy": "60.89%",
+        "Test DP Diff": "0.0401",
+        "Acc Loss <= 5pp": false,
+        "Selected": "No"
+      }
+    ],
+    "adult_income": [
+      {
+        "Epsilon": 0.005,
+        "Val Accuracy": "84.36%",
+        "Val Accuracy Loss (pp)": "+2.74",
+        "Val DP Diff": "0.0235",
+        "Val Fairness Gain (DP reduction)": "+0.1439",
+        "Test Accuracy": "84.36%",
+        "Test DP Diff": "0.0145",
+        "Acc Loss <= 5pp": true,
+        "Selected": "No"
+      },
+      {
+        "Epsilon": 0.01,
+        "Val Accuracy": "84.45%",
+        "Val Accuracy Loss (pp)": "+2.64",
+        "Val DP Diff": "0.0207",
+        "Val Fairness Gain (DP reduction)": "+0.1467",
+        "Test Accuracy": "84.27%",
+        "Test DP Diff": "0.0111",
+        "Acc Loss <= 5pp": true,
+        "Selected": "No"
+      },
+      {
+        "Epsilon": 0.02,
+        "Val Accuracy": "84.46%",
+        "Val Accuracy Loss (pp)": "+2.63",
+        "Val DP Diff": "0.0232",
+        "Val Fairness Gain (DP reduction)": "+0.1442",
+        "Test Accuracy": "84.28%",
+        "Test DP Diff": "0.0118",
+        "Acc Loss <= 5pp": true,
+        "Selected": "No"
+      },
+      {
+        "Epsilon": 0.05,
+        "Val Accuracy": "84.39%",
+        "Val Accuracy Loss (pp)": "+2.70",
+        "Val DP Diff": "0.0214",
+        "Val Fairness Gain (DP reduction)": "+0.1460",
+        "Test Accuracy": "84.36%",
+        "Test DP Diff": "0.0118",
+        "Acc Loss <= 5pp": true,
+        "Selected": "No"
+      },
+      {
+        "Epsilon": 0.1,
+        "Val Accuracy": "84.37%",
+        "Val Accuracy Loss (pp)": "+2.72",
+        "Val DP Diff": "0.0184",
+        "Val Fairness Gain (DP reduction)": "+0.1490",
+        "Test Accuracy": "84.31%",
+        "Test DP Diff": "0.0106",
+        "Acc Loss <= 5pp": true,
+        "Selected": "YES (Chosen)"
+      }
+    ]
   },
   "experiments": {
     "german_credit": {
       "summary_table": [
         {
           "Variant": "Baseline",
-          "F1 (10-seed mean)": "0.8290 \u00b1 0.0153",
-          "Accuracy (10-seed mean)": "72.80% \u00b1 2.27%",
-          "DP Diff": "0.0331 \u00b1 0.0230",
+          "F1 (10-seed mean)": "0.8287 \u00b1 0.0150",
+          "Accuracy (10-seed mean)": "72.75% \u00b1 2.24%",
+          "DP Diff": "0.0324 \u00b1 0.0214",
           "EO Diff": "0.0739 \u00b1 0.0301",
-          "EOpp Diff": "0.0285 \u00b1 0.0219",
-          "PP Diff": "0.0804 \u00b1 0.0167",
+          "EOpp Diff": "0.0275 \u00b1 0.0204",
+          "PP Diff": "0.0802 \u00b1 0.0168",
           "Paired Reduction Delta (DP)": "N/A",
           "95% CI (Delta DP)": "N/A",
           "Significant (CI > 0)": "N/A"
         },
         {
           "Variant": "Reweighing",
-          "F1 (10-seed mean)": "0.8282 \u00b1 0.0107",
-          "Accuracy (10-seed mean)": "72.65% \u00b1 1.61%",
-          "DP Diff": "0.0333 \u00b1 0.0207",
-          "EO Diff": "0.0776 \u00b1 0.0471",
-          "EOpp Diff": "0.0320 \u00b1 0.0186",
-          "PP Diff": "0.0792 \u00b1 0.0181",
-          "Paired Reduction Delta (DP)": "-0.0111",
-          "95% CI (Delta DP)": "[-0.0887, 0.0942]",
+          "F1 (10-seed mean)": "0.8310 \u00b1 0.0098",
+          "Accuracy (10-seed mean)": "72.95% \u00b1 1.52%",
+          "DP Diff": "0.0435 \u00b1 0.0295",
+          "EO Diff": "0.0873 \u00b1 0.0252",
+          "EOpp Diff": "0.0425 \u00b1 0.0302",
+          "PP Diff": "0.0695 \u00b1 0.0209",
+          "Paired Reduction Delta (DP)": "0.0003",
+          "95% CI (Delta DP)": "[-0.0801, 0.0916]",
           "Significant (CI > 0)": "False"
         },
         {
           "Variant": "Exponentiated Gradient",
-          "F1 (10-seed mean)": "0.8297 \u00b1 0.0075",
-          "Accuracy (10-seed mean)": "72.10% \u00b1 1.20%",
-          "DP Diff": "0.0361 \u00b1 0.0304",
-          "EO Diff": "0.0643 \u00b1 0.0382",
-          "EOpp Diff": "0.0320 \u00b1 0.0258",
-          "PP Diff": "0.0806 \u00b1 0.0098",
-          "Paired Reduction Delta (DP)": "0.0096",
-          "95% CI (Delta DP)": "[-0.0477, 0.0779]",
+          "F1 (10-seed mean)": "0.8293 \u00b1 0.0081",
+          "Accuracy (10-seed mean)": "72.10% \u00b1 1.11%",
+          "DP Diff": "0.0332 \u00b1 0.0110",
+          "EO Diff": "0.0783 \u00b1 0.0554",
+          "EOpp Diff": "0.0285 \u00b1 0.0157",
+          "PP Diff": "0.0875 \u00b1 0.0182",
+          "Paired Reduction Delta (DP)": "0.0061",
+          "95% CI (Delta DP)": "[-0.0649, 0.0840]",
           "Significant (CI > 0)": "False"
         },
         {
           "Variant": "Threshold Optimizer",
-          "F1 (10-seed mean)": "0.8262 \u00b1 0.0152",
-          "Accuracy (10-seed mean)": "73.55% \u00b1 2.66%",
-          "DP Diff": "0.0544 \u00b1 0.0421",
-          "EO Diff": "0.1179 \u00b1 0.0760",
-          "EOpp Diff": "0.0445 \u00b1 0.0181",
-          "PP Diff": "0.0848 \u00b1 0.0240",
-          "Paired Reduction Delta (DP)": "-0.0183",
-          "95% CI (Delta DP)": "[-0.1063, 0.0783]",
+          "F1 (10-seed mean)": "0.8282 \u00b1 0.0192",
+          "Accuracy (10-seed mean)": "73.95% \u00b1 3.22%",
+          "DP Diff": "0.0478 \u00b1 0.0407",
+          "EO Diff": "0.1208 \u00b1 0.0735",
+          "EOpp Diff": "0.0315 \u00b1 0.0263",
+          "PP Diff": "0.0914 \u00b1 0.0183",
+          "Paired Reduction Delta (DP)": "-0.0411",
+          "95% CI (Delta DP)": "[-0.1426, 0.0948]",
           "Significant (CI > 0)": "False"
         }
       ],
+      "baseline_fairness": {
+        "demographic_parity_diff": {
+          "val": 0.0147,
+          "bootstrap_mean": 0.0433,
+          "ci_low": 0.0016,
+          "ci_high": 0.1226,
+          "signed_ci_low": -0.0855,
+          "signed_ci_high": 0.1215,
+          "reference_groups": [
+            "male",
+            "female"
+          ],
+          "is_significant": 0
+        },
+        "equalized_odds_diff": {
+          "val": 0.0359,
+          "bootstrap_mean": 0.1079,
+          "ci_low": 0.0133,
+          "ci_high": 0.2748
+        },
+        "equal_opportunity_diff": {
+          "val": 0.02,
+          "bootstrap_mean": 0.0429,
+          "ci_low": 0.0017,
+          "ci_high": 0.1276,
+          "signed_ci_low": -0.0864,
+          "signed_ci_high": 0.1277,
+          "reference_groups": [
+            "male",
+            "female"
+          ],
+          "is_significant": 0
+        },
+        "predictive_parity_diff": {
+          "val": 0.0874,
+          "bootstrap_mean": 0.0937,
+          "ci_low": 0.0029,
+          "ci_high": 0.2305,
+          "signed_ci_low": -0.0782,
+          "signed_ci_high": 0.2304,
+          "reference_groups": [
+            "male",
+            "female"
+          ],
+          "is_significant": 0
+        }
+      },
+      "baseline_pred_metrics": {
+        "accuracy": 0.715,
+        "balanced_accuracy": 0.5821,
+        "precision": 0.7399,
+        "recall": 0.9143,
+        "f1_score": 0.8179,
+        "precision_class_0": 0.5556,
+        "recall_class_0": 0.25,
+        "f1_class_0": 0.3448,
+        "precision_class_1": 0.7399,
+        "recall_class_1": 0.9143,
+        "f1_class_1": 0.8179,
+        "macro_f1": 0.5814,
+        "roc_auc": 0.7333,
+        "confusion_matrix": {
+          "TN": 15,
+          "FP": 45,
+          "FN": 12,
+          "TP": 128
+        }
+      },
+      "mitigations": {
+        "Reweighing": {
+          "metrics": {
+            "demographic_parity_diff": {
+              "val": 0.0264,
+              "bootstrap_mean": 0.043,
+              "ci_low": 0.0024,
+              "ci_high": 0.1152,
+              "signed_ci_low": -0.0705,
+              "signed_ci_high": 0.1152,
+              "reference_groups": [
+                "female",
+                "male"
+              ],
+              "is_significant": 0
+            },
+            "equalized_odds_diff": {
+              "val": 0.055,
+              "bootstrap_mean": 0.107,
+              "ci_low": 0.0195,
+              "ci_high": 0.2656
+            },
+            "equal_opportunity_diff": {
+              "val": 0.03,
+              "bootstrap_mean": 0.041,
+              "ci_low": 0.0012,
+              "ci_high": 0.1051,
+              "signed_ci_low": -0.0597,
+              "signed_ci_high": 0.1024,
+              "reference_groups": [
+                "female",
+                "male"
+              ],
+              "is_significant": 0
+            },
+            "predictive_parity_diff": {
+              "val": 0.0818,
+              "bootstrap_mean": 0.088,
+              "ci_low": 0.0032,
+              "ci_high": 0.2253,
+              "signed_ci_low": -0.0683,
+              "signed_ci_high": 0.2253,
+              "reference_groups": [
+                "male",
+                "female"
+              ],
+              "is_significant": 0
+            }
+          },
+          "pred_metrics": {
+            "accuracy": 0.715,
+            "balanced_accuracy": 0.5726,
+            "precision": 0.7345,
+            "recall": 0.9286,
+            "f1_score": 0.8202,
+            "precision_class_0": 0.5652,
+            "recall_class_0": 0.2167,
+            "f1_class_0": 0.3133,
+            "precision_class_1": 0.7345,
+            "recall_class_1": 0.9286,
+            "f1_class_1": 0.8202,
+            "macro_f1": 0.5667,
+            "roc_auc": 0.739,
+            "confusion_matrix": {
+              "TN": 13,
+              "FP": 47,
+              "FN": 10,
+              "TP": 130
+            }
+          },
+          "significance": {
+            "mean_delta": 0.0003,
+            "ci_low": -0.0801,
+            "ci_high": 0.0916,
+            "is_significant": 0,
+            "p_value": 0.512
+          }
+        },
+        "Exponentiated Gradient": {
+          "metrics": {
+            "demographic_parity_diff": {
+              "val": 0.0208,
+              "bootstrap_mean": 0.0372,
+              "ci_low": 0.0009,
+              "ci_high": 0.0998,
+              "signed_ci_low": -0.0684,
+              "signed_ci_high": 0.0972,
+              "reference_groups": [
+                "female",
+                "male"
+              ],
+              "is_significant": 0
+            },
+            "equalized_odds_diff": {
+              "val": 0.0478,
+              "bootstrap_mean": 0.0931,
+              "ci_low": 0.013,
+              "ci_high": 0.2199
+            },
+            "equal_opportunity_diff": {
+              "val": 0.02,
+              "bootstrap_mean": 0.036,
+              "ci_low": 0.0012,
+              "ci_high": 0.1,
+              "signed_ci_low": -0.066,
+              "signed_ci_high": 0.0922,
+              "reference_groups": [
+                "female",
+                "male"
+              ],
+              "is_significant": 0
+            },
+            "predictive_parity_diff": {
+              "val": 0.0833,
+              "bootstrap_mean": 0.0903,
+              "ci_low": 0.0045,
+              "ci_high": 0.2259,
+              "signed_ci_low": -0.0713,
+              "signed_ci_high": 0.2259,
+              "reference_groups": [
+                "male",
+                "female"
+              ],
+              "is_significant": 0
+            }
+          },
+          "pred_metrics": {
+            "accuracy": 0.705,
+            "balanced_accuracy": 0.5512,
+            "precision": 0.7238,
+            "recall": 0.9357,
+            "f1_score": 0.8162,
+            "precision_class_0": 0.5263,
+            "recall_class_0": 0.1667,
+            "f1_class_0": 0.2532,
+            "precision_class_1": 0.7238,
+            "recall_class_1": 0.9357,
+            "f1_class_1": 0.8162,
+            "macro_f1": 0.5347,
+            "roc_auc": 0.5512,
+            "confusion_matrix": {
+              "TN": 10,
+              "FP": 50,
+              "FN": 9,
+              "TP": 131
+            }
+          },
+          "significance": {
+            "mean_delta": 0.0061,
+            "ci_low": -0.0649,
+            "ci_high": 0.084,
+            "is_significant": 0,
+            "p_value": 0.466
+          }
+        },
+        "Threshold Optimizer": {
+          "metrics": {
+            "demographic_parity_diff": {
+              "val": 0.0811,
+              "bootstrap_mean": 0.0845,
+              "ci_low": 0.0062,
+              "ci_high": 0.1944,
+              "signed_ci_low": -0.03,
+              "signed_ci_high": 0.1944,
+              "reference_groups": [
+                "female",
+                "male"
+              ],
+              "is_significant": 0
+            },
+            "equalized_odds_diff": {
+              "val": 0.2129,
+              "bootstrap_mean": 0.2177,
+              "ci_low": 0.0357,
+              "ci_high": 0.4221
+            },
+            "equal_opportunity_diff": {
+              "val": 0.04,
+              "bootstrap_mean": 0.0548,
+              "ci_low": 0.0022,
+              "ci_high": 0.1471,
+              "signed_ci_low": -0.0685,
+              "signed_ci_high": 0.1471,
+              "reference_groups": [
+                "female",
+                "male"
+              ],
+              "is_significant": 0
+            },
+            "predictive_parity_diff": {
+              "val": 0.1223,
+              "bootstrap_mean": 0.1204,
+              "ci_low": 0.0074,
+              "ci_high": 0.2695,
+              "signed_ci_low": -0.0417,
+              "signed_ci_high": 0.2695,
+              "reference_groups": [
+                "male",
+                "female"
+              ],
+              "is_significant": 0
+            }
+          },
+          "pred_metrics": {
+            "accuracy": 0.705,
+            "balanced_accuracy": 0.594,
+            "precision": 0.7485,
+            "recall": 0.8714,
+            "f1_score": 0.8053,
+            "precision_class_0": 0.5135,
+            "recall_class_0": 0.3167,
+            "f1_class_0": 0.3918,
+            "precision_class_1": 0.7485,
+            "recall_class_1": 0.8714,
+            "f1_class_1": 0.8053,
+            "macro_f1": 0.5985,
+            "roc_auc": 0.6529,
+            "confusion_matrix": {
+              "TN": 19,
+              "FP": 41,
+              "FN": 18,
+              "TP": 122
+            }
+          },
+          "significance": {
+            "mean_delta": -0.0411,
+            "ci_low": -0.1426,
+            "ci_high": 0.0948,
+            "is_significant": 0,
+            "p_value": 0.726
+          }
+        }
+      },
       "raw_metrics_10_seeds": {
         "Baseline": {
           "f1": [
@@ -418,7 +1137,7 @@
             0.8243,
             0.8188,
             0.8176,
-            0.8421,
+            0.8385,
             0.8349
           ],
           "acc": [
@@ -430,7 +1149,7 @@
             0.725,
             0.71,
             0.71,
-            0.745,
+            0.74,
             0.735
           ],
           "dp": [
@@ -442,7 +1161,7 @@
             0.0381,
             0.0047,
             0.0192,
-            0.0872,
+            0.0799,
             0.0493
           ],
           "eo": [
@@ -466,7 +1185,7 @@
             0.03,
             0.015,
             0.005,
-            0.065,
+            0.055,
             0.01
           ],
           "pp": [
@@ -478,229 +1197,229 @@
             0.0763,
             0.0974,
             0.1016,
-            0.0634,
+            0.0616,
             0.0522
           ]
         },
         "Reweighing": {
           "f1": [
+            0.8202,
+            0.8431,
+            0.8391,
             0.8139,
-            0.8369,
-            0.8381,
-            0.8139,
-            0.8401,
-            0.8243,
-            0.8228,
-            0.8162,
-            0.8421,
-            0.8339
+            0.8395,
+            0.8371,
+            0.8235,
+            0.8297,
+            0.8411,
+            0.8224
           ],
           "acc": [
-            0.705,
-            0.735,
+            0.715,
+            0.745,
             0.745,
             0.705,
+            0.74,
             0.745,
+            0.715,
             0.725,
-            0.72,
-            0.705,
             0.745,
-            0.735
+            0.715
           ],
           "dp": [
-            0.0498,
-            0.0152,
-            0.0175,
-            0.0498,
-            0.0587,
-            0.0086,
-            0.0131,
-            0.0442,
-            0.0638,
-            0.0119
+            0.0264,
+            0.0386,
+            0.0203,
+            0.0732,
+            0.0458,
+            0.0381,
+            0.0171,
+            0.0297,
+            0.1194,
+            0.0259
           ],
           "eo": [
+            0.055,
             0.1005,
-            0.04,
-            0.0885,
-            0.075,
-            0.1794,
-            0.04,
-            0.0096,
-            0.1196,
-            0.0885,
-            0.035
+            0.0813,
+            0.11,
+            0.1005,
+            0.1005,
+            0.0478,
+            0.0742,
+            0.134,
+            0.0694
           ],
           "eopp": [
-            0.04,
-            0.04,
-            0.01,
-            0.075,
-            0.025,
-            0.04,
-            0.005,
-            0.02,
             0.03,
-            0.035
+            0.03,
+            0.035,
+            0.11,
+            0.04,
+            0.02,
+            0.035,
+            0.025,
+            0.09,
+            0.01
           ],
           "pp": [
-            0.0917,
-            0.0663,
-            0.0924,
-            0.0658,
-            0.1127,
-            0.061,
-            0.0771,
-            0.1009,
-            0.056,
-            0.0678
+            0.0818,
+            0.0919,
+            0.042,
+            0.0582,
+            0.09,
+            0.0378,
+            0.0952,
+            0.0876,
+            0.0557,
+            0.0551
           ]
         },
         "Exponentiated Gradient": {
           "f1": [
-            0.821,
-            0.8373,
-            0.8318,
-            0.8185,
-            0.8379,
-            0.8431,
-            0.8293,
-            0.8278,
+            0.8162,
+            0.8399,
+            0.8364,
+            0.8137,
+            0.8308,
+            0.8328,
             0.8267,
-            0.8232
+            0.8303,
+            0.8369,
+            0.8293
           ],
           "acc": [
-            0.71,
-            0.73,
-            0.725,
             0.705,
             0.735,
-            0.745,
+            0.73,
+            0.7,
+            0.725,
+            0.725,
+            0.715,
             0.72,
-            0.715,
-            0.715,
-            0.71
+            0.735,
+            0.72
           ],
           "dp": [
-            0.0009,
-            0.0112,
-            0.0418,
+            0.0208,
+            0.0185,
+            0.0491,
+            0.0369,
             0.0386,
-            0.0241,
-            0.0676,
-            0.0241,
-            0.0049,
-            0.1073,
-            0.0402
+            0.033,
+            0.0372,
+            0.0491,
+            0.0316,
+            0.0168
           ],
           "eo": [
-            0.0215,
-            0.0407,
-            0.0598,
-            0.067,
             0.0478,
-            0.1005,
-            0.0933,
-            0.0144,
-            0.1483,
-            0.05
+            0.067,
+            0.2105,
+            0.055,
+            0.05,
+            0.1388,
+            0.0311,
+            0.1124,
+            0.03,
+            0.04
           ],
           "eopp": [
-            0.0,
+            0.02,
             0.01,
-            0.04,
-            0.035,
+            0.015,
+            0.055,
+            0.05,
+            0.005,
             0.03,
-            0.07,
-            0.005,
-            0.005,
-            0.075,
-            0.05
+            0.03,
+            0.03,
+            0.04
           ],
           "pp": [
-            0.0814,
             0.0833,
-            0.0827,
-            0.085,
-            0.0798,
-            0.0843,
-            0.0968,
-            0.0814,
-            0.0556,
-            0.0755
+            0.0891,
+            0.1281,
+            0.0695,
+            0.076,
+            0.1097,
+            0.0758,
+            0.0962,
+            0.0811,
+            0.0662
           ]
         },
         "Threshold Optimizer": {
           "f1": [
-            0.8146,
-            0.8522,
-            0.8493,
-            0.8254,
-            0.8197,
-            0.8105,
-            0.8105,
-            0.8129,
-            0.8418,
+            0.804,
+            0.866,
+            0.8483,
+            0.8039,
+            0.8328,
+            0.8131,
+            0.8251,
+            0.8182,
+            0.8454,
             0.8255
           ],
           "acc": [
-            0.72,
-            0.785,
+            0.705,
+            0.805,
             0.78,
-            0.725,
-            0.725,
-            0.71,
-            0.71,
-            0.71,
-            0.75,
+            0.695,
+            0.745,
+            0.715,
+            0.735,
+            0.72,
+            0.755,
             0.74
           ],
           "dp": [
-            0.0811,
-            0.1664,
-            0.0601,
-            0.0337,
-            0.011,
-            0.0577,
-            0.0269,
-            0.0231,
-            0.0365,
+            0.0489,
+            0.1592,
+            0.0117,
+            0.0699,
+            0.0432,
+            0.0199,
+            0.0358,
+            0.0215,
+            0.0203,
             0.0472
           ],
           "eo": [
-            0.2129,
-            0.2727,
-            0.1507,
-            0.055,
-            0.05,
             0.1675,
-            0.0957,
-            0.0622,
-            0.0287,
+            0.299,
+            0.1507,
+            0.0813,
+            0.1483,
+            0.0694,
+            0.0766,
+            0.1148,
+            0.0167,
             0.0837
           ],
           "eopp": [
-            0.04,
-            0.055,
-            0.07,
-            0.04,
-            0.05,
-            0.03,
-            0.06,
+            0.015,
+            0.035,
+            0.005,
+            0.08,
             0.025,
+            0.02,
+            0.06,
+            0.0,
             0.01,
             0.065
           ],
           "pp": [
-            0.1223,
-            0.0446,
-            0.0944,
-            0.0798,
-            0.0585,
-            0.1117,
-            0.1113,
-            0.084,
-            0.0635,
+            0.1159,
+            0.0552,
+            0.1097,
+            0.078,
+            0.1055,
+            0.0865,
+            0.1044,
+            0.1034,
+            0.0768,
             0.0782
           ]
         }
@@ -708,92 +1427,92 @@
       "paired_ci_seed42": {
         "Reweighing": {
           "demographic_parity_diff": {
-            "mean_delta": -0.0111,
-            "ci_low": -0.0887,
-            "ci_high": 0.0942,
+            "mean_delta": 0.0003,
+            "ci_low": -0.0801,
+            "ci_high": 0.0916,
             "is_significant": 0,
-            "p_value": 0.626
+            "p_value": 0.512
           },
           "equalized_odds_diff": {
-            "mean_delta": -0.0171,
-            "ci_low": -0.161,
-            "ci_high": 0.1176,
+            "mean_delta": 0.0009,
+            "ci_low": -0.1666,
+            "ci_high": 0.1402,
             "is_significant": 0,
-            "p_value": 0.612
+            "p_value": 0.476
           },
           "equal_opportunity_diff": {
-            "mean_delta": -0.0041,
-            "ci_low": -0.0833,
-            "ci_high": 0.1069,
+            "mean_delta": 0.002,
+            "ci_low": -0.0713,
+            "ci_high": 0.0969,
             "is_significant": 0,
-            "p_value": 0.618
+            "p_value": 0.524
           },
           "predictive_parity_diff": {
-            "mean_delta": -0.0024,
-            "ci_low": -0.0478,
-            "ci_high": 0.0398,
+            "mean_delta": 0.0057,
+            "ci_low": -0.0507,
+            "ci_high": 0.062,
             "is_significant": 0,
-            "p_value": 0.548
+            "p_value": 0.416
           }
         },
         "Exponentiated Gradient": {
           "demographic_parity_diff": {
-            "mean_delta": 0.0096,
-            "ci_low": -0.0477,
-            "ci_high": 0.0779,
+            "mean_delta": 0.0061,
+            "ci_low": -0.0649,
+            "ci_high": 0.084,
             "is_significant": 0,
-            "p_value": 0.374
+            "p_value": 0.466
           },
           "equalized_odds_diff": {
-            "mean_delta": 0.0207,
-            "ci_low": -0.106,
-            "ci_high": 0.1449,
-            "is_significant": 0,
-            "p_value": 0.396
-          },
-          "equal_opportunity_diff": {
-            "mean_delta": 0.0108,
-            "ci_low": -0.046,
-            "ci_high": 0.0919,
-            "is_significant": 0,
-            "p_value": 0.402
-          },
-          "predictive_parity_diff": {
-            "mean_delta": 0.0052,
-            "ci_low": -0.0359,
-            "ci_high": 0.0493,
+            "mean_delta": 0.0147,
+            "ci_low": -0.107,
+            "ci_high": 0.1312,
             "is_significant": 0,
             "p_value": 0.408
+          },
+          "equal_opportunity_diff": {
+            "mean_delta": 0.0069,
+            "ci_low": -0.0605,
+            "ci_high": 0.1014,
+            "is_significant": 0,
+            "p_value": 0.456
+          },
+          "predictive_parity_diff": {
+            "mean_delta": 0.0034,
+            "ci_low": -0.038,
+            "ci_high": 0.0423,
+            "is_significant": 0,
+            "p_value": 0.438
           }
         },
         "Threshold Optimizer": {
           "demographic_parity_diff": {
-            "mean_delta": -0.0183,
-            "ci_low": -0.1063,
-            "ci_high": 0.0783,
+            "mean_delta": -0.0411,
+            "ci_low": -0.1426,
+            "ci_high": 0.0948,
             "is_significant": 0,
-            "p_value": 0.62
+            "p_value": 0.726
           },
           "equalized_odds_diff": {
-            "mean_delta": -0.0709,
-            "ci_low": -0.2222,
-            "ci_high": 0.1175,
+            "mean_delta": -0.1099,
+            "ci_low": -0.2822,
+            "ci_high": 0.108,
             "is_significant": 0,
-            "p_value": 0.774
+            "p_value": 0.832
           },
           "equal_opportunity_diff": {
-            "mean_delta": -0.0051,
-            "ci_low": -0.0802,
-            "ci_high": 0.0715,
+            "mean_delta": -0.0119,
+            "ci_low": -0.1156,
+            "ci_high": 0.0923,
             "is_significant": 0,
-            "p_value": 0.552
+            "p_value": 0.61
           },
           "predictive_parity_diff": {
-            "mean_delta": -0.0215,
-            "ci_low": -0.061,
-            "ci_high": 0.0316,
+            "mean_delta": -0.0267,
+            "ci_low": -0.0761,
+            "ci_high": 0.0376,
             "is_significant": 0,
-            "p_value": 0.868
+            "p_value": 0.866
           }
         }
       }
@@ -802,89 +1521,390 @@
       "summary_table": [
         {
           "Variant": "Baseline",
-          "F1 (10-seed mean)": "0.6345 \u00b1 0.0109",
-          "Accuracy (10-seed mean)": "68.72% \u00b1 0.81%",
-          "DP Diff": "0.2470 \u00b1 0.0202",
-          "EO Diff": "0.2413 \u00b1 0.0319",
-          "EOpp Diff": "0.2413 \u00b1 0.0319",
-          "PP Diff": "0.0497 \u00b1 0.0254",
+          "F1 (10-seed mean)": "0.6344 \u00b1 0.0107",
+          "Accuracy (10-seed mean)": "68.71% \u00b1 0.79%",
+          "DP Diff": "0.2473 \u00b1 0.0204",
+          "EO Diff": "0.2416 \u00b1 0.0321",
+          "EOpp Diff": "0.2416 \u00b1 0.0321",
+          "PP Diff": "0.0495 \u00b1 0.0258",
           "Paired Reduction Delta (DP)": "N/A",
           "95% CI (Delta DP)": "N/A",
           "Significant (CI > 0)": "N/A"
         },
         {
           "Variant": "Reweighing",
-          "F1 (10-seed mean)": "0.6307 \u00b1 0.0110",
-          "Accuracy (10-seed mean)": "68.52% \u00b1 0.76%",
-          "DP Diff": "0.2444 \u00b1 0.0198",
-          "EO Diff": "0.2367 \u00b1 0.0314",
-          "EOpp Diff": "0.2367 \u00b1 0.0314",
-          "PP Diff": "0.0489 \u00b1 0.0297",
-          "Paired Reduction Delta (DP)": "0.0021",
-          "95% CI (Delta DP)": "[-0.0109, 0.0158]",
+          "F1 (10-seed mean)": "0.6293 \u00b1 0.0088",
+          "Accuracy (10-seed mean)": "68.35% \u00b1 0.54%",
+          "DP Diff": "0.2408 \u00b1 0.0202",
+          "EO Diff": "0.2319 \u00b1 0.0364",
+          "EOpp Diff": "0.2319 \u00b1 0.0364",
+          "PP Diff": "0.0560 \u00b1 0.0357",
+          "Paired Reduction Delta (DP)": "0.002",
+          "95% CI (Delta DP)": "[-0.0142, 0.0161]",
           "Significant (CI > 0)": "False"
         },
         {
           "Variant": "Exponentiated Gradient",
-          "F1 (10-seed mean)": "0.4069 \u00b1 0.0287",
-          "Accuracy (10-seed mean)": "60.62% \u00b1 0.98%",
-          "DP Diff": "0.0762 \u00b1 0.0261",
-          "EO Diff": "0.0851 \u00b1 0.0375",
-          "EOpp Diff": "0.0844 \u00b1 0.0374",
-          "PP Diff": "0.1303 \u00b1 0.0601",
-          "Paired Reduction Delta (DP)": "0.1931",
-          "95% CI (Delta DP)": "[0.1339, 0.2470]",
+          "F1 (10-seed mean)": "0.3996 \u00b1 0.0166",
+          "Accuracy (10-seed mean)": "60.27% \u00b1 0.64%",
+          "DP Diff": "0.0592 \u00b1 0.0252",
+          "EO Diff": "0.0789 \u00b1 0.0487",
+          "EOpp Diff": "0.0756 \u00b1 0.0523",
+          "PP Diff": "0.1655 \u00b1 0.0650",
+          "Paired Reduction Delta (DP)": "0.2076",
+          "95% CI (Delta DP)": "[0.1476, 0.2591]",
           "Significant (CI > 0)": "True"
         },
         {
           "Variant": "Threshold Optimizer",
-          "F1 (10-seed mean)": "0.6041 \u00b1 0.0209",
-          "Accuracy (10-seed mean)": "66.48% \u00b1 1.02%",
-          "DP Diff": "0.0211 \u00b1 0.0147",
-          "EO Diff": "0.0630 \u00b1 0.0216",
-          "EOpp Diff": "0.0483 \u00b1 0.0326",
-          "PP Diff": "0.1456 \u00b1 0.0225",
-          "Paired Reduction Delta (DP)": "0.2142",
-          "95% CI (Delta DP)": "[0.1455, 0.2582]",
+          "F1 (10-seed mean)": "0.6056 \u00b1 0.0198",
+          "Accuracy (10-seed mean)": "66.40% \u00b1 1.14%",
+          "DP Diff": "0.0271 \u00b1 0.0124",
+          "EO Diff": "0.0596 \u00b1 0.0239",
+          "EOpp Diff": "0.0445 \u00b1 0.0274",
+          "PP Diff": "0.1513 \u00b1 0.0261",
+          "Paired Reduction Delta (DP)": "0.2158",
+          "95% CI (Delta DP)": "[0.1318, 0.2680]",
           "Significant (CI > 0)": "True"
         }
       ],
+      "baseline_fairness": {
+        "demographic_parity_diff": {
+          "val": 0.2387,
+          "bootstrap_mean": 0.24,
+          "ci_low": 0.1833,
+          "ci_high": 0.2917,
+          "signed_ci_low": 0.1833,
+          "signed_ci_high": 0.2916,
+          "reference_groups": [
+            "African-American",
+            "Caucasian"
+          ],
+          "is_significant": 1
+        },
+        "equalized_odds_diff": {
+          "val": 0.2232,
+          "bootstrap_mean": 0.2331,
+          "ci_low": 0.1619,
+          "ci_high": 0.3134
+        },
+        "equal_opportunity_diff": {
+          "val": 0.2232,
+          "bootstrap_mean": 0.2261,
+          "ci_low": 0.1398,
+          "ci_high": 0.3134,
+          "signed_ci_low": 0.1398,
+          "signed_ci_high": 0.3134,
+          "reference_groups": [
+            "African-American",
+            "Caucasian"
+          ],
+          "is_significant": 1
+        },
+        "predictive_parity_diff": {
+          "val": 0.0427,
+          "bootstrap_mean": 0.0571,
+          "ci_low": 0.0019,
+          "ci_high": 0.1515,
+          "signed_ci_low": -0.0656,
+          "signed_ci_high": 0.1515,
+          "reference_groups": [
+            "African-American",
+            "Caucasian"
+          ],
+          "is_significant": 0
+        }
+      },
+      "baseline_pred_metrics": {
+        "accuracy": 0.6769,
+        "balanced_accuracy": 0.6682,
+        "precision": 0.6701,
+        "recall": 0.5712,
+        "f1_score": 0.6167,
+        "precision_class_0": 0.6812,
+        "recall_class_0": 0.7652,
+        "f1_class_0": 0.7208,
+        "precision_class_1": 0.6701,
+        "recall_class_1": 0.5712,
+        "f1_class_1": 0.6167,
+        "macro_f1": 0.6687,
+        "roc_auc": 0.7278,
+        "confusion_matrix": {
+          "TN": 515,
+          "FP": 158,
+          "FN": 241,
+          "TP": 321
+        }
+      },
+      "mitigations": {
+        "Reweighing": {
+          "metrics": {
+            "demographic_parity_diff": {
+              "val": 0.2371,
+              "bootstrap_mean": 0.238,
+              "ci_low": 0.1834,
+              "ci_high": 0.2925,
+              "signed_ci_low": 0.1834,
+              "signed_ci_high": 0.2925,
+              "reference_groups": [
+                "African-American",
+                "Caucasian"
+              ],
+              "is_significant": 1
+            },
+            "equalized_odds_diff": {
+              "val": 0.2323,
+              "bootstrap_mean": 0.2382,
+              "ci_low": 0.1615,
+              "ci_high": 0.3206
+            },
+            "equal_opportunity_diff": {
+              "val": 0.2323,
+              "bootstrap_mean": 0.2342,
+              "ci_low": 0.1435,
+              "ci_high": 0.3206,
+              "signed_ci_low": 0.1435,
+              "signed_ci_high": 0.3205,
+              "reference_groups": [
+                "African-American",
+                "Caucasian"
+              ],
+              "is_significant": 1
+            },
+            "predictive_parity_diff": {
+              "val": 0.0544,
+              "bootstrap_mean": 0.0636,
+              "ci_low": 0.0026,
+              "ci_high": 0.1666,
+              "signed_ci_low": -0.0605,
+              "signed_ci_high": 0.1666,
+              "reference_groups": [
+                "African-American",
+                "Caucasian"
+              ],
+              "is_significant": 0
+            }
+          },
+          "pred_metrics": {
+            "accuracy": 0.6769,
+            "balanced_accuracy": 0.6678,
+            "precision": 0.6723,
+            "recall": 0.5658,
+            "f1_score": 0.6145,
+            "precision_class_0": 0.6798,
+            "recall_class_0": 0.7697,
+            "f1_class_0": 0.722,
+            "precision_class_1": 0.6723,
+            "recall_class_1": 0.5658,
+            "f1_class_1": 0.6145,
+            "macro_f1": 0.6682,
+            "roc_auc": 0.7261,
+            "confusion_matrix": {
+              "TN": 518,
+              "FP": 155,
+              "FN": 244,
+              "TP": 318
+            }
+          },
+          "significance": {
+            "mean_delta": 0.002,
+            "ci_low": -0.0142,
+            "ci_high": 0.0161,
+            "is_significant": 0,
+            "p_value": 0.39
+          }
+        },
+        "Exponentiated Gradient": {
+          "metrics": {
+            "demographic_parity_diff": {
+              "val": 0.0281,
+              "bootstrap_mean": 0.0324,
+              "ci_low": 0.0018,
+              "ci_high": 0.0807,
+              "signed_ci_low": -0.0215,
+              "signed_ci_high": 0.0807,
+              "reference_groups": [
+                "African-American",
+                "Caucasian"
+              ],
+              "is_significant": 0
+            },
+            "equalized_odds_diff": {
+              "val": 0.0376,
+              "bootstrap_mean": 0.0553,
+              "ci_low": 0.0086,
+              "ci_high": 0.1195
+            },
+            "equal_opportunity_diff": {
+              "val": 0.0376,
+              "bootstrap_mean": 0.048,
+              "ci_low": 0.0024,
+              "ci_high": 0.1195,
+              "signed_ci_low": -0.0494,
+              "signed_ci_high": 0.1195,
+              "reference_groups": [
+                "African-American",
+                "Caucasian"
+              ],
+              "is_significant": 0
+            },
+            "predictive_parity_diff": {
+              "val": 0.1783,
+              "bootstrap_mean": 0.1791,
+              "ci_low": 0.0424,
+              "ci_high": 0.3115,
+              "signed_ci_low": 0.0425,
+              "signed_ci_high": 0.3115,
+              "reference_groups": [
+                "African-American",
+                "Caucasian"
+              ],
+              "is_significant": 1
+            }
+          },
+          "pred_metrics": {
+            "accuracy": 0.604,
+            "balanced_accuracy": 0.5773,
+            "precision": 0.6515,
+            "recall": 0.2794,
+            "f1_score": 0.391,
+            "precision_class_0": 0.5926,
+            "recall_class_0": 0.8752,
+            "f1_class_0": 0.7067,
+            "precision_class_1": 0.6515,
+            "recall_class_1": 0.2794,
+            "f1_class_1": 0.391,
+            "macro_f1": 0.5488,
+            "roc_auc": 0.6109,
+            "confusion_matrix": {
+              "TN": 589,
+              "FP": 84,
+              "FN": 405,
+              "TP": 157
+            }
+          },
+          "significance": {
+            "mean_delta": 0.2076,
+            "ci_low": 0.1476,
+            "ci_high": 0.2591,
+            "is_significant": 1,
+            "p_value": 0.0
+          }
+        },
+        "Threshold Optimizer": {
+          "metrics": {
+            "demographic_parity_diff": {
+              "val": 0.0,
+              "bootstrap_mean": 0.0242,
+              "ci_low": 0.0011,
+              "ci_high": 0.0686,
+              "signed_ci_low": -0.0602,
+              "signed_ci_high": 0.0563,
+              "reference_groups": [
+                "Caucasian",
+                "African-American"
+              ],
+              "is_significant": 0
+            },
+            "equalized_odds_diff": {
+              "val": 0.058,
+              "bootstrap_mean": 0.0697,
+              "ci_low": 0.011,
+              "ci_high": 0.1458
+            },
+            "equal_opportunity_diff": {
+              "val": 0.058,
+              "bootstrap_mean": 0.0607,
+              "ci_low": 0.0027,
+              "ci_high": 0.1458,
+              "signed_ci_low": -0.0354,
+              "signed_ci_high": 0.1458,
+              "reference_groups": [
+                "Caucasian",
+                "African-American"
+              ],
+              "is_significant": 0
+            },
+            "predictive_parity_diff": {
+              "val": 0.1201,
+              "bootstrap_mean": 0.1196,
+              "ci_low": 0.0303,
+              "ci_high": 0.2174,
+              "signed_ci_low": 0.0303,
+              "signed_ci_high": 0.2174,
+              "reference_groups": [
+                "African-American",
+                "Caucasian"
+              ],
+              "is_significant": 1
+            }
+          },
+          "pred_metrics": {
+            "accuracy": 0.651,
+            "balanced_accuracy": 0.6462,
+            "precision": 0.6224,
+            "recall": 0.5925,
+            "f1_score": 0.6071,
+            "precision_class_0": 0.6729,
+            "recall_class_0": 0.6999,
+            "f1_class_0": 0.6861,
+            "precision_class_1": 0.6224,
+            "recall_class_1": 0.5925,
+            "f1_class_1": 0.6071,
+            "macro_f1": 0.6466,
+            "roc_auc": 0.6765,
+            "confusion_matrix": {
+              "TN": 471,
+              "FP": 202,
+              "FN": 229,
+              "TP": 333
+            }
+          },
+          "significance": {
+            "mean_delta": 0.2158,
+            "ci_low": 0.1318,
+            "ci_high": 0.268,
+            "is_significant": 1,
+            "p_value": 0.0
+          }
+        }
+      },
       "raw_metrics_10_seeds": {
         "Baseline": {
           "f1": [
             0.6167,
-            0.6381,
+            0.6368,
             0.6356,
             0.6203,
-            0.6287,
+            0.6294,
             0.6527,
-            0.6351,
+            0.6344,
             0.6363,
-            0.6507,
-            0.6305
+            0.6501,
+            0.6318
           ],
           "acc": [
             0.6769,
-            0.6988,
+            0.698,
             0.6899,
             0.6729,
             0.6834,
             0.6923,
             0.6883,
             0.6964,
-            0.6931,
-            0.6802
+            0.6923,
+            0.681
           ],
           "dp": [
             0.2387,
             0.2087,
             0.2742,
             0.2188,
-            0.2646,
+            0.2678,
             0.2392,
-            0.2505,
+            0.2529,
             0.2672,
-            0.2622,
+            0.2598,
             0.2456
           ],
           "eo": [
@@ -892,7 +1912,7 @@
             0.199,
             0.2503,
             0.1959,
-            0.2564,
+            0.2594,
             0.2047,
             0.2685,
             0.2716,
@@ -904,7 +1924,7 @@
             0.199,
             0.2503,
             0.1959,
-            0.2564,
+            0.2594,
             0.2047,
             0.2685,
             0.2716,
@@ -916,326 +1936,326 @@
             0.0527,
             0.0032,
             0.0519,
-            0.042,
+            0.0409,
             0.031,
-            0.0754,
+            0.0698,
             0.028,
-            0.0944,
+            0.0994,
             0.0758
           ]
         },
         "Reweighing": {
           "f1": [
-            0.6161,
-            0.6378,
-            0.6361,
-            0.6136,
-            0.6279,
-            0.6417,
-            0.6231,
-            0.6312,
-            0.6513,
-            0.6284
+            0.6145,
+            0.6295,
+            0.6246,
+            0.6174,
+            0.6318,
+            0.6395,
+            0.623,
+            0.6366,
+            0.6422,
+            0.6336
           ],
           "acc": [
-            0.6761,
-            0.6947,
-            0.6915,
-            0.6696,
-            0.6842,
-            0.6826,
-            0.6826,
-            0.6915,
+            0.6769,
+            0.6883,
+            0.6818,
+            0.6729,
+            0.6866,
+            0.685,
+            0.6834,
             0.6931,
-            0.6858
+            0.6842,
+            0.6826
           ],
           "dp": [
-            0.2363,
-            0.211,
-            0.275,
-            0.2213,
-            0.2623,
-            0.2456,
-            0.2553,
-            0.2609,
-            0.2535,
-            0.2229
+            0.2371,
+            0.2095,
+            0.2671,
+            0.2149,
+            0.2544,
+            0.2156,
+            0.2529,
+            0.2679,
+            0.2464,
+            0.2425
           ],
           "eo": [
-            0.2232,
-            0.205,
-            0.2503,
+            0.2323,
+            0.202,
+            0.2353,
             0.199,
-            0.2473,
-            0.2048,
-            0.2867,
-            0.2535,
-            0.2865,
-            0.2111
+            0.2352,
+            0.1716,
+            0.2837,
+            0.2234,
+            0.3017,
+            0.2351
           ],
           "eopp": [
-            0.2232,
-            0.205,
-            0.2503,
+            0.2323,
+            0.202,
+            0.2353,
             0.199,
-            0.2473,
-            0.2048,
-            0.2867,
-            0.2535,
-            0.2865,
-            0.2111
+            0.2352,
+            0.1716,
+            0.2837,
+            0.2232,
+            0.3017,
+            0.2351
           ],
           "pp": [
-            0.0482,
-            0.0643,
-            0.0011,
-            0.0499,
-            0.0335,
-            0.0228,
-            0.0873,
-            0.0213,
-            0.1044,
-            0.056
+            0.0544,
+            0.0653,
+            0.0007,
+            0.0603,
+            0.0314,
+            0.0292,
+            0.085,
+            0.0331,
+            0.1386,
+            0.0623
           ]
         },
         "Exponentiated Gradient": {
           "f1": [
-            0.3857,
-            0.399,
-            0.403,
-            0.3824,
-            0.3871,
-            0.4265,
-            0.4049,
-            0.3693,
-            0.4658,
-            0.4452
+            0.391,
+            0.3941,
+            0.4071,
+            0.3764,
+            0.4043,
+            0.3676,
+            0.4173,
+            0.422,
+            0.4126,
+            0.4039
           ],
           "acc": [
-            0.5822,
-            0.6097,
-            0.6089,
-            0.6024,
-            0.6,
-            0.6146,
-            0.6097,
-            0.6073,
-            0.6211,
-            0.6065
+            0.604,
+            0.604,
+            0.5968,
+            0.5976,
+            0.5919,
+            0.6016,
+            0.6065,
+            0.6162,
+            0.6081,
+            0.6008
           ],
           "dp": [
-            0.0833,
-            0.0747,
-            0.1078,
-            0.0881,
-            0.0842,
-            0.088,
-            0.0368,
-            0.0528,
-            0.1139,
-            0.0325
+            0.0281,
+            0.0715,
+            0.0737,
+            0.0337,
+            0.0358,
+            0.0519,
+            0.0509,
+            0.1149,
+            0.0817,
+            0.0501
           ],
           "eo": [
-            0.0769,
-            0.0768,
-            0.0938,
-            0.0708,
-            0.083,
-            0.0918,
-            0.0284,
-            0.068,
-            0.1853,
-            0.0766
+            0.0376,
+            0.1404,
+            0.11,
+            0.0241,
+            0.0283,
+            0.0383,
+            0.1039,
+            0.1584,
+            0.1131,
+            0.0344
           ],
           "eopp": [
-            0.0769,
-            0.0768,
-            0.0859,
-            0.0708,
-            0.083,
-            0.0918,
-            0.0284,
-            0.068,
-            0.1853,
-            0.0766
+            0.0376,
+            0.1404,
+            0.11,
+            0.0044,
+            0.0283,
+            0.0256,
+            0.1039,
+            0.1584,
+            0.1131,
+            0.0344
           ],
           "pp": [
-            0.1052,
-            0.1171,
-            0.0391,
-            0.0632,
-            0.0971,
-            0.1204,
-            0.1339,
-            0.1667,
-            0.2347,
-            0.2255
+            0.1783,
+            0.2769,
+            0.1985,
+            0.0844,
+            0.1348,
+            0.0639,
+            0.25,
+            0.176,
+            0.1833,
+            0.1089
           ]
         },
         "Threshold Optimizer": {
           "f1": [
-            0.6015,
-            0.5786,
-            0.6435,
-            0.5913,
-            0.6221,
-            0.5812,
-            0.6069,
-            0.5961,
-            0.588,
-            0.6323
+            0.6217,
+            0.578,
+            0.643,
+            0.5983,
+            0.6055,
+            0.586,
+            0.5986,
+            0.5948,
+            0.5957,
+            0.6342
           ],
           "acc": [
-            0.647,
-            0.6721,
-            0.6672,
-            0.6575,
+            0.6364,
+            0.6713,
             0.6656,
-            0.6534,
-            0.6696,
-            0.685,
             0.6607,
-            0.6704
+            0.6623,
+            0.6591,
+            0.6656,
+            0.6834,
+            0.6648,
+            0.6713
           ],
           "dp": [
-            0.0095,
-            0.0247,
-            0.0258,
-            0.0559,
-            0.0372,
-            0.0138,
-            0.0121,
-            0.0163,
-            0.0043,
-            0.0119
+            0.032,
+            0.0311,
+            0.0186,
+            0.0456,
+            0.0449,
+            0.0328,
+            0.0295,
+            0.0132,
+            0.0169,
+            0.0064
           ],
           "eo": [
-            0.0671,
-            0.0807,
-            0.0347,
-            0.1031,
-            0.0913,
-            0.0486,
-            0.0445,
-            0.0394,
-            0.0592,
-            0.0612
+            0.0774,
+            0.0925,
+            0.0386,
+            0.0883,
+            0.0881,
+            0.0213,
+            0.0361,
+            0.0484,
+            0.0526,
+            0.0522
           ],
           "eopp": [
-            0.0671,
-            0.0514,
-            0.0051,
-            0.1031,
-            0.0913,
-            0.0486,
-            0.0094,
-            0.0394,
-            0.0062,
-            0.0612
+            0.0614,
+            0.0484,
+            0.007,
+            0.085,
+            0.0881,
+            0.0213,
+            0.0209,
+            0.0484,
+            0.0119,
+            0.0522
           ],
           "pp": [
-            0.1243,
-            0.1813,
-            0.1498,
-            0.1609,
-            0.1428,
-            0.1077,
-            0.1559,
-            0.1184,
-            0.1733,
-            0.1412
+            0.1538,
+            0.1953,
+            0.148,
+            0.1647,
+            0.1603,
+            0.1046,
+            0.1615,
+            0.1096,
+            0.1735,
+            0.1421
           ]
         }
       },
       "paired_ci_seed42": {
         "Reweighing": {
           "demographic_parity_diff": {
-            "mean_delta": 0.0021,
-            "ci_low": -0.0109,
-            "ci_high": 0.0158,
+            "mean_delta": 0.002,
+            "ci_low": -0.0142,
+            "ci_high": 0.0161,
             "is_significant": 0,
-            "p_value": 0.412
+            "p_value": 0.39
           },
           "equalized_odds_diff": {
-            "mean_delta": 0.0005,
-            "ci_low": -0.0213,
-            "ci_high": 0.0216,
+            "mean_delta": -0.0051,
+            "ci_low": -0.0322,
+            "ci_high": 0.0221,
             "is_significant": 0,
-            "p_value": 0.496
+            "p_value": 0.642
           },
           "equal_opportunity_diff": {
-            "mean_delta": -0.0006,
-            "ci_low": -0.024,
-            "ci_high": 0.0218,
+            "mean_delta": -0.0081,
+            "ci_low": -0.0352,
+            "ci_high": 0.0182,
             "is_significant": 0,
-            "p_value": 0.554
+            "p_value": 0.722
           },
           "predictive_parity_diff": {
-            "mean_delta": -0.0031,
-            "ci_low": -0.0268,
-            "ci_high": 0.0189,
+            "mean_delta": -0.0065,
+            "ci_low": -0.0333,
+            "ci_high": 0.0218,
             "is_significant": 0,
-            "p_value": 0.6
+            "p_value": 0.692
           }
         },
         "Exponentiated Gradient": {
           "demographic_parity_diff": {
-            "mean_delta": 0.1931,
-            "ci_low": 0.1339,
-            "ci_high": 0.247,
+            "mean_delta": 0.2076,
+            "ci_low": 0.1476,
+            "ci_high": 0.2591,
             "is_significant": 1,
             "p_value": 0.0
           },
           "equalized_odds_diff": {
-            "mean_delta": 0.1772,
-            "ci_low": 0.1026,
-            "ci_high": 0.2496,
+            "mean_delta": 0.1778,
+            "ci_low": 0.0929,
+            "ci_high": 0.2495,
             "is_significant": 1,
             "p_value": 0.0
           },
           "equal_opportunity_diff": {
-            "mean_delta": 0.1831,
-            "ci_low": 0.0977,
-            "ci_high": 0.265,
+            "mean_delta": 0.1781,
+            "ci_low": 0.0798,
+            "ci_high": 0.2562,
             "is_significant": 1,
             "p_value": 0.002
           },
           "predictive_parity_diff": {
-            "mean_delta": -0.0563,
-            "ci_low": -0.1716,
-            "ci_high": 0.0496,
+            "mean_delta": -0.122,
+            "ci_low": -0.2438,
+            "ci_high": 0.0137,
             "is_significant": 0,
-            "p_value": 0.812
+            "p_value": 0.956
           }
         },
         "Threshold Optimizer": {
           "demographic_parity_diff": {
-            "mean_delta": 0.2142,
-            "ci_low": 0.1455,
-            "ci_high": 0.2582,
+            "mean_delta": 0.2158,
+            "ci_low": 0.1318,
+            "ci_high": 0.268,
             "is_significant": 1,
             "p_value": 0.0
           },
           "equalized_odds_diff": {
-            "mean_delta": 0.1729,
-            "ci_low": 0.0488,
-            "ci_high": 0.2786,
+            "mean_delta": 0.1634,
+            "ci_low": 0.0371,
+            "ci_high": 0.2772,
             "is_significant": 1,
-            "p_value": 0.006
+            "p_value": 0.004
           },
           "equal_opportunity_diff": {
-            "mean_delta": 0.1758,
-            "ci_low": 0.0176,
-            "ci_high": 0.2876,
+            "mean_delta": 0.1654,
+            "ci_low": 0.0077,
+            "ci_high": 0.2906,
             "is_significant": 1,
-            "p_value": 0.014
+            "p_value": 0.016
           },
           "predictive_parity_diff": {
-            "mean_delta": -0.0632,
-            "ci_low": -0.1343,
-            "ci_high": 0.0316,
+            "mean_delta": -0.0625,
+            "ci_low": -0.1293,
+            "ci_high": 0.0387,
             "is_significant": 0,
-            "p_value": 0.936
+            "p_value": 0.942
           }
         }
       }
@@ -1268,29 +2288,330 @@
         },
         {
           "Variant": "Exponentiated Gradient",
-          "F1 (10-seed mean)": "0.5906 \u00b1 0.0125",
-          "Accuracy (10-seed mean)": "84.21% \u00b1 0.34%",
-          "DP Diff": "0.0198 \u00b1 0.0061",
-          "EO Diff": "0.2616 \u00b1 0.0245",
-          "EOpp Diff": "0.2616 \u00b1 0.0245",
-          "PP Diff": "0.2964 \u00b1 0.0269",
-          "Paired Reduction Delta (DP)": "0.1419",
-          "95% CI (Delta DP)": "[0.1193, 0.1609]",
+          "F1 (10-seed mean)": "0.5938 \u00b1 0.0116",
+          "Accuracy (10-seed mean)": "84.31% \u00b1 0.36%",
+          "DP Diff": "0.0202 \u00b1 0.0069",
+          "EO Diff": "0.2584 \u00b1 0.0278",
+          "EOpp Diff": "0.2584 \u00b1 0.0278",
+          "PP Diff": "0.3009 \u00b1 0.0250",
+          "Paired Reduction Delta (DP)": "0.1422",
+          "95% CI (Delta DP)": "[0.1208, 0.1613]",
           "Significant (CI > 0)": "True"
         },
         {
           "Variant": "Threshold Optimizer",
-          "F1 (10-seed mean)": "0.6391 \u00b1 0.0108",
-          "Accuracy (10-seed mean)": "84.98% \u00b1 0.32%",
-          "DP Diff": "0.0092 \u00b1 0.0047",
-          "EO Diff": "0.3159 \u00b1 0.0255",
-          "EOpp Diff": "0.3159 \u00b1 0.0255",
-          "PP Diff": "0.3497 \u00b1 0.0166",
-          "Paired Reduction Delta (DP)": "0.1428",
-          "95% CI (Delta DP)": "[0.1017, 0.1728]",
+          "F1 (10-seed mean)": "0.6397 \u00b1 0.0109",
+          "Accuracy (10-seed mean)": "85.02% \u00b1 0.31%",
+          "DP Diff": "0.0089 \u00b1 0.0061",
+          "EO Diff": "0.3104 \u00b1 0.0231",
+          "EOpp Diff": "0.3104 \u00b1 0.0231",
+          "PP Diff": "0.3511 \u00b1 0.0188",
+          "Paired Reduction Delta (DP)": "0.144",
+          "95% CI (Delta DP)": "[0.1062, 0.1701]",
           "Significant (CI > 0)": "True"
         }
       ],
+      "baseline_fairness": {
+        "demographic_parity_diff": {
+          "val": 0.1625,
+          "bootstrap_mean": 0.1564,
+          "ci_low": 0.1321,
+          "ci_high": 0.1815,
+          "signed_ci_low": 0.1321,
+          "signed_ci_high": 0.1815,
+          "reference_groups": [
+            "Male",
+            "Female"
+          ],
+          "is_significant": 1
+        },
+        "equalized_odds_diff": {
+          "val": 0.0529,
+          "bootstrap_mean": 0.0868,
+          "ci_low": 0.0288,
+          "ci_high": 0.1775
+        },
+        "equal_opportunity_diff": {
+          "val": 0.0529,
+          "bootstrap_mean": 0.0831,
+          "ci_low": 0.0048,
+          "ci_high": 0.1775,
+          "signed_ci_low": -0.0206,
+          "signed_ci_high": 0.1775,
+          "reference_groups": [
+            "Male",
+            "Female"
+          ],
+          "is_significant": 0
+        },
+        "predictive_parity_diff": {
+          "val": 0.0362,
+          "bootstrap_mean": 0.1218,
+          "ci_low": 0.0228,
+          "ci_high": 0.2261,
+          "signed_ci_low": 0.0228,
+          "signed_ci_high": 0.2261,
+          "reference_groups": [
+            "Male",
+            "Female"
+          ],
+          "is_significant": 1
+        }
+      },
+      "baseline_pred_metrics": {
+        "accuracy": 0.8703,
+        "balanced_accuracy": 0.7896,
+        "precision": 0.7864,
+        "recall": 0.6339,
+        "f1_score": 0.702,
+        "precision_class_0": 0.8905,
+        "recall_class_0": 0.9453,
+        "f1_class_0": 0.9171,
+        "precision_class_1": 0.7864,
+        "recall_class_1": 0.6339,
+        "f1_class_1": 0.702,
+        "macro_f1": 0.8096,
+        "roc_auc": 0.9274,
+        "confusion_matrix": {
+          "TN": 4670,
+          "FP": 270,
+          "FN": 574,
+          "TP": 994
+        }
+      },
+      "mitigations": {
+        "Reweighing": {
+          "metrics": {
+            "demographic_parity_diff": {
+              "val": 0.0843,
+              "bootstrap_mean": 0.0798,
+              "ci_low": 0.0529,
+              "ci_high": 0.1071,
+              "signed_ci_low": 0.0529,
+              "signed_ci_high": 0.107,
+              "reference_groups": [
+                "Male",
+                "Female"
+              ],
+              "is_significant": 1
+            },
+            "equalized_odds_diff": {
+              "val": 0.1672,
+              "bootstrap_mean": 0.1652,
+              "ci_low": 0.0679,
+              "ci_high": 0.252
+            },
+            "equal_opportunity_diff": {
+              "val": 0.1672,
+              "bootstrap_mean": 0.1651,
+              "ci_low": 0.0679,
+              "ci_high": 0.252,
+              "signed_ci_low": 0.0678,
+              "signed_ci_high": 0.2521,
+              "reference_groups": [
+                "Female",
+                "Male"
+              ],
+              "is_significant": 1
+            },
+            "predictive_parity_diff": {
+              "val": 0.1868,
+              "bootstrap_mean": 0.2574,
+              "ci_low": 0.1744,
+              "ci_high": 0.3489,
+              "signed_ci_low": 0.1744,
+              "signed_ci_high": 0.3489,
+              "reference_groups": [
+                "Male",
+                "Female"
+              ],
+              "is_significant": 1
+            }
+          },
+          "pred_metrics": {
+            "accuracy": 0.8685,
+            "balanced_accuracy": 0.7767,
+            "precision": 0.8048,
+            "recall": 0.5995,
+            "f1_score": 0.6871,
+            "precision_class_0": 0.8824,
+            "recall_class_0": 0.9538,
+            "f1_class_0": 0.9167,
+            "precision_class_1": 0.8048,
+            "recall_class_1": 0.5995,
+            "f1_class_1": 0.6871,
+            "macro_f1": 0.8019,
+            "roc_auc": 0.9234,
+            "confusion_matrix": {
+              "TN": 4712,
+              "FP": 228,
+              "FN": 628,
+              "TP": 940
+            }
+          },
+          "significance": {
+            "mean_delta": 0.0766,
+            "ci_low": 0.0622,
+            "ci_high": 0.0918,
+            "is_significant": 1,
+            "p_value": 0.0
+          }
+        },
+        "Exponentiated Gradient": {
+          "metrics": {
+            "demographic_parity_diff": {
+              "val": 0.0106,
+              "bootstrap_mean": 0.0142,
+              "ci_low": 0.0007,
+              "ci_high": 0.0382,
+              "signed_ci_low": -0.0156,
+              "signed_ci_high": 0.0381,
+              "reference_groups": [
+                "Male",
+                "Female"
+              ],
+              "is_significant": 0
+            },
+            "equalized_odds_diff": {
+              "val": 0.3053,
+              "bootstrap_mean": 0.2963,
+              "ci_low": 0.1987,
+              "ci_high": 0.386
+            },
+            "equal_opportunity_diff": {
+              "val": 0.3053,
+              "bootstrap_mean": 0.2963,
+              "ci_low": 0.1987,
+              "ci_high": 0.386,
+              "signed_ci_low": 0.1987,
+              "signed_ci_high": 0.386,
+              "reference_groups": [
+                "Female",
+                "Male"
+              ],
+              "is_significant": 1
+            },
+            "predictive_parity_diff": {
+              "val": 0.3033,
+              "bootstrap_mean": 0.3559,
+              "ci_low": 0.2665,
+              "ci_high": 0.4485,
+              "signed_ci_low": 0.2665,
+              "signed_ci_high": 0.4486,
+              "reference_groups": [
+                "Male",
+                "Female"
+              ],
+              "is_significant": 1
+            }
+          },
+          "pred_metrics": {
+            "accuracy": 0.8431,
+            "balanced_accuracy": 0.7199,
+            "precision": 0.7834,
+            "recall": 0.4821,
+            "f1_score": 0.5969,
+            "precision_class_0": 0.8535,
+            "recall_class_0": 0.9577,
+            "f1_class_0": 0.9026,
+            "precision_class_1": 0.7834,
+            "recall_class_1": 0.4821,
+            "f1_class_1": 0.5969,
+            "macro_f1": 0.7498,
+            "roc_auc": 0.7259,
+            "confusion_matrix": {
+              "TN": 4731,
+              "FP": 209,
+              "FN": 812,
+              "TP": 756
+            }
+          },
+          "significance": {
+            "mean_delta": 0.1422,
+            "ci_low": 0.1208,
+            "ci_high": 0.1613,
+            "is_significant": 1,
+            "p_value": 0.0
+          }
+        },
+        "Threshold Optimizer": {
+          "metrics": {
+            "demographic_parity_diff": {
+              "val": 0.0004,
+              "bootstrap_mean": 0.0124,
+              "ci_low": 0.0006,
+              "ci_high": 0.0322,
+              "signed_ci_low": -0.031,
+              "signed_ci_high": 0.0265,
+              "reference_groups": [
+                "Male",
+                "Female"
+              ],
+              "is_significant": 0
+            },
+            "equalized_odds_diff": {
+              "val": 0.3243,
+              "bootstrap_mean": 0.35,
+              "ci_low": 0.2706,
+              "ci_high": 0.4231
+            },
+            "equal_opportunity_diff": {
+              "val": 0.3243,
+              "bootstrap_mean": 0.35,
+              "ci_low": 0.2706,
+              "ci_high": 0.4231,
+              "signed_ci_low": 0.2706,
+              "signed_ci_high": 0.4231,
+              "reference_groups": [
+                "Female",
+                "Male"
+              ],
+              "is_significant": 1
+            },
+            "predictive_parity_diff": {
+              "val": 0.3587,
+              "bootstrap_mean": 0.4075,
+              "ci_low": 0.3342,
+              "ci_high": 0.4893,
+              "signed_ci_low": 0.3342,
+              "signed_ci_high": 0.4893,
+              "reference_groups": [
+                "Male",
+                "Female"
+              ],
+              "is_significant": 1
+            }
+          },
+          "pred_metrics": {
+            "accuracy": 0.8499,
+            "balanced_accuracy": 0.7464,
+            "precision": 0.7631,
+            "recall": 0.5466,
+            "f1_score": 0.6369,
+            "precision_class_0": 0.868,
+            "recall_class_0": 0.9462,
+            "f1_class_0": 0.9054,
+            "precision_class_1": 0.7631,
+            "recall_class_1": 0.5466,
+            "f1_class_1": 0.6369,
+            "macro_f1": 0.7712,
+            "roc_auc": 0.7638,
+            "confusion_matrix": {
+              "TN": 4674,
+              "FP": 266,
+              "FN": 711,
+              "TP": 857
+            }
+          },
+          "significance": {
+            "mean_delta": 0.144,
+            "ci_low": 0.1062,
+            "ci_high": 0.1701,
+            "is_significant": 1,
+            "p_value": 0.0
+          }
+        }
+      },
       "raw_metrics_10_seeds": {
         "Baseline": {
           "f1": [
@@ -1442,150 +2763,150 @@
         },
         "Exponentiated Gradient": {
           "f1": [
-            0.592,
-            0.6115,
-            0.5779,
-            0.5789,
-            0.5852,
+            0.5969,
+            0.61,
+            0.5976,
+            0.5672,
             0.5872,
-            0.5755,
-            0.5885,
-            0.6135,
-            0.5959
+            0.5925,
+            0.5904,
+            0.5911,
+            0.6107,
+            0.5948
           ],
           "acc": [
-            0.8416,
+            0.8431,
             0.8463,
-            0.8393,
-            0.8368,
+            0.8448,
+            0.8342,
+            0.8436,
             0.843,
-            0.841,
-            0.8407,
-            0.8388,
-            0.8474,
-            0.8462
+            0.846,
+            0.8393,
+            0.8462,
+            0.8447
           ],
           "dp": [
-            0.0136,
-            0.0279,
-            0.0192,
-            0.0111,
-            0.0218,
-            0.0183,
-            0.0163,
-            0.0142,
+            0.0106,
             0.0295,
-            0.0266
+            0.0122,
+            0.0174,
+            0.025,
+            0.0146,
+            0.0205,
+            0.0149,
+            0.029,
+            0.0282
           ],
           "eo": [
-            0.2931,
-            0.2374,
-            0.291,
-            0.2875,
-            0.2353,
-            0.2183,
-            0.2758,
-            0.2512,
-            0.2666,
-            0.2597
+            0.3053,
+            0.231,
+            0.3098,
+            0.2573,
+            0.2296,
+            0.2303,
+            0.2511,
+            0.2505,
+            0.2736,
+            0.246
           ],
           "eopp": [
-            0.2931,
-            0.2374,
-            0.291,
-            0.2875,
-            0.2353,
-            0.2183,
-            0.2758,
-            0.2512,
-            0.2666,
-            0.2597
+            0.3053,
+            0.231,
+            0.3098,
+            0.2573,
+            0.2296,
+            0.2303,
+            0.2511,
+            0.2505,
+            0.2736,
+            0.246
           ],
           "pp": [
-            0.3018,
-            0.2997,
-            0.2594,
-            0.2947,
-            0.3105,
-            0.3464,
-            0.2892,
-            0.3311,
-            0.2649,
-            0.2664
+            0.3033,
+            0.3002,
+            0.2921,
+            0.2902,
+            0.2994,
+            0.3552,
+            0.3033,
+            0.3295,
+            0.2618,
+            0.2737
           ]
         },
         "Threshold Optimizer": {
           "f1": [
-            0.6328,
-            0.6391,
-            0.6289,
-            0.6343,
-            0.6609,
-            0.6308,
-            0.6284,
-            0.6419,
-            0.6571,
-            0.6369
+            0.6369,
+            0.6361,
+            0.6291,
+            0.638,
+            0.6623,
+            0.6303,
+            0.628,
+            0.6407,
+            0.6574,
+            0.6378
           ],
           "acc": [
-            0.8488,
-            0.8525,
-            0.8459,
-            0.8448,
-            0.8563,
-            0.8483,
-            0.8488,
+            0.8499,
+            0.8514,
+            0.8462,
+            0.8473,
+            0.8573,
+            0.8479,
             0.8491,
-            0.8526,
-            0.8514
+            0.8485,
+            0.853,
+            0.851
           ],
           "dp": [
+            0.0004,
+            0.0148,
+            0.0117,
+            0.0123,
+            0.0204,
             0.0001,
-            0.015,
-            0.0103,
-            0.0067,
-            0.0178,
-            0.0053,
-            0.0095,
+            0.0037,
             0.0063,
-            0.0101,
+            0.0092,
             0.0106
           ],
           "eo": [
             0.3243,
-            0.3061,
-            0.3595,
-            0.3035,
-            0.2937,
-            0.2757,
-            0.3585,
-            0.3013,
-            0.3269,
-            0.3093
+            0.3034,
+            0.3602,
+            0.2951,
+            0.2887,
+            0.2842,
+            0.3303,
+            0.2928,
+            0.3284,
+            0.2966
           ],
           "eopp": [
             0.3243,
-            0.3061,
-            0.3595,
-            0.3035,
-            0.2937,
-            0.2757,
-            0.3585,
-            0.3013,
-            0.3269,
-            0.3093
+            0.3034,
+            0.3602,
+            0.2951,
+            0.2887,
+            0.2842,
+            0.3303,
+            0.2928,
+            0.3284,
+            0.2966
           ],
           "pp": [
-            0.3611,
-            0.3193,
-            0.3608,
-            0.3473,
-            0.3386,
-            0.3771,
-            0.3657,
-            0.3564,
-            0.3357,
-            0.3352
+            0.3587,
+            0.3214,
+            0.3655,
+            0.3364,
+            0.3334,
+            0.3869,
+            0.3655,
+            0.3617,
+            0.3367,
+            0.3445
           ]
         }
       },
@@ -1622,60 +2943,60 @@
         },
         "Exponentiated Gradient": {
           "demographic_parity_diff": {
-            "mean_delta": 0.1419,
-            "ci_low": 0.1193,
-            "ci_high": 0.1609,
+            "mean_delta": 0.1422,
+            "ci_low": 0.1208,
+            "ci_high": 0.1613,
             "is_significant": 1,
             "p_value": 0.0
           },
           "equalized_odds_diff": {
-            "mean_delta": -0.2093,
-            "ci_low": -0.3442,
-            "ci_high": -0.0328,
+            "mean_delta": -0.2095,
+            "ci_low": -0.3423,
+            "ci_high": -0.0393,
             "is_significant": 0,
             "p_value": 0.992
           },
           "equal_opportunity_diff": {
-            "mean_delta": -0.2131,
-            "ci_low": -0.3649,
-            "ci_high": -0.0328,
+            "mean_delta": -0.2132,
+            "ci_low": -0.3593,
+            "ci_high": -0.0393,
             "is_significant": 0,
             "p_value": 0.992
           },
           "predictive_parity_diff": {
-            "mean_delta": -0.2227,
-            "ci_low": -0.3008,
-            "ci_high": -0.1455,
+            "mean_delta": -0.2341,
+            "ci_low": -0.3137,
+            "ci_high": -0.1514,
             "is_significant": 0,
             "p_value": 1.0
           }
         },
         "Threshold Optimizer": {
           "demographic_parity_diff": {
-            "mean_delta": 0.1428,
-            "ci_low": 0.1017,
-            "ci_high": 0.1728,
+            "mean_delta": 0.144,
+            "ci_low": 0.1062,
+            "ci_high": 0.1701,
             "is_significant": 1,
             "p_value": 0.0
           },
           "equalized_odds_diff": {
-            "mean_delta": -0.28,
-            "ci_low": -0.398,
-            "ci_high": -0.1271,
+            "mean_delta": -0.2632,
+            "ci_low": -0.379,
+            "ci_high": -0.1115,
             "is_significant": 0,
-            "p_value": 1.0
+            "p_value": 0.998
           },
           "equal_opportunity_diff": {
-            "mean_delta": -0.2838,
-            "ci_low": -0.414,
-            "ci_high": -0.1271,
+            "mean_delta": -0.267,
+            "ci_low": -0.3985,
+            "ci_high": -0.1115,
             "is_significant": 0,
-            "p_value": 1.0
+            "p_value": 0.998
           },
           "predictive_parity_diff": {
-            "mean_delta": -0.2747,
-            "ci_low": -0.3492,
-            "ci_high": -0.1959,
+            "mean_delta": -0.2857,
+            "ci_low": -0.3632,
+            "ci_high": -0.2038,
             "is_significant": 0,
             "p_value": 1.0
           }
@@ -1693,14 +3014,30 @@
       "Native American": 2
     },
     "black_vs_caucasian_ci": {
-      "val": 0.2383,
-      "ci_low": 0.1808,
-      "ci_high": 0.2948
+      "val": 0.2387,
+      "bootstrap_mean": 0.2383,
+      "ci_low": 0.1795,
+      "ci_high": 0.2936,
+      "signed_ci_low": 0.1795,
+      "signed_ci_high": 0.2936,
+      "reference_groups": [
+        "African-American",
+        "Caucasian"
+      ],
+      "is_significant": true
     },
     "all_groups_n30_ci": {
-      "val": 0.3213,
-      "ci_low": 0.24,
-      "ci_high": 0.4019
+      "val": 0.3089,
+      "bootstrap_mean": 0.3213,
+      "ci_low": 0.2377,
+      "ci_high": 0.402,
+      "signed_ci_low": 0.1991,
+      "signed_ci_high": 0.4019,
+      "reference_groups": [
+        "African-American",
+        "Other"
+      ],
+      "is_significant": true
     }
   },
   "shap_top5": {

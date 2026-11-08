@@ -43,12 +43,18 @@ def generate_plain_language_summary(
     base_dp_low = baseline_fairness.get("demographic_parity_diff", {}).get("ci_low", 0.0)
     base_dp_high = baseline_fairness.get("demographic_parity_diff", {}).get("ci_high", 0.0)
     
-    is_biased = base_dp_low > 0.02
-    
+    dp_info = baseline_fairness.get("demographic_parity_diff", {})
+    is_biased = dp_info.get("is_significant", base_dp_low > 0.02)
+    signed_txt = ""
+    if "signed_ci_low" in dp_info:
+        g_hi, g_lo = dp_info.get("reference_groups", ["", ""])
+        signed_txt = (f" Signed gap ('{g_hi}' minus '{g_lo}') 95% CI: "
+                      f"[{dp_info['signed_ci_low']:.3f}, {dp_info['signed_ci_high']:.3f}].")
+
     audit_statement = (
         f"The baseline unmitigated classifier exhibits a Demographic Parity difference of {base_dp:.3f} "
-        f"(95% Bootstrap CI: [{base_dp_low:.3f}, {base_dp_high:.3f}]). "
-        f"{'This disparity is statistically significant (CI excludes zero), confirming systematic demographic bias.' if is_biased else 'This disparity is within expected statistical noise bounds.'}"
+        f"(95% Bootstrap CI: [{base_dp_low:.3f}, {base_dp_high:.3f}]).{signed_txt} "
+        f"{'This disparity is statistically significant (signed-gap CI excludes zero), confirming systematic demographic bias.' if is_biased else 'This disparity is not statistically distinguishable from zero (signed-gap CI includes zero).'}"
     )
 
     # 4. Mitigation Efficacy & Tradeoff
@@ -64,9 +70,11 @@ def generate_plain_language_summary(
     p_val = mitigation_res.get("significance", {}).get("p_value", 1.0)
     is_sig = mitigation_res.get("significance", {}).get("is_significant", False)
 
+    change_verb = "reduced" if mit_dp < base_dp else "increased" if mit_dp > base_dp else "left unchanged"
+    change_pct = abs(dp_reduction_pct)
     mitigation_statement = (
-        f"Applying '{technique_name}' mitigation reduced the Demographic Parity disparity from {base_dp:.3f} to {mit_dp:.3f} "
-        f"(a {dp_reduction_pct}% reduction, 95% CI: [{mit_dp_low:.3f}, {mit_dp_high:.3f}]). "
+        f"Applying '{technique_name}' mitigation {change_verb} the Demographic Parity disparity from {base_dp:.3f} to {mit_dp:.3f} "
+        f"(a {change_pct}% {'reduction' if mit_dp < base_dp else 'change'}, 95% CI: [{mit_dp_low:.3f}, {mit_dp_high:.3f}]). "
         f"Paired hypothesis testing confirmed this improvement is {'statistically significant (p = ' + str(p_val) + ' < 0.05)' if is_sig else 'not statistically significant (p = ' + str(p_val) + ')'}. "
         f"The associated accuracy/F1 trade-off cost was {f1_delta} percentage points."
     )
