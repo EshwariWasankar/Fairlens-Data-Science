@@ -31,7 +31,7 @@ from src.db.db_manager import get_experiment_history
 
 # Page Configuration
 st.set_page_config(
-    page_title="FairLens | Algorithmic Bias Auditing & Mitigation Platform",
+    page_title="FairLens",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -45,22 +45,77 @@ def load_css():
 
 load_css()
 
-# Consistent Institutional Color Palette
-PALETTE = ["#2563eb", "#0d9488", "#d97706", "#7c3aed", "#dc2626", "#4f46e5"]
+# ---------------------------------------------------------------- design tokens
+import html as _html
+import plotly.io as pio
+
+BRAND = "#0f766e"      # single accent colour (teal)
+MUTED = "#94a3b8"
+PALETTE = [BRAND, "#64748b", "#d97706", "#6366f1", "#be123c", "#0891b2"]
+RISK_COLORS = {"High Proxy Risk": "#be123c", "Moderate Proxy Risk": "#d97706", "Low Proxy Risk": MUTED}
+DIVERGING = [[0.0, "#b45309"], [0.5, "#f8fafc"], [1.0, BRAND]]
+METHOD_COLORS = {"Baseline": "#94a3b8", "Reweighing": "#d97706",
+                 "Exponentiated Gradient": BRAND, "Threshold Optimizer": "#6366f1"}
 MODEL_LABELS = {"random_forest": "Random Forest", "logistic_regression": "Logistic Regression", "xgboost": "XGBoost"}
 
+pio.templates["fairlens"] = go.layout.Template(layout=go.Layout(
+    font=dict(family="IBM Plex Sans, -apple-system, Segoe UI, sans-serif", size=12, color="#334155"),
+    paper_bgcolor="white", plot_bgcolor="white", colorway=PALETTE,
+    margin=dict(l=8, r=8, t=16, b=8),
+    xaxis=dict(gridcolor="#eef1f5", linecolor="#cbd5e1", zeroline=False, ticks="outside", tickcolor="#cbd5e1", title_font_size=12),
+    yaxis=dict(gridcolor="#eef1f5", linecolor="#cbd5e1", zeroline=False, title_font_size=12),
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0, font_size=12, title_font_size=12),
+    hoverlabel=dict(bgcolor="white", bordercolor="#e2e8f0", font=dict(size=12, color="#0f172a")),
+    bargap=0.35,
+), data=dict(bar=[go.Bar(textposition="outside", textangle=0, cliponaxis=False, marker_line_width=0)]))
+pio.templates.default = "plotly_white+fairlens"
+
+
+def section(title: str, subtitle: Optional[str] = None, level: int = 3) -> None:
+    tag = "h3" if level == 3 else "h4"
+    sub = f'<p class="fl-sub">{_html.escape(subtitle)}</p>' if subtitle else ""
+    st.markdown(f'<{tag} class="fl-{tag}">{_html.escape(title)}</{tag}>{sub}', unsafe_allow_html=True)
+
+
+def finding(text: str) -> None:
+    st.markdown(f'<div class="fl-note"><div class="fl-note-label">What this shows</div>{text}</div>',
+                unsafe_allow_html=True)
+
+
+def cards(items: list) -> None:
+    """Row of metric cards: label, value, optional note and status=(kind, text) with kind in good/warn/bad/neutral."""
+    cells = []
+    for it in items:
+        status = it.get("status")
+        status_html = (f'<div class="fl-status fl-{status[0]}"><span class="fl-dot"></span>{_html.escape(status[1])}</div>'
+                       if status else "")
+        note_html = f'<div class="fl-card-note">{_html.escape(it["note"])}</div>' if it.get("note") else ""
+        size = " fl-card-value-sm" if it.get("small") else ""
+        cells.append(f'<div class="fl-card"><div class="fl-card-label">{_html.escape(it["label"])}</div>'
+                     f'<div class="fl-card-value{size}">{_html.escape(str(it["value"]))}</div>{note_html}{status_html}</div>')
+    st.markdown(f'<div class="fl-cards" style="grid-template-columns: repeat({len(items)}, minmax(0, 1fr));">'
+                + "".join(cells) + "</div>", unsafe_allow_html=True)
+
+
+def divider() -> None:
+    st.markdown('<hr class="fl-hr">', unsafe_allow_html=True)
+
+
+def show(fig) -> None:
+    st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
+
 # Sidebar Configuration Controls
-st.sidebar.markdown('<div class="sidebar-section-title">DATASET SELECTION</div>', unsafe_allow_html=True)
+st.sidebar.markdown('<div class="fl-side-h fl-side-first">Audit setup</div>', unsafe_allow_html=True)
 
 dataset_options = {
-    "german_credit": "German Credit Data (Statlog)",
-    "compas": "COMPAS Recidivism (ProPublica)",
-    "adult_income": "Adult Census Income",
-    "custom": "Upload Custom CSV"
+    "german_credit": "German Credit",
+    "compas": "COMPAS recidivism",
+    "adult_income": "Adult Income",
+    "custom": "Upload a CSV…"
 }
 
 selected_dataset_key = st.sidebar.selectbox(
-    "Select Benchmark Dataset",
+    "Dataset",
     options=list(dataset_options.keys()),
     format_func=lambda x: dataset_options[x]
 )
@@ -70,27 +125,26 @@ custom_target = None
 custom_protected = None
 
 if selected_dataset_key == "custom":
-    st.sidebar.markdown('<div class="sidebar-section-title">CUSTOM CSV INGESTION</div>', unsafe_allow_html=True)
-    uploaded_file = st.sidebar.file_uploader("Upload CSV file", type=["csv"])
+    uploaded_file = st.sidebar.file_uploader("CSV file", type=["csv"])
     
     if uploaded_file is not None:
         try:
             custom_df = pd.read_csv(uploaded_file)
-            st.sidebar.caption(f"Loaded: {len(custom_df):,} rows")
+            st.sidebar.caption(f"{len(custom_df):,} rows loaded")
             
             cols = list(custom_df.columns)
-            custom_target = st.sidebar.selectbox("Select Target Column", options=cols)
-            custom_protected = st.sidebar.selectbox("Select Protected Attribute Column", options=[c for c in cols if c != custom_target])
+            custom_target = st.sidebar.selectbox("Outcome column", options=cols)
+            custom_protected = st.sidebar.selectbox("Protected attribute", options=[c for c in cols if c != custom_target])
             
             valid, msg = validate_custom_csv(custom_df, custom_target, custom_protected)
             if not valid:
                 st.sidebar.error(msg)
                 st.stop()
         except Exception as e:
-            st.sidebar.error(f"Error reading CSV: {e}")
+            st.sidebar.error(f"Could not read this CSV: {e}")
             st.stop()
     else:
-        st.info("Upload a custom dataset CSV in the sidebar to initiate live bias audit.")
+        st.info("Upload a CSV in the sidebar to start an audit.")
         st.stop()
 
 if selected_dataset_key != "custom":
@@ -99,26 +153,25 @@ if selected_dataset_key != "custom":
     default_prot = cfg["default_protected_attribute"]
     
     selected_protected = st.sidebar.selectbox(
-        "Protected Demographic Attribute",
+        "Protected attribute",
         options=protected_attrs,
         index=protected_attrs.index(default_prot) if default_prot in protected_attrs else 0
     )
 else:
     selected_protected = custom_protected
 
-st.sidebar.markdown('<div class="sidebar-section-title">CLASSIFIER MODEL</div>', unsafe_allow_html=True)
 selected_model_type = st.sidebar.selectbox(
-    "Classifier Architecture (System Under Audit)",
+    "Model",
     options=["random_forest", "logistic_regression", "xgboost"],
-    format_func=lambda x: "Random Forest Classifier" if x == "random_forest" else "Logistic Regression Baseline" if x == "logistic_regression" else "XGBoost Classifier"
+    format_func=lambda x: MODEL_LABELS[x]
 )
 
-st.sidebar.markdown('<div class="sidebar-section-title">AUDIT METHODOLOGY</div>', unsafe_allow_html=True)
-st.sidebar.markdown("""
-- **Partitioning:** 60% Train / 20% Val / 20% Test (Stratified)
-- **Bootstrap Validation:** 500 Resamples (95% CI)
-- **Significance Test:** Paired Bootstrap 95% CI (Difference vs Baseline)
-""")
+st.sidebar.markdown(
+    '<div class="fl-side-method"><div class="fl-side-h">Method</div>'
+    '<p>Stratified 60 / 20 / 20 train, validation and test split.</p>'
+    '<p>95% bootstrap intervals from 500 resamples; mitigation effects tested with a paired bootstrap.</p>'
+    '<p>Exponentiated Gradient tolerance chosen on the validation split.</p></div>',
+    unsafe_allow_html=True)
 
 # ==============================================================================
 # STREAMLIT CACHING & PRE-COMPUTED RESOURCE LOADERS
@@ -170,22 +223,34 @@ def load_cached_joblib_file(model_path_str: str) -> Any:
     """Loads pre-trained .joblib model binary from disk using st.cache_resource."""
     return joblib.load(model_path_str)
 
+def _model_matches_features(model: Any, feature_names: tuple) -> bool:
+    """True when a saved model was fitted on exactly the feature set the dashboard feeds it."""
+    names = getattr(model, "feature_names_in_", None)
+    if names is None and hasattr(model, "get_booster"):
+        names = model.get_booster().feature_names
+    if names is not None:
+        return list(names) == list(feature_names)
+    n_in = getattr(model, "n_features_in_", None)
+    return n_in is None or n_in == len(feature_names)
+
+
 @st.cache_resource(show_spinner=False)
-def get_cached_baseline_model(dataset_key: str, model_type: str) -> Any:
-    """Loads pre-trained baseline classifier from disk or fits once if absent."""
-    candidate_names = [
-        f"{dataset_key}_{model_type}_baseline.joblib",
-        f"default_{model_type}_baseline.joblib"
-    ]
-    for cname in candidate_names:
+def get_cached_baseline_model(dataset_key: str, model_type: str, feature_names: tuple = ()) -> Any:
+    """Loads the saved baseline classifier, or refits it (without touching disk) if the file is
+    missing, unreadable (e.g. written by a different xgboost version) or fitted on other features."""
+    for cname in (f"{dataset_key}_{model_type}_baseline.joblib", f"default_{model_type}_baseline.joblib"):
         p = MODELS_DIR / cname
         if p.exists():
-            return load_cached_joblib_file(str(p))
+            try:
+                model = load_cached_joblib_file(str(p))
+            except Exception:
+                continue
+            if not feature_names or _model_matches_features(model, feature_names):
+                return model
     cfg = DATASET_CONFIGS[dataset_key]
     data = get_cached_preprocessed_data(dataset_key, cfg["target_column"], cfg["default_protected_attribute"])
-    model, _ = train_model(data, model_type=model_type, dataset_key=dataset_key, random_state=42)
+    model, _ = train_model(data, model_type=model_type, dataset_key=dataset_key, random_state=42, save=False)
     return model
-
 @st.cache_resource(show_spinner=False)
 def get_cached_mitigated_model(dataset_key: str, model_type: str, technique: str, eps: Optional[float] = None) -> Optional[Any]:
     """Loads pre-trained mitigated model from disk via st.cache_resource."""
@@ -197,19 +262,25 @@ def get_cached_mitigated_model(dataset_key: str, model_type: str, technique: str
             candidates.append(MODELS_DIR / f"{dataset_key}_{model_type}_exponentiated_gradient_demographic_parity_eps{eps}_seed42.joblib")
         for p in candidates:
             if p.exists():
-                return load_cached_joblib_file(str(p))
+                try:
+                    return load_cached_joblib_file(str(p))
+                except Exception:
+                    continue
     elif technique == "Threshold Optimizer":
         p = MODELS_DIR / f"{dataset_key}_{model_type}_threshold_optimizer.joblib"
         if p.exists():
-            return load_cached_joblib_file(str(p))
+            try:
+                return load_cached_joblib_file(str(p))
+            except Exception:
+                return None
     return None
 
 @st.cache_data(show_spinner=False)
 def get_cached_global_shap(dataset_key: str, model_type: str) -> pd.DataFrame:
     """Computes global SHAP feature importance once and caches result in memory."""
-    base_model = get_cached_baseline_model(dataset_key, model_type)
     cfg = DATASET_CONFIGS[dataset_key]
     data = get_cached_preprocessed_data(dataset_key, cfg["target_column"], cfg["default_protected_attribute"])
+    base_model = get_cached_baseline_model(dataset_key, model_type, tuple(data.X_test.columns))
     X_in = data.X_test_scaled if model_type == "logistic_regression" else data.X_test
     return compute_global_shap_importance(base_model, X_in, data.feature_names)
 
@@ -229,7 +300,6 @@ if selected_dataset_key != "custom":
     # Fast cached EDA and Preprocessing
     kpis, disparity_table, corr_matrix, proxy_df = get_cached_eda(selected_dataset_key, protected_col)
     preproc_data = get_cached_preprocessed_data(selected_dataset_key, target_col, protected_col)
-    baseline_model = get_cached_baseline_model(selected_dataset_key, selected_model_type)
 
     benchmarks = load_precomputed_benchmarks()
     exp_bench = benchmarks.get("experiments", {}).get(selected_dataset_key, {})
@@ -240,6 +310,7 @@ if selected_dataset_key != "custom":
     )
 
     if is_benchmark_match:
+        baseline_model = get_cached_baseline_model(selected_dataset_key, selected_model_type, tuple(preproc_data.X_test.columns))
         # Strictly read the heavy statistical metrics from verified benchmark JSON
         baseline_fairness = exp_bench["baseline_fairness"]
         baseline_pred_metrics = exp_bench["baseline_pred_metrics"]
@@ -324,309 +395,153 @@ else:
         insights = pipeline_results["insights"]
         preproc_data = pipeline_results["preprocessed_data"]
 
-# Header Wordmark & Metadata Subtitle
-model_label = "Random Forest Classifier" if selected_model_type == "random_forest" else "Logistic Regression Baseline" if selected_model_type == "logistic_regression" else "XGBoost Classifier"
-timestamp_str = datetime.now().strftime('%Y-%m-%d %H:%M')
+# ==============================================================================
+# PRESENTATION
+# ==============================================================================
+model_label = MODEL_LABELS.get(selected_model_type, selected_model_type)
+subject = outcome_labels["subject"].lower()
+fav_rate_name = outcome_labels["favorable_rate"]
+label1_name = outcome_labels["by_value"][1]
+prot = pipeline_results["protected_col"]
 
 st.markdown(f"""
-<div class="main-header">
-    <div class="main-title">FAIRLENS | ALGORITHMIC BIAS AUDITING & MITIGATION PLATFORM</div>
-    <div class="main-subtitle">
-        Dataset: <strong>{pipeline_results['dataset_name']}</strong> &nbsp;|&nbsp; 
-        Protected Attribute: <strong>{pipeline_results['protected_col']}</strong> &nbsp;|&nbsp; 
-        Target: <strong>{pipeline_results.get('target_col', 'target')}</strong> &nbsp;|&nbsp; 
-        Model: <strong>{model_label}</strong> &nbsp;|&nbsp; 
-        Audit Timestamp: <strong>{timestamp_str}</strong>
-    </div>
+<div class="fl-top">
+  <div class="fl-brand"><span class="fl-mark"></span>FairLens</div>
+  <div class="fl-context">
+    <span>{pipeline_results['dataset_name']}</span><span class="fl-sep">/</span>
+    <span>{prot}</span><span class="fl-sep">/</span>
+    <span>{model_label}</span>
+  </div>
 </div>
 """, unsafe_allow_html=True)
 
-# 6 Main Clean Text Navigation Tabs
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-    "Overview & EDA",
-    "Proxy Leakage Analysis",
-    "Fairness Audit",
-    "Mitigation Comparison",
-    "Explainability & Recourse",
-    "Audit Report & Export"
-])
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
+    ["Overview", "Proxies", "Fairness", "Mitigation", "Explanations", "Report"]
+)
 
-# ==========================================
-# TAB 1: OVERVIEW & EDA
-# ==========================================
+# ------------------------------------------------------------------ Overview
 with tab1:
-    st.markdown("### Dataset Summary & Base Outcome Disparity")
-    
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-label">Total {outcome_labels['subject']}s / Records</div>
-            <div class="kpi-val">{kpis['total_records']:,}</div>
-            <div class="kpi-subtext">Deduplicated Sample Size</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col2:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-label">Base Favorable Rate</div>
-            <div class="kpi-val">{kpis['overall_positive_rate']*100:.2f}%</div>
-            <div class="kpi-subtext">Historical {outcome_labels['favorable_rate']}</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col3:
-        disp_val = kpis['base_rate_disparity']*100
-        badge = '<span class="status-badge-red">Significant Disparity</span>' if disp_val > 10 else '<span class="status-badge-amber">Moderate Disparity</span>' if disp_val > 5 else '<span class="status-badge-green">Low Disparity</span>'
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-label">Demographic Base Gap</div>
-            <div class="kpi-val">{disp_val:.2f}%</div>
-            <div class="kpi-subtext">{badge}</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col4:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-label">Protected Subgroups</div>
-            <div class="kpi-val">{kpis['protected_groups_count']}</div>
-            <div class="kpi-subtext">Evaluated Subcategories</div>
-        </div>
-        """, unsafe_allow_html=True)
+    section("Dataset overview", f"Outcomes in the cleaned data, before any model is trained.")
 
-    st.markdown(f"""
-    <div class="insight-card">
-        <div class="insight-title">EXPLORATORY DISPARITY AUDIT FINDING</div>
-        {insights['base_statement']}
-    </div>
-    """, unsafe_allow_html=True)
+    disp_val = kpis['base_rate_disparity'] * 100
+    gap_status = ("bad", "Large gap") if disp_val > 10 else ("warn", "Moderate gap") if disp_val > 5 else ("good", "Small gap")
+    cards([
+        dict(label="Records", value=f"{kpis['total_records']:,}", note="after removing duplicates"),
+        dict(label=fav_rate_name, value=f"{kpis['overall_positive_rate']*100:.1f}%", note=f"favorable outcome: {outcome_labels['favorable'].lower()}"),
+        dict(label=f"Gap across {prot} groups", value=f"{disp_val:.1f} pts", status=gap_status),
+        dict(label=f"Groups in {prot}", value=f"{kpis['protected_groups_count']}", note="distinct values"),
+    ])
+    finding(insights['base_statement'])
 
-    c1, c2 = st.columns([1, 1])
-    
+    disp_df = pipeline_results["disparity_table"]
+    c1, c2 = st.columns(2, gap="large")
     with c1:
-        st.markdown(f"#### Favorable Outcome ({outcome_labels['favorable_rate']}) by Demographic Group")
-        disp_df = pipeline_results["disparity_table"]
+        section(f"{fav_rate_name} by {prot}", level=4)
         if not disp_df.empty:
-            fig_bar = px.bar(
-                disp_df,
-                x='Protected_Group',
-                y='Favorable_Rate',
-                text_auto='.2f',
-                color='Protected_Group',
-                color_discrete_sequence=PALETTE,
-                title=f"Historical {outcome_labels['favorable_rate']} (%)"
-            )
-            fig_bar.update_layout(
-                template="plotly_dark",
-                paper_bgcolor="#0b0f19",
-                plot_bgcolor="#111827",
-                height=360,
-                showlegend=False,
-                yaxis_title=f"{outcome_labels['favorable_rate']} (%)"
-            )
-            st.plotly_chart(fig_bar, use_container_width=True)
-
+            fig = px.bar(disp_df, x='Protected_Group', y='Favorable_Rate', text_auto='.1f',
+                         color='Protected_Group', color_discrete_sequence=PALETTE)
+            fig.update_layout(height=320, showlegend=False, xaxis_title=None, yaxis_title="%")
+            show(fig)
     with c2:
-        st.markdown("#### Subgroup Applicant Volume & Representation")
+        section(f"Group sizes", level=4)
         if not disp_df.empty:
-            fig_vol = px.bar(
-                disp_df,
-                x='Protected_Group',
-                y='Total_Applicants',
-                text_auto=',d',
-                color='Protected_Group',
-                color_discrete_sequence=PALETTE,
-                title="Total Applicant Count by Group"
-            )
-            fig_vol.update_layout(
-                template="plotly_dark",
-                paper_bgcolor="#0b0f19",
-                plot_bgcolor="#111827",
-                height=360,
-                showlegend=False,
-                yaxis_title="Applicant Count"
-            )
-            st.plotly_chart(fig_vol, use_container_width=True)
+            fig = px.bar(disp_df, x='Protected_Group', y='Total_Applicants', text_auto=',d',
+                         color='Protected_Group', color_discrete_sequence=PALETTE)
+            fig.update_layout(height=320, showlegend=False, xaxis_title=None, yaxis_title=f"{outcome_labels['subject']}s")
+            show(fig)
 
-    st.markdown("#### Feature Pairwise Correlation Matrix")
+    section("Correlation between numeric features", level=4)
     corr_df = pipeline_results["corr_matrix"]
     if not corr_df.empty:
-        fig_heat = px.imshow(
-            corr_df,
-            text_auto=True,
-            aspect="auto",
-            color_continuous_scale="Blues",
-            title="Pearson Correlation Matrix (Numerical Features)"
-        )
-        fig_heat.update_layout(
-            template="plotly_dark",
-            paper_bgcolor="#0b0f19",
-            plot_bgcolor="#111827",
-            height=400
-        )
-        st.plotly_chart(fig_heat, use_container_width=True)
+        fig = px.imshow(corr_df, text_auto=".2f", aspect="auto", zmin=-1, zmax=1, color_continuous_scale=DIVERGING)
+        fig.update_layout(height=420, coloraxis_colorbar=dict(thickness=10, len=0.8, title=None))
+        show(fig)
 
-# ==========================================
-# TAB 2: PROXY LEAKAGE ANALYSIS
-# ==========================================
+# ------------------------------------------------------------------ Proxies
 with tab2:
-    st.markdown("### Indirect Feature Proxy Leakage Ranking")
-    
-    st.markdown(f"""
-    <div class="insight-card">
-        <div class="insight-title">PROXY LEAKAGE AUDIT FINDING</div>
-        {insights['proxy_statement']}
-    </div>
-    """, unsafe_allow_html=True)
+    section("Proxy features",
+            f"The model never sees '{prot}', but other features can still encode it. "
+            f"Higher mutual information means a feature reveals more about {prot}.")
+    finding(insights['proxy_statement'])
 
-    c1, c2 = st.columns([3, 2])
-    
+    c1, c2 = st.columns([3, 2], gap="large")
     with c1:
-        st.markdown("#### Feature Mutual Information Leakage Ranking")
         if not proxy_df.empty:
-            fig_proxy = px.bar(
-                proxy_df.head(10),
-                x='mutual_information',
-                y='feature',
-                orientation='h',
-                color='risk_level',
-                color_discrete_map={
-                    "High Proxy Risk": "#dc2626",
-                    "Moderate Proxy Risk": "#d97706",
-                    "Low Proxy Risk": "#059669"
-                },
-                title=f"Mutual Information with Protected Attribute: '{pipeline_results['protected_col']}'"
-            )
-            fig_proxy.update_layout(
-                template="plotly_dark",
-                paper_bgcolor="#0b0f19",
-                plot_bgcolor="#111827",
-                height=400,
-                xaxis_title="Mutual Information Score",
-                yaxis=dict(autorange="reversed")
-            )
-            st.plotly_chart(fig_proxy, use_container_width=True)
-
+            fig = px.bar(proxy_df.head(10), x='mutual_information', y='feature', orientation='h',
+                         color='risk_level', color_discrete_map=RISK_COLORS)
+            fig.update_layout(height=400, xaxis_title=f"Mutual information with {prot}", yaxis_title=None,
+                              yaxis=dict(autorange="reversed"), legend_title_text=None)
+            show(fig)
     with c2:
-        st.markdown("#### Proxy Leakage Scores Table")
         if not proxy_df.empty:
             st.dataframe(
                 proxy_df[['feature', 'mutual_information', 'correlation', 'risk_level']],
                 column_config={
-                    "feature": "Feature Name",
-                    "mutual_information": st.column_config.NumberColumn("Mutual Information", format="%.4f"),
-                    "correlation": st.column_config.NumberColumn("Correlation", format="%.4f"),
-                    "risk_level": "Proxy Risk Level"
+                    "feature": "Feature",
+                    "mutual_information": st.column_config.NumberColumn("Mutual info.", format="%.4f"),
+                    "correlation": st.column_config.NumberColumn("Correlation", format="%.3f"),
+                    "risk_level": "Risk",
                 },
-                hide_index=True,
-                use_container_width=True,
-                height=400
+                hide_index=True, width="stretch", height=400,
             )
 
-# ==========================================
-# TAB 3: FAIRNESS AUDIT
-# ==========================================
+# ------------------------------------------------------------------ Fairness
 with tab3:
-    st.markdown(f"### Baseline Model Fairness Audit — {model_label}")
-    
-    st.markdown(f"""
-    <div class="insight-card">
-        <div class="insight-title">STATISTICAL BIAS AUDIT FINDING</div>
-        {insights['audit_statement']}
-    </div>
-    """, unsafe_allow_html=True)
+    section(f"Baseline fairness · {model_label}",
+            "Gaps between groups on the test set, with 95% bootstrap intervals (500 resamples).")
+    finding(insights['audit_statement'])
 
-    # 4 Metric Cards with 95% Bootstrap CIs
-    m1, m2, m3, m4 = st.columns(4)
-    
     dp_info = baseline_fairness["demographic_parity_diff"]
     eo_info = baseline_fairness["equalized_odds_diff"]
     eopp_info = baseline_fairness["equal_opportunity_diff"]
     pp_info = baseline_fairness["predictive_parity_diff"]
 
-    with m1:
-        badge = '<span class="status-badge-red">Significant Disparity</span>' if dp_info.get('is_significant', dp_info['ci_low'] > 0.02) else '<span class="status-badge-green">Not Significant</span>'
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-label">Demographic Parity Diff</div>
-            <div class="kpi-val">{dp_info['val']:.4f}</div>
-            <div class="kpi-subtext">95% CI: [{dp_info['ci_low']:.4f}, {dp_info['ci_high']:.4f}]</div>
-            <div style="margin-top: 6px;">{badge}</div>
-        </div>
-        """, unsafe_allow_html=True)
+    def _sig(info):
+        if "is_significant" not in info:
+            return None
+        return ("bad", "Significant") if bool(info["is_significant"]) else ("neutral", "Not significant")
 
-    with m2:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-label">Equalized Odds Diff</div>
-            <div class="kpi-val">{eo_info['val']:.4f}</div>
-            <div class="kpi-subtext">95% CI: [{eo_info['ci_low']:.4f}, {eo_info['ci_high']:.4f}]</div>
-            <div style="margin-top: 6px;"><span class="status-badge-amber">Equal Error Rate</span></div>
-        </div>
-        """, unsafe_allow_html=True)
+    def _ci(info):
+        if "signed_ci_low" in info:
+            return f"signed 95% CI {info['signed_ci_low']:.3f} to {info['signed_ci_high']:.3f}"
+        return f"95% CI {info['ci_low']:.3f} to {info['ci_high']:.3f}"
 
-    with m3:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-label">Equal Opportunity Diff</div>
-            <div class="kpi-val">{eopp_info['val']:.4f}</div>
-            <div class="kpi-subtext">95% CI: [{eopp_info['ci_low']:.4f}, {eopp_info['ci_high']:.4f}]</div>
-            <div style="margin-top: 6px;"><span class="status-badge-amber">TPR Disparity</span></div>
-        </div>
-        """, unsafe_allow_html=True)
+    cards([
+        dict(label="Demographic parity gap", value=f"{dp_info['val']:.3f}", note=_ci(dp_info), status=_sig(dp_info)),
+        dict(label="Equalized odds gap", value=f"{eo_info['val']:.3f}", note=_ci(eo_info)),
+        dict(label="Equal opportunity gap", value=f"{eopp_info['val']:.3f}", note=_ci(eopp_info), status=_sig(eopp_info)),
+        dict(label="Predictive parity gap", value=f"{pp_info['val']:.3f}", note=_ci(pp_info), status=_sig(pp_info)),
+    ])
+    st.caption("Gaps are absolute differences between groups. Significance uses the signed difference, "
+               "because an interval on an absolute value almost never contains zero.")
 
-    with m4:
-        st.markdown(f"""
-        <div class="kpi-card">
-            <div class="kpi-label">Predictive Parity Diff</div>
-            <div class="kpi-val">{pp_info['val']:.4f}</div>
-            <div class="kpi-subtext">95% CI: [{pp_info['ci_low']:.4f}, {pp_info['ci_high']:.4f}]</div>
-            <div style="margin-top: 6px;"><span class="status-badge-amber">Precision Gap</span></div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    c1, c2 = st.columns([1, 1])
-
+    c1, c2 = st.columns(2, gap="large")
     with c1:
-        st.markdown("#### Baseline Model Predictive Performance Breakdown")
-        perf_df = pd.DataFrame([{
-            "F1 (Class 1)": f"{baseline_pred_metrics.get('f1_class_1', baseline_pred_metrics.get('f1_score', 0.0)):.4f}",
-            "Precision (Class 1)": f"{baseline_pred_metrics.get('precision_class_1', baseline_pred_metrics.get('precision', 0.0)):.4f}",
-            "Recall (Class 1)": f"{baseline_pred_metrics.get('recall_class_1', baseline_pred_metrics.get('recall', 0.0)):.4f}",
-            "F1 (Class 0)": f"{baseline_pred_metrics.get('f1_class_0', 0.0):.4f}",
-            "Precision (Class 0)": f"{baseline_pred_metrics.get('precision_class_0', 0.0):.4f}",
-            "Recall (Class 0)": f"{baseline_pred_metrics.get('recall_class_0', 0.0):.4f}",
-            "Balanced Accuracy": f"{baseline_pred_metrics.get('balanced_accuracy', 0.0):.4f}",
-            "Overall Accuracy": f"{baseline_pred_metrics.get('accuracy', 0.0):.4f}",
-            "ROC-AUC": f"{baseline_pred_metrics.get('roc_auc', 0.0):.4f}"
-        }]).T.reset_index()
-        perf_df.columns = ["Metric Name", "Value"]
-        st.dataframe(perf_df, hide_index=True, use_container_width=True)
-
+        section("Model performance", level=4)
+        perf_df = pd.DataFrame([
+            ("Accuracy", baseline_pred_metrics.get('accuracy', 0.0)),
+            ("Balanced accuracy", baseline_pred_metrics.get('balanced_accuracy', 0.0)),
+            ("ROC-AUC", baseline_pred_metrics.get('roc_auc', 0.0)),
+            (f"F1 · {outcome_labels['by_value'][1]}", baseline_pred_metrics.get('f1_class_1', baseline_pred_metrics.get('f1_score', 0.0))),
+            (f"Precision · {outcome_labels['by_value'][1]}", baseline_pred_metrics.get('precision_class_1', baseline_pred_metrics.get('precision', 0.0))),
+            (f"Recall · {outcome_labels['by_value'][1]}", baseline_pred_metrics.get('recall_class_1', baseline_pred_metrics.get('recall', 0.0))),
+            (f"F1 · {outcome_labels['by_value'][0]}", baseline_pred_metrics.get('f1_class_0', 0.0)),
+            (f"Precision · {outcome_labels['by_value'][0]}", baseline_pred_metrics.get('precision_class_0', 0.0)),
+            (f"Recall · {outcome_labels['by_value'][0]}", baseline_pred_metrics.get('recall_class_0', 0.0)),
+        ], columns=["Metric", "Value"])
+        st.dataframe(perf_df, hide_index=True, width="stretch",
+                     column_config={"Value": st.column_config.NumberColumn(format="%.3f")})
     with c2:
-        st.markdown("#### Model Selection Rate Breakdown by Subgroup")
-        gr_df = pd.DataFrame(baseline_fairness["demographic_parity_diff"].get("group_rates", []))
+        section("Selection rate by group", level=4)
+        st.caption(f"Share of each group the model predicts as '{label1_name}'.")
+        gr_df = pd.DataFrame(dp_info.get("group_rates", []))
         if not gr_df.empty:
-            fig_gr = px.bar(
-                gr_df,
-                x='group',
-                y='selection_rate',
-                text_auto='.3f',
-                color='group',
-                color_discrete_sequence=PALETTE,
-                title=f"Selection Rate = share predicted '{outcome_labels['by_value'][1]}' (label 1)"
-            )
-            fig_gr.update_layout(
-                template="plotly_dark",
-                paper_bgcolor="#0b0f19",
-                plot_bgcolor="#111827",
-                height=360,
-                showlegend=False,
-                yaxis_title="Selection Rate"
-            )
-            st.plotly_chart(fig_gr, use_container_width=True)
+            fig = px.bar(gr_df, x='group', y='selection_rate', text_auto='.3f',
+                         color='group', color_discrete_sequence=PALETTE)
+            fig.update_layout(height=300, showlegend=False, xaxis_title=None, yaxis_title="Selection rate")
+            show(fig)
 
-    # ---- Shared baseline test-set predictions for the extra audits ----
+    # Shared baseline test-set predictions for the extra audits
     _X_base_in = preproc_data.X_test_scaled if selected_model_type == "logistic_regression" else preproc_data.X_test
     _base_model = pipeline_results["baseline_model"]
     _y_pred_base_t = np.asarray(_base_model.predict(_X_base_in))
@@ -634,307 +549,228 @@ with tab3:
     if _clean_for_attrs is None and selected_dataset_key != "custom":
         _clean_for_attrs = load_cached_clean_dataset(selected_dataset_key)
 
-    st.markdown("---")
-    st.markdown("### Intersectional Fairness Audit")
-    st.caption("Single-attribute audits can hide disparities that only appear for combinations of attributes. "
-               "Subgroups with fewer than 30 test-set members are listed but excluded from the gap.")
+    divider()
+    section("Intersectional audit",
+            "Some gaps only show up for combinations of attributes. Groups with fewer than 30 people in the test set are listed but left out of the gap.")
     _cfg_attrs = list(DATASET_CONFIGS.get(selected_dataset_key, {}).get("protected_attributes", {}).keys())
     _other_attrs = [a for a in _cfg_attrs if a != protected_col and _clean_for_attrs is not None and a in _clean_for_attrs.columns]
     if _other_attrs:
         _default_second = {"compas": "sex", "adult_income": "age_group", "german_credit": "age_group"}.get(selected_dataset_key)
-        second_attr = st.selectbox(
-            f"Intersect '{protected_col}' with",
-            options=_other_attrs,
-            index=_other_attrs.index(_default_second) if _default_second in _other_attrs else 0,
-        )
+        sc1, _ = st.columns([1, 2])
+        with sc1:
+            second_attr = st.selectbox(
+                f"Combine {protected_col} with",
+                options=_other_attrs,
+                index=_other_attrs.index(_default_second) if _default_second in _other_attrs else 0,
+            )
         inter = compute_intersectional_metrics(
             preproc_data.y_test.values, _y_pred_base_t,
             preproc_data.s_test, _clean_for_attrs.loc[preproc_data.s_test.index, second_attr],
         )
         inter["label"] = f"{protected_col} × {second_attr}"
         st.session_state["fl_intersectional"] = inter
-        ic1, ic2, ic3 = st.columns(3)
-        ic1.metric("Intersectional DP gap (max−min)", f"{inter['gaps']['demographic_parity_diff']:.4f}")
-        ic2.metric(f"'{protected_col}' alone", f"{inter['single_attribute_dp']['attr_a']:.4f}")
-        ic3.metric(f"'{second_attr}' alone", f"{inter['single_attribute_dp']['attr_b']:.4f}")
+        cards([
+            dict(label=f"{protected_col} × {second_attr}", value=f"{inter['gaps']['demographic_parity_diff']:.3f}", note="largest selection-rate gap"),
+            dict(label=f"{protected_col} alone", value=f"{inter['single_attribute_dp']['attr_a']:.3f}", note="same rows"),
+            dict(label=f"{second_attr} alone", value=f"{inter['single_attribute_dp']['attr_b']:.3f}", note="same rows"),
+        ])
         _it = inter["table"]
-        fig_int = px.bar(
-            _it[_it["included"]], x="attr_a", y="selection_rate", color="attr_b", barmode="group",
-            text_auto=".2f", color_discrete_sequence=PALETTE,
-            hover_data={"count": True, "tpr": ":.3f", "fpr": ":.3f"},
-            title=f"Selection rate by {protected_col} × {second_attr} (label 1 = {outcome_labels['by_value'][1]})",
-        )
-        fig_int.update_layout(template="plotly_dark", paper_bgcolor="#0b0f19", plot_bgcolor="#111827", height=380,
-                              xaxis_title=protected_col, yaxis_title="Selection Rate", legend_title=second_attr)
-        st.plotly_chart(fig_int, use_container_width=True)
-        _show = _it.rename(columns={"attr_a": protected_col, "attr_b": second_attr}).drop(columns=["group"])
-        st.dataframe(_show.round(4), hide_index=True, use_container_width=True)
+        c1, c2 = st.columns([3, 2], gap="large")
+        with c1:
+            fig = px.bar(_it[_it["included"]], x="attr_a", y="selection_rate", color="attr_b", barmode="group",
+                         text_auto=".2f", color_discrete_sequence=PALETTE,
+                         hover_data={"count": True, "tpr": ":.3f", "fpr": ":.3f"})
+            fig.update_layout(height=340, xaxis_title=None, yaxis_title="Selection rate",
+                              legend=dict(title=dict(text=f"{second_attr}  ", side="left")))
+            show(fig)
+        with c2:
+            _show = _it.rename(columns={"attr_a": protected_col, "attr_b": second_attr, "count": "n",
+                                        "selection_rate": "Selection", "tpr": "TPR", "fpr": "FPR",
+                                        "precision": "Precision", "included": "In gap"}).drop(columns=["group"])
+            st.dataframe(_show.round(3), hide_index=True, width="stretch")
     else:
-        st.info("No second protected attribute is configured for this dataset.")
+        st.caption("No second protected attribute is configured for this dataset.")
 
-    st.markdown("---")
-    st.markdown("### Calibration by Group")
-    st.caption("Does a predicted risk mean the same thing for every group? A well-calibrated model's points sit on the diagonal. "
-               "When base rates differ, calibration and equal error rates cannot both hold — the core of the COMPAS debate.")
+    divider()
+    section("Calibration by group",
+            f"Does a predicted probability of '{label1_name}' mean the same thing for every group? "
+            "Well-calibrated groups sit on the diagonal. When base rates differ, calibration and equal error rates cannot both hold.")
     try:
         _y_prob_t = _base_model.predict_proba(_X_base_in)[:, 1]
         calib = compute_group_calibration(preproc_data.y_test.values, _y_prob_t, preproc_data.s_test.values)
         st.session_state["fl_calibration"] = calib
-        cc1, cc2 = st.columns([3, 2])
+        cc1, cc2 = st.columns([3, 2], gap="large")
         with cc1:
-            fig_cal = go.Figure()
-            fig_cal.add_trace(go.Scatter(x=[0, 1], y=[0, 1], mode="lines", name="Perfect calibration",
-                                         line=dict(dash="dash", color="#64748b")))
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=[0, 1], y=[0, 1], mode="lines", name="Perfectly calibrated",
+                                     line=dict(dash="dot", color=MUTED, width=1)))
             for i, (g, cdf) in enumerate(calib["curves"].groupby("group", sort=False)):
-                fig_cal.add_trace(go.Scatter(x=cdf["mean_predicted"], y=cdf["observed_rate"], mode="lines+markers",
-                                             name=str(g), line=dict(color=PALETTE[i % len(PALETTE)]),
-                                             customdata=cdf["count"], hovertemplate="pred %{x:.2f} · observed %{y:.2f} · n=%{customdata}"))
-            fig_cal.update_layout(template="plotly_dark", paper_bgcolor="#0b0f19", plot_bgcolor="#111827", height=400,
-                                  title=f"Reliability curve: P('{outcome_labels['by_value'][1]}')",
-                                  xaxis_title="Mean predicted probability", yaxis_title="Observed rate",
-                                  xaxis=dict(range=[0, 1]), yaxis=dict(range=[0, 1]))
-            st.plotly_chart(fig_cal, use_container_width=True)
+                fig.add_trace(go.Scatter(x=cdf["mean_predicted"], y=cdf["observed_rate"], mode="lines+markers",
+                                         name=str(g), line=dict(color=PALETTE[i % len(PALETTE)], width=2),
+                                         marker=dict(size=6), customdata=cdf["count"],
+                                         hovertemplate="predicted %{x:.2f} · observed %{y:.2f} · n=%{customdata}<extra>" + str(g) + "</extra>"))
+            fig.update_layout(height=380, xaxis_title="Mean predicted probability", yaxis_title="Observed rate",
+                              xaxis=dict(range=[0, 1]), yaxis=dict(range=[0, 1]))
+            show(fig)
         with cc2:
-            st.dataframe(calib["summary"].rename(columns={"brier_score": "Brier", "ece": "ECE"}).round(4),
-                         hide_index=True, use_container_width=True)
-            st.caption(f"Overall Brier {calib['overall']['brier_score']:.4f} · ECE {calib['overall']['ece']:.4f}. "
-                       "Lower is better. Groups with n < 30 omitted.")
+            st.dataframe(calib["summary"].rename(columns={"group": "Group", "count": "n", "brier_score": "Brier", "ece": "ECE",
+                                                          "mean_predicted": "Mean predicted", "observed_rate": "Observed"}).round(3),
+                         hide_index=True, width="stretch")
+            st.caption(f"Overall Brier {calib['overall']['brier_score']:.3f}, ECE {calib['overall']['ece']:.3f}. "
+                       "Lower is better. Groups with fewer than 30 people are omitted.")
     except Exception as e:
-        st.info(f"Calibration needs predicted probabilities; unavailable for this model ({e}).")
+        st.caption(f"Calibration needs predicted probabilities, which this model does not provide ({e}).")
 
-# ==========================================
-# TAB 4: MITIGATION COMPARISON
-# ==========================================
+# ------------------------------------------------------------------ Mitigation
 with tab4:
-    st.markdown("### Multi-Stage Mitigation Strategy Evaluation")
-    
-    st.markdown(f"""
-    <div class="insight-card">
-        <div class="insight-title">MITIGATION & ACCURACY TRADEOFF FINDING</div>
-        {insights['mitigation_statement']}
-    </div>
-    """, unsafe_allow_html=True)
+    section("Mitigation",
+            "Three ways to reduce the demographic parity gap: reweighting the training data, constraining training, "
+            "and adjusting decision thresholds per group.")
+    finding(insights['mitigation_statement'])
 
-    comp_rows = []
-    comp_rows.append({
-        "Stage": "Baseline",
-        "Technique": "Unmitigated Baseline",
-        "F1-Score": baseline_pred_metrics['f1_score'],
-        "Balanced Acc": baseline_pred_metrics['balanced_accuracy'],
+    comp_rows = [{
+        "Method": "Baseline",
+        "F1": baseline_pred_metrics['f1_score'],
+        "Balanced acc.": baseline_pred_metrics['balanced_accuracy'],
         "ROC-AUC": baseline_pred_metrics['roc_auc'],
-        "Demographic Parity Diff": baseline_fairness['demographic_parity_diff']['val'],
-        "Equalized Odds Diff": baseline_fairness['equalized_odds_diff']['val'],
-        "Significance (p < 0.05)": "Reference Baseline"
-    })
-
+        "Parity gap": baseline_fairness['demographic_parity_diff']['val'],
+        "Odds gap": baseline_fairness['equalized_odds_diff']['val'],
+        "Reduction (95% CI)": "—",
+    }]
     for name, mres in mitigations.items():
-        metrics = mres["metrics"]
-        pmetrics = mres["pred_metrics"]
         sig = mres["significance"]
         stage = "Pre-processing" if name == "Reweighing" else "In-processing" if name == "Exponentiated Gradient" else "Post-processing"
-        
+        mark = "  ✓" if sig['is_significant'] else ""
         comp_rows.append({
+            "Method": name,
             "Stage": stage,
-            "Technique": name,
-            "F1-Score": pmetrics['f1_score'],
-            "Balanced Acc": pmetrics['balanced_accuracy'],
-            "ROC-AUC": pmetrics['roc_auc'],
-            "Demographic Parity Diff": metrics['demographic_parity_diff']['val'],
-            "Equalized Odds Diff": metrics['equalized_odds_diff']['val'],
-            "Significance (95% CI > 0)": f"{'Significant' if sig['is_significant'] else 'Not Significant'} (Δ={sig.get('mean_delta', 0.0):.4f}, [{sig.get('ci_low', 0.0):.4f}, {sig.get('ci_high', 0.0):.4f}])"
+            "F1": mres["pred_metrics"]['f1_score'],
+            "Balanced acc.": mres["pred_metrics"]['balanced_accuracy'],
+            "ROC-AUC": mres["pred_metrics"]['roc_auc'],
+            "Parity gap": mres["metrics"]['demographic_parity_diff']['val'],
+            "Odds gap": mres["metrics"]['equalized_odds_diff']['val'],
+            "Reduction (95% CI)": f"{sig.get('mean_delta', 0.0):+.3f}  ({sig.get('ci_low', 0.0):.3f} to {sig.get('ci_high', 0.0):.3f}){mark}",
         })
+    comp_rows[0]["Stage"] = "—"
+    comp_df = pd.DataFrame(comp_rows)[["Method", "Stage", "F1", "Balanced acc.", "ROC-AUC", "Parity gap", "Odds gap", "Reduction (95% CI)"]]
+    st.dataframe(comp_df, hide_index=True, width="stretch",
+                 column_config={c: st.column_config.NumberColumn(format="%.3f")
+                                for c in ["F1", "Balanced acc.", "ROC-AUC", "Parity gap", "Odds gap"]})
+    st.caption("Reduction = baseline parity gap minus mitigated gap, from a paired bootstrap on the same resampled rows. "
+               "✓ means the interval is entirely above zero.")
 
-    comp_df = pd.DataFrame(comp_rows)
-    
-    st.markdown("#### Comparative Mitigation Results Table")
-    st.dataframe(comp_df, hide_index=True, use_container_width=True)
+    eps_tables = benchmarks.get("epsilon_selection_tables", {})
+    if is_benchmark_match and selected_dataset_key in eps_tables:
+        with st.expander("How ε was chosen for Exponentiated Gradient"):
+            st.markdown(
+                "ε is the tolerance on the fairness constraint. On the **validation** split we pick the ε with the "
+                "smallest parity gap among those that lose at most 5 accuracy points against the baseline. If none "
+                "qualifies, we take the one that loses the least accuracy. The test split is only used for reporting."
+            )
+            st.dataframe(pd.DataFrame(eps_tables[selected_dataset_key]), hide_index=True, width="stretch")
 
-    # Epsilon Sweep & Selection Audit Section
-    if selected_dataset_key in ["german_credit", "compas", "adult_income"]:
-        import json
-        from src.config import DATA_DIR
-        json_path = DATA_DIR / "verified_benchmark_results.json"
-        if json_path.exists():
-            try:
-                with open(json_path, "r", encoding="utf-8") as f:
-                    bench_data = json.load(f)
-                eps_tables = bench_data.get("epsilon_selection_tables", {})
-                if selected_dataset_key in eps_tables:
-                    with st.expander("Epsilon Optimization & Selection Audit (Validation Set Rule: Max Fairness Gain with <=5pp Accuracy Loss)"):
-                        st.markdown("""
-                        **Optimization Rule:** Epsilon ($\\epsilon$) controls the fairness constraint tolerance in Exponentiated Gradient. The optimal $\\epsilon$ is selected to maximize fairness gain (minimize Demographic Parity difference) while keeping model accuracy loss $\\le 5.0$ percentage points vs the unmitigated baseline. If all candidates exceed 5pp loss (as on COMPAS), the deterministic fallback selects the $\\epsilon$ that minimizes accuracy loss.
-                        """)
-                        eps_df = pd.DataFrame(eps_tables[selected_dataset_key])
-                        st.dataframe(eps_df, hide_index=True, use_container_width=True)
-            except Exception as e:
-                pass
-
-    c1, c2 = st.columns([1, 1])
-
+    c1, c2 = st.columns(2, gap="large")
     with c1:
-        st.markdown("#### Demographic Parity Disparity Comparison")
-        fig_comp_bar = px.bar(
-            comp_df,
-            x='Technique',
-            y='Demographic Parity Diff',
-            color='Technique',
-            color_discrete_sequence=PALETTE,
-            text_auto='.4f',
-            title="Absolute Demographic Parity Gap"
-        )
-        fig_comp_bar.update_layout(
-            template="plotly_dark",
-            paper_bgcolor="#0b0f19",
-            plot_bgcolor="#111827",
-            height=380,
-            showlegend=False
-        )
-        st.plotly_chart(fig_comp_bar, use_container_width=True)
-
+        section("Parity gap by method", level=4)
+        fig = px.bar(comp_df, x='Method', y='Parity gap', text_auto='.3f',
+                     color='Method', color_discrete_map=METHOD_COLORS)
+        fig.update_layout(height=340, showlegend=False, xaxis_title=None, yaxis_title="Demographic parity gap")
+        show(fig)
     with c2:
-        st.markdown("#### Accuracy vs Fairness Pareto Trade-off")
-        fig_scatter = px.scatter(
-            comp_df,
-            x='Demographic Parity Diff',
-            y='F1-Score',
-            text='Technique',
-            color='Stage',
-            color_discrete_sequence=PALETTE,
-            size=[18]*len(comp_df),
-            title="Pareto Scatter: F1 Performance vs Demographic Parity Gap"
-        )
-        fig_scatter.update_traces(textposition='top center')
-        fig_scatter.update_layout(
-            template="plotly_dark",
-            paper_bgcolor="#0b0f19",
-            plot_bgcolor="#111827",
-            height=380
-        )
-        st.plotly_chart(fig_scatter, use_container_width=True)
+        section("F1 against parity gap", level=4)
+        fig = px.scatter(comp_df, x='Parity gap', y='F1', color='Method',
+                         color_discrete_map=METHOD_COLORS)
+        fig.update_traces(marker=dict(size=13, line=dict(width=1, color="white")))
+        fig.update_layout(height=340, legend_title_text=None, xaxis_title="Demographic parity gap (lower is fairer)")
+        show(fig)
 
-    st.markdown("---")
-    st.markdown("### Fairness–Accuracy Frontier (Exponentiated Gradient ε-sweep)")
+    divider()
+    section("Fairness–accuracy frontier",
+            "Every ε tried for Exponentiated Gradient, next to the other methods. Points on the dotted line are "
+            "Pareto-optimal: nothing else is both fairer and more accurate.")
     _sw = sweep_points(benchmarks, selected_dataset_key) if is_benchmark_match else pd.DataFrame()
     if _sw.empty:
-        st.caption("The ε-sweep is precomputed for the benchmark configuration only "
-                   f"({MODEL_LABELS.get(benchmarks.get('selected_baseline_models', {}).get(selected_dataset_key, ''), 'n/a')} with the default protected attribute).")
+        st.caption("The ε sweep is precomputed for the benchmark setup only "
+                   f"({MODEL_LABELS.get(benchmarks.get('selected_baseline_models', {}).get(selected_dataset_key, ''), 'n/a')} "
+                   "with the default protected attribute). Switch to that setup to see it.")
     else:
-        fig_fr = go.Figure()
-        _styles = {"demographic_parity": ("DP-constrained EG", "#3b82f6"), "equalized_odds": ("EO-constrained EG", "#a855f7")}
+        fig = go.Figure()
+        _styles = {"demographic_parity": ("EG · parity constraint", BRAND), "equalized_odds": ("EG · odds constraint", "#5eb8ad")}
         for cons, cdf in _sw.groupby("constraint"):
-            name, color = _styles.get(cons, (cons, "#94a3b8"))
-            fig_fr.add_trace(go.Scatter(x=cdf["dp_diff"], y=cdf["accuracy"], mode="markers", name=name,
-                                        customdata=cdf["eps"], marker=dict(size=10, color=color),
-                                        hovertemplate=name + "<br>ε=%{customdata}<br>DP %{x:.4f} · acc %{y:.4f}<extra></extra>"))
+            name, color = _styles.get(cons, (cons, MUTED))
+            fig.add_trace(go.Scatter(x=cdf["dp_diff"], y=cdf["accuracy"], mode="markers", name=name,
+                                     customdata=cdf["eps"], marker=dict(size=9, color=color, opacity=0.85),
+                                     hovertemplate=name + "<br>ε=%{customdata}<br>gap %{x:.4f} · accuracy %{y:.4f}<extra></extra>"))
         _others = [("Baseline", baseline_fairness["demographic_parity_diff"]["val"], baseline_pred_metrics["accuracy"])]
         _others += [(n, m["metrics"]["demographic_parity_diff"]["val"], m["pred_metrics"]["accuracy"])
                     for n, m in mitigations.items() if n != "Exponentiated Gradient"]
-        for i, (n, dp, acc) in enumerate(_others):
-            fig_fr.add_trace(go.Scatter(x=[dp], y=[acc], mode="markers", name=n,
-                                        marker=dict(size=13, symbol="diamond", color=["#f59e0b", "#10b981", "#ef4444"][i % 3]),
-                                        hovertemplate=n + "<br>DP %{x:.4f} · acc %{y:.4f}<extra></extra>"))
+        _ocolors = {**METHOD_COLORS, "Baseline": "#475569"}
+        for n, dp, acc in _others:
+            fig.add_trace(go.Scatter(x=[dp], y=[acc], mode="markers", name=n,
+                                     marker=dict(size=12, symbol="diamond", color=_ocolors.get(n, MUTED), line=dict(width=1, color="white")),
+                                     hovertemplate=n + "<br>gap %{x:.4f} · accuracy %{y:.4f}<extra></extra>"))
         _all = pd.concat([_sw[["dp_diff", "accuracy"]], pd.DataFrame([(dp, acc) for _, dp, acc in _others], columns=["dp_diff", "accuracy"])])
         _front = pareto_frontier(_all)
-        fig_fr.add_trace(go.Scatter(x=_front["dp_diff"], y=_front["accuracy"], mode="lines", name="Pareto frontier",
-                                    line=dict(color="#e2e8f0", dash="dot", shape="hv")))
+        fig.add_trace(go.Scatter(x=_front["dp_diff"], y=_front["accuracy"], mode="lines", name="Pareto frontier",
+                                 line=dict(color="#94a3b8", dash="dot", shape="hv", width=1.5), hoverinfo="skip"))
         _sel = _sw[_sw["selected"]]
         if not _sel.empty:
-            fig_fr.add_trace(go.Scatter(x=_sel["dp_diff"], y=_sel["accuracy"], mode="markers", name="Selected ε (validation rule)",
-                                        customdata=_sel["eps"], hovertemplate="Selected ε=%{customdata}<extra></extra>",
-                                        marker=dict(size=20, symbol="circle-open", line=dict(width=3, color="#facc15"))))
+            fig.add_trace(go.Scatter(x=_sel["dp_diff"], y=_sel["accuracy"], mode="markers", name="Chosen ε",
+                                     customdata=_sel["eps"], hovertemplate="chosen ε=%{customdata}<extra></extra>",
+                                     marker=dict(size=20, symbol="circle-open", line=dict(width=2, color="#0f172a"))))
         _xmax = float(max(_all["dp_diff"].max(), 0.01))
-        fig_fr.update_xaxes(range=[-0.05 * _xmax, 1.08 * _xmax])
-        fig_fr.update_layout(template="plotly_dark", paper_bgcolor="#0b0f19", plot_bgcolor="#111827", height=460,
-                             xaxis_title="Demographic Parity Diff (test, lower = fairer)", yaxis_title="Accuracy (test)",
-                             title="Every ε tested, plus the other mitigations (seed-42 test split)")
-        st.plotly_chart(fig_fr, use_container_width=True)
-        st.caption("Points on the dotted line are Pareto-optimal: nothing else is both fairer and more accurate. "
-                   "ε is chosen on the validation split, so the selected point need not be on the test-set frontier.")
+        fig.update_xaxes(range=[-0.05 * _xmax, 1.08 * _xmax])
+        fig.update_layout(height=440, xaxis_title="Demographic parity gap (test, lower is fairer)", yaxis_title="Accuracy (test)")
+        show(fig)
+        st.caption("ε is chosen on the validation split, so the chosen point need not sit on the test-set frontier.")
 
-# ==========================================
-# TAB 5: EXPLAINABILITY & RECOURSE
-# ==========================================
+# ------------------------------------------------------------------ Explanations
 with tab5:
-    st.markdown("### Individual Decision Auditing & Actionable Recourse")
-    
-    c1, c2 = st.columns([1, 1])
-    
-    with c1:
-        st.markdown("#### Global Feature Importance (SHAP)")
-        if not shap_importance.empty:
-            fig_shap = px.bar(
-                shap_importance.head(10),
-                x='importance',
-                y='feature',
-                orientation='h',
-                title="Top 10 Global Features Driving Model Predictions",
-                color_discrete_sequence=['#2563eb']
-            )
-            fig_shap.update_layout(
-                template="plotly_dark",
-                paper_bgcolor="#0b0f19",
-                plot_bgcolor="#111827",
-                height=380,
-                yaxis=dict(autorange="reversed")
-            )
-            st.plotly_chart(fig_shap, use_container_width=True)
+    section("Explanations", f"Which features drive the model, and what would change an individual {subject}'s outcome.")
 
+    X_test = preproc_data.X_test
+    explain_model = raw_feature_model(pipeline_results["baseline_model"], selected_model_type, preproc_data.scaler)
+    y_pred = explain_model.predict(X_test)
+
+    c1, c2 = st.columns([3, 2], gap="large")
+    with c1:
+        section("Most influential features", level=4)
+        st.caption("Mean absolute SHAP value across the test set.")
+        if not shap_importance.empty:
+            fig = px.bar(shap_importance.head(10), x='importance', y='feature', orientation='h',
+                         color_discrete_sequence=[BRAND])
+            fig.update_layout(height=360, xaxis_title="Mean |SHAP|", yaxis_title=None, yaxis=dict(autorange="reversed"))
+            show(fig)
     with c2:
-        st.markdown("#### Select Applicant for Individual Audit")
-        X_test = preproc_data.X_test
-        y_test = preproc_data.y_test
-        explain_model = raw_feature_model(pipeline_results["baseline_model"], selected_model_type, preproc_data.scaler)
-        y_pred = explain_model.predict(X_test)
-        
+        section(f"Choose {'an' if subject[:1] in 'aeiou' else 'a'} {subject}", level=4)
+        st.caption(f"Only {subject}s the model predicts as '{outcome_labels['unfavorable']}' are listed.")
         rejected_indices = np.where(y_pred == outcome_labels["unfavorable_value"])[0]
         if len(rejected_indices) == 0:
             rejected_indices = list(range(len(X_test)))
-
-        selected_rec_idx = st.selectbox(
-            f"Select {outcome_labels['subject']} Row Index (Test Partition, predicted unfavorable)",
-            options=rejected_indices,
-            index=0
-        )
-
+        selected_rec_idx = st.selectbox(f"{outcome_labels['subject']} (test-set row)", options=rejected_indices, index=0)
         record_series = X_test.iloc[selected_rec_idx]
         _dec = int(y_pred[selected_rec_idx])
-        st.caption(f"Selected {outcome_labels['subject']} Index: {selected_rec_idx} | Model Baseline Decision: {outcome_labels['by_value'].get(_dec, _dec)} (label {_dec})")
+        cards([dict(label="Model decision", value=outcome_labels['by_value'].get(_dec, str(_dec)),
+                    note=f"row {selected_rec_idx} · label {_dec}", small=True)])
 
-    st.markdown("---")
-    
-    rec_c1, rec_c2 = st.columns([1, 1])
-
-    with rec_c1:
-        st.markdown("#### Local SHAP Feature Contribution Waterfall")
-        local_shap = compute_local_shap_explanation(
-            explain_model,
-            X_test,
-            selected_rec_idx,
-            preproc_data.feature_names
-        )
-        
-        local_df = local_shap["local_explanation"].head(8)
-        fig_local = px.bar(
-            local_df,
-            x='shap_value',
-            y='feature',
-            orientation='h',
-            color='shap_value',
-            color_continuous_scale="RdBu",
-            title=f"SHAP contributions to P(label 1) for {outcome_labels['subject']} #{selected_rec_idx}"
-        )
-        fig_local.update_layout(
-            template="plotly_dark",
-            paper_bgcolor="#0b0f19",
-            plot_bgcolor="#111827",
-            height=380,
-            yaxis=dict(autorange="reversed")
-        )
-        st.plotly_chart(fig_local, use_container_width=True)
-
-    with rec_c2:
-        st.markdown(f"#### Actionable Counterfactual Recourse (DiCE Search → {outcome_labels['favorable']})")
-        with st.spinner("Searching actionable recourse path..."):
+    divider()
+    rc1, rc2 = st.columns(2, gap="large")
+    with rc1:
+        section("Why this prediction", level=4)
+        st.caption(f"Contribution of each feature to the probability of '{label1_name}'.")
+        local_shap = compute_local_shap_explanation(explain_model, X_test, selected_rec_idx, preproc_data.feature_names)
+        local_df = local_shap["local_explanation"].head(8).copy()
+        local_df["direction"] = np.where(local_df["shap_value"] >= 0, f"towards '{label1_name}'", "away")
+        fig = px.bar(local_df, x='shap_value', y='feature', orientation='h', color="direction",
+                     color_discrete_map={f"towards '{label1_name}'": BRAND, "away": "#d97706"})
+        fig.update_layout(height=340, xaxis_title="SHAP value", yaxis_title=None,
+                          yaxis=dict(autorange="reversed"), legend_title_text=None)
+        show(fig)
+    with rc2:
+        section(f"What would change the outcome", level=4)
+        st.caption(f"Smallest changes to actionable features that lead to '{outcome_labels['favorable']}' (DiCE). "
+                   "Protected and immutable attributes are held fixed.")
+        with st.spinner("Searching for counterfactuals…"):
             cf_res = generate_counterfactual_explanation(
                 explain_model,
                 preproc_data.X_train,
@@ -944,32 +780,28 @@ with tab5:
                 immutable_features=pipeline_results.get("immutable_cols"),
                 desired_class=outcome_labels["favorable_value"]
             )
-            
-            changes = cf_res.get("actionable_changes", [])
-            if len(changes) > 0:
-                st.dataframe(pd.DataFrame(changes), hide_index=True, use_container_width=True)
-            else:
-                st.caption("No simple single-step recourse found within constraints.")
+        changes = cf_res.get("actionable_changes", [])
+        if len(changes) > 0:
+            _cf = pd.DataFrame(changes).rename(columns={"feature": "Feature", "original_value": "Now",
+                                                        "suggested_value": "Change to", "delta": "Difference"})
+            st.dataframe(_cf, hide_index=True, width="stretch")
+        else:
+            st.caption("No simple change within the allowed features flips this decision.")
 
-# ==========================================
-# TAB 6: AUDIT REPORT & EXPORT
-# ==========================================
+# ------------------------------------------------------------------ Report
 with tab6:
-    st.markdown("### Compliance & Academic Audit Report Export")
-    
+    section("Report", "Download the audit for this dataset and model, or review past runs.")
+
     primary_mitigation_name = list(mitigations.keys())[0] if mitigations else "Reweighing"
     primary_mitigation_data = mitigations.get(primary_mitigation_name, {})
 
-    col1, col2 = st.columns([1, 1])
-    
+    col1, col2 = st.columns([3, 2], gap="large")
     with col1:
-        st.markdown("#### Executive Summary Preview")
-        st.markdown(f"""
-        <div class="insight-card">
-            {insights['executive_summary']}
-        </div>
-        """, unsafe_allow_html=True)
-        
+        section("Summary", level=4)
+        st.markdown("<div class='fl-prose'>" + "".join(
+            f"<p>{insights[k]}</p>" for k in ["base_statement", "proxy_statement", "audit_statement", "mitigation_statement"]
+        ) + "</div>", unsafe_allow_html=True)
+
         pdf_path = generate_pdf_audit_report(
             dataset_name=pipeline_results["dataset_name"],
             protected_attribute=pipeline_results["protected_col"],
@@ -980,17 +812,6 @@ with tab6:
             insights=insights,
             technique_name=primary_mitigation_name
         )
-
-        if pdf_path.exists():
-            with open(pdf_path, "rb") as f:
-                st.download_button(
-                    label="Download PDF Audit Report",
-                    data=f,
-                    file_name=pdf_path.name,
-                    mime="application/pdf"
-                )
-
-        st.markdown("#### Model Card & Datasheet")
         _eps_sel = benchmarks.get("selected_epsilons", {}).get(selected_dataset_key)
         model_card_md = generate_model_card(
             dataset_key=selected_dataset_key,
@@ -1009,25 +830,35 @@ with tab6:
             intersectional=st.session_state.get("fl_intersectional"),
             calibration=st.session_state.get("fl_calibration"),
         )
-        st.download_button(
-            label="Download Model Card + Datasheet (Markdown)",
-            data=model_card_md.encode("utf-8"),
-            file_name=f"FairLens_Model_Card_{selected_dataset_key}_{selected_model_type}.md",
-            mime="text/markdown",
-        )
-        with st.expander("Preview model card"):
+
+        b1, b2 = st.columns(2)
+        with b1:
+            if pdf_path.exists():
+                with open(pdf_path, "rb") as f:
+                    st.download_button("Download PDF report", data=f, file_name=pdf_path.name,
+                                       mime="application/pdf", type="primary", width="stretch")
+        with b2:
+            st.download_button("Download model card", data=model_card_md.encode("utf-8"),
+                               file_name=f"FairLens_Model_Card_{selected_dataset_key}_{selected_model_type}.md",
+                               mime="text/markdown", width="stretch")
+        with st.expander("Preview model card and datasheet"):
             st.markdown(model_card_md)
 
     with col2:
-        st.markdown("#### SQLite Logged Experiment History")
+        section("Run history", level=4)
+        st.caption("Every audit is logged to a local SQLite database.")
         exp_db_df = get_experiment_history(selected_dataset_key)
         if not exp_db_df.empty:
-            st.dataframe(exp_db_df, hide_index=True, use_container_width=True, height=280)
-            
-            csv_data = exp_db_df.to_csv(index=False).encode('utf-8')
-            st.download_button(
-                label="Download Experiment History CSV",
-                data=csv_data,
-                file_name=f"FairLens_Experiments_{selected_dataset_key}.csv",
-                mime="text/csv"
-            )
+            _hist = exp_db_df.rename(columns={"timestamp": "When", "model_type": "Model", "mitigation_technique": "Method",
+                                              "f1_score": "F1", "demographic_parity_diff": "Parity gap",
+                                              "equalized_odds_diff": "Odds gap", "p_value": "p"})
+            _hist["Model"] = _hist["Model"].map(lambda m: MODEL_LABELS.get(m, m))
+            _hist["Method"] = _hist["Method"].replace({"baseline": "Baseline"})
+            _hist["When"] = pd.to_datetime(_hist["When"], errors="coerce").dt.strftime("%d %b %H:%M")
+            st.dataframe(_hist[["When", "Model", "Method", "F1", "Parity gap", "Odds gap", "p"]], hide_index=True,
+                         width="stretch", height=300,
+                         column_config={c: st.column_config.NumberColumn(format="%.3f") for c in ["F1", "Parity gap", "Odds gap", "p"]})
+            st.download_button("Download history (CSV)", data=exp_db_df.to_csv(index=False).encode('utf-8'),
+                               file_name=f"FairLens_Experiments_{selected_dataset_key}.csv", mime="text/csv")
+        else:
+            st.caption("No runs logged yet.")

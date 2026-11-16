@@ -1,0 +1,901 @@
+{
+ "compas": {
+  "n_clean": 6172,
+  "n_features": 10,
+  "splits": [
+   3703,
+   1234,
+   1235
+  ],
+  "protected": "race",
+  "second_attr": "sex",
+  "model": "random_forest",
+  "favorable_rate": 0.5448801036941024,
+  "base_gap": 0.26508509017018034,
+  "group_fav_rates": {
+   "African-American": 0.4768503937007874,
+   "Asian": 0.7419354838709677,
+   "Caucasian": 0.609129814550642,
+   "Hispanic": 0.6286836935166994,
+   "Native American": 0.5454545454545454,
+   "Other": 0.6384839650145773
+  },
+  "label1_rate": 0.4551198963058976,
+  "proxy_top3": [
+   [
+    "priors_count",
+    0.0257
+   ],
+   [
+    "age",
+    0.0244
+   ],
+   [
+    "days_b_screening_arrest",
+    0.0188
+   ]
+  ],
+  "intersectional": {
+   "gap": 0.3683737646001798,
+   "eo_gap": 0.4111498257839722,
+   "single": {
+    "attr_a": 0.30891247289740953,
+    "attr_b": 0.15223263208260662
+   },
+   "hi": "African-American \u00d7 Male",
+   "lo": "Caucasian \u00d7 Female",
+   "n_incl": 6,
+   "n_excl": 5,
+   "table": [
+    [
+     "African-American \u00d7 Male",
+     504,
+     0.5476,
+     0.6969,
+     0.3502,
+     true
+    ],
+    [
+     "Caucasian \u00d7 Male",
+     315,
+     0.3048,
+     0.4818,
+     0.1685,
+     true
+    ],
+    [
+     "African-American \u00d7 Female",
+     131,
+     0.374,
+     0.5111,
+     0.3023,
+     true
+    ],
+    [
+     "Caucasian \u00d7 Female",
+     106,
+     0.1792,
+     0.2857,
+     0.141,
+     true
+    ],
+    [
+     "Hispanic \u00d7 Male",
+     82,
+     0.2561,
+     0.4483,
+     0.1509,
+     true
+    ],
+    [
+     "Other \u00d7 Male",
+     59,
+     0.2373,
+     0.2917,
+     0.2,
+     true
+    ],
+    [
+     "Hispanic \u00d7 Female",
+     20,
+     0.15,
+     0.3333,
+     0.0,
+     false
+    ],
+    [
+     "Other \u00d7 Female",
+     10,
+     0.0,
+     0.0,
+     0.0,
+     false
+    ],
+    [
+     "Asian \u00d7 Male",
+     5,
+     0.0,
+     0.0,
+     0.0,
+     false
+    ],
+    [
+     "Native American \u00d7 Male",
+     2,
+     0.0,
+     0.0,
+     0.0,
+     false
+    ],
+    [
+     "Asian \u00d7 Female",
+     1,
+     1.0,
+     1.0,
+     0.0,
+     false
+    ]
+   ]
+  },
+  "calibration": {
+   "overall": {
+    "brier_score": 0.20956643358002564,
+    "ece": 0.017296103519454646
+   },
+   "gaps": {
+    "brier_gap": 0.015319986852695366,
+    "ece_gap": 0.12724332878760616
+   },
+   "summary": [
+    {
+     "group": "African-American",
+     "count": 635,
+     "brier_score": 0.2157,
+     "ece": 0.0272,
+     "mean_predicted": 0.5096,
+     "observed_rate": 0.5228
+    },
+    {
+     "group": "Caucasian",
+     "count": 421,
+     "brier_score": 0.2042,
+     "ece": 0.0287,
+     "mean_predicted": 0.3882,
+     "observed_rate": 0.3919
+    },
+    {
+     "group": "Hispanic",
+     "count": 102,
+     "brier_score": 0.2003,
+     "ece": 0.0604,
+     "mean_predicted": 0.3968,
+     "observed_rate": 0.3725
+    },
+    {
+     "group": "Other",
+     "count": 69,
+     "brier_score": 0.2098,
+     "ece": 0.1544,
+     "mean_predicted": 0.3836,
+     "observed_rate": 0.3623
+    }
+   ],
+   "curves": [
+    {
+     "group": "Caucasian",
+     "mean_predicted": 0.1565,
+     "observed_rate": 0.1667,
+     "count": 42
+    },
+    {
+     "group": "Caucasian",
+     "mean_predicted": 0.2173,
+     "observed_rate": 0.1667,
+     "count": 42
+    },
+    {
+     "group": "Caucasian",
+     "mean_predicted": 0.2495,
+     "observed_rate": 0.2619,
+     "count": 42
+    },
+    {
+     "group": "Caucasian",
+     "mean_predicted": 0.2729,
+     "observed_rate": 0.2857,
+     "count": 42
+    },
+    {
+     "group": "Caucasian",
+     "mean_predicted": 0.309,
+     "observed_rate": 0.3333,
+     "count": 42
+    },
+    {
+     "group": "Caucasian",
+     "mean_predicted": 0.3481,
+     "observed_rate": 0.3488,
+     "count": 43
+    },
+    {
+     "group": "Caucasian",
+     "mean_predicted": 0.419,
+     "observed_rate": 0.5,
+     "count": 40
+    },
+    {
+     "group": "Caucasian",
+     "mean_predicted": 0.5184,
+     "observed_rate": 0.4651,
+     "count": 43
+    },
+    {
+     "group": "Caucasian",
+     "mean_predicted": 0.6118,
+     "observed_rate": 0.6429,
+     "count": 42
+    },
+    {
+     "group": "Caucasian",
+     "mean_predicted": 0.7697,
+     "observed_rate": 0.7442,
+     "count": 43
+    },
+    {
+     "group": "Hispanic",
+     "mean_predicted": 0.1679,
+     "observed_rate": 0.1818,
+     "count": 11
+    },
+    {
+     "group": "Hispanic",
+     "mean_predicted": 0.2247,
+     "observed_rate": 0.3,
+     "count": 10
+    },
+    {
+     "group": "Hispanic",
+     "mean_predicted": 0.2725,
+     "observed_rate": 0.2,
+     "count": 10
+    },
+    {
+     "group": "Hispanic",
+     "mean_predicted": 0.3073,
+     "observed_rate": 0.3,
+     "count": 10
+    },
+    {
+     "group": "Hispanic",
+     "mean_predicted": 0.3297,
+     "observed_rate": 0.1111,
+     "count": 9
+    },
+    {
+     "group": "Hispanic",
+     "mean_predicted": 0.3668,
+     "observed_rate": 0.2727,
+     "count": 11
+    },
+    {
+     "group": "Hispanic",
+     "mean_predicted": 0.4181,
+     "observed_rate": 0.6,
+     "count": 10
+    },
+    {
+     "group": "Hispanic",
+     "mean_predicted": 0.4864,
+     "observed_rate": 0.3,
+     "count": 10
+    },
+    {
+     "group": "Hispanic",
+     "mean_predicted": 0.5968,
+     "observed_rate": 0.6,
+     "count": 10
+    },
+    {
+     "group": "Hispanic",
+     "mean_predicted": 0.7787,
+     "observed_rate": 0.8182,
+     "count": 11
+    },
+    {
+     "group": "African-American",
+     "mean_predicted": 0.2143,
+     "observed_rate": 0.2344,
+     "count": 64
+    },
+    {
+     "group": "African-American",
+     "mean_predicted": 0.271,
+     "observed_rate": 0.2698,
+     "count": 63
+    },
+    {
+     "group": "African-American",
+     "mean_predicted": 0.3246,
+     "observed_rate": 0.4062,
+     "count": 64
+    },
+    {
+     "group": "African-American",
+     "mean_predicted": 0.3905,
+     "observed_rate": 0.381,
+     "count": 63
+    },
+    {
+     "group": "African-American",
+     "mean_predicted": 0.4689,
+     "observed_rate": 0.4921,
+     "count": 63
+    },
+    {
+     "group": "African-American",
+     "mean_predicted": 0.5476,
+     "observed_rate": 0.6094,
+     "count": 64
+    },
+    {
+     "group": "African-American",
+     "mean_predicted": 0.6187,
+     "observed_rate": 0.619,
+     "count": 63
+    },
+    {
+     "group": "African-American",
+     "mean_predicted": 0.6817,
+     "observed_rate": 0.6562,
+     "count": 64
+    },
+    {
+     "group": "African-American",
+     "mean_predicted": 0.7518,
+     "observed_rate": 0.7302,
+     "count": 63
+    },
+    {
+     "group": "African-American",
+     "mean_predicted": 0.8264,
+     "observed_rate": 0.8281,
+     "count": 64
+    },
+    {
+     "group": "Other",
+     "mean_predicted": 0.181,
+     "observed_rate": 0.0,
+     "count": 7
+    },
+    {
+     "group": "Other",
+     "mean_predicted": 0.2301,
+     "observed_rate": 0.0,
+     "count": 7
+    },
+    {
+     "group": "Other",
+     "mean_predicted": 0.2718,
+     "observed_rate": 0.2857,
+     "count": 7
+    },
+    {
+     "group": "Other",
+     "mean_predicted": 0.3024,
+     "observed_rate": 0.2857,
+     "count": 7
+    },
+    {
+     "group": "Other",
+     "mean_predicted": 0.3322,
+     "observed_rate": 0.5,
+     "count": 6
+    },
+    {
+     "group": "Other",
+     "mean_predicted": 0.3544,
+     "observed_rate": 0.5714,
+     "count": 7
+    },
+    {
+     "group": "Other",
+     "mean_predicted": 0.4011,
+     "observed_rate": 0.2857,
+     "count": 7
+    },
+    {
+     "group": "Other",
+     "mean_predicted": 0.4562,
+     "observed_rate": 0.7143,
+     "count": 7
+    },
+    {
+     "group": "Other",
+     "mean_predicted": 0.5705,
+     "observed_rate": 0.5714,
+     "count": 7
+    },
+    {
+     "group": "Other",
+     "mean_predicted": 0.7294,
+     "observed_rate": 0.4286,
+     "count": 7
+    }
+   ]
+  }
+ },
+ "german_credit": {
+  "n_clean": 1000,
+  "n_features": 46,
+  "splits": [
+   600,
+   200,
+   200
+  ],
+  "protected": "sex",
+  "second_attr": "age_group",
+  "model": "random_forest",
+  "favorable_rate": 0.7,
+  "base_gap": 0.07480130902290782,
+  "group_fav_rates": {
+   "female": 0.6483870967741936,
+   "male": 0.7231884057971014
+  },
+  "label1_rate": 0.7,
+  "proxy_top3": [
+   [
+    "age",
+    0.0474
+   ],
+   [
+    "credit_history",
+    0.0327
+   ],
+   [
+    "employment_duration",
+    0.0277
+   ]
+  ],
+  "intersectional": {
+   "gap": 0.024500907441016295,
+   "eo_gap": 0.15804597701149425,
+   "single": {
+    "attr_a": 0.014726507713884951,
+    "attr_b": 0.16346696781479397
+   },
+   "hi": "female \u00d7 older (>25)",
+   "lo": "male \u00d7 older (>25)",
+   "n_incl": 2,
+   "n_excl": 2,
+   "table": [
+    [
+     "male \u00d7 older (>25)",
+     116,
+     0.8966,
+     0.9425,
+     0.7586,
+     true
+    ],
+    [
+     "female \u00d7 older (>25)",
+     38,
+     0.9211,
+     0.9231,
+     0.9167,
+     true
+    ],
+    [
+     "female \u00d7 young (<=25)",
+     24,
+     0.75,
+     0.8571,
+     0.6,
+     false
+    ],
+    [
+     "male \u00d7 young (<=25)",
+     22,
+     0.7273,
+     0.7692,
+     0.6667,
+     false
+    ]
+   ]
+  },
+  "calibration": {
+   "overall": {
+    "brier_score": 0.1820106737012059,
+    "ece": 0.029981167633367937
+   },
+   "gaps": {
+    "brier_gap": 0.057976047199440384,
+    "ece_gap": 0.009977207328544846
+   },
+   "summary": [
+    {
+     "group": "male",
+     "count": 138,
+     "brier_score": 0.164,
+     "ece": 0.0563,
+     "mean_predicted": 0.7022,
+     "observed_rate": 0.7246
+    },
+    {
+     "group": "female",
+     "count": 62,
+     "brier_score": 0.222,
+     "ece": 0.0662,
+     "mean_predicted": 0.6852,
+     "observed_rate": 0.6452
+    }
+   ],
+   "curves": [
+    {
+     "group": "male",
+     "mean_predicted": 0.3835,
+     "observed_rate": 0.5,
+     "count": 14
+    },
+    {
+     "group": "male",
+     "mean_predicted": 0.5144,
+     "observed_rate": 0.4286,
+     "count": 14
+    },
+    {
+     "group": "male",
+     "mean_predicted": 0.6025,
+     "observed_rate": 0.3571,
+     "count": 14
+    },
+    {
+     "group": "male",
+     "mean_predicted": 0.6511,
+     "observed_rate": 0.7692,
+     "count": 13
+    },
+    {
+     "group": "male",
+     "mean_predicted": 0.6958,
+     "observed_rate": 0.7857,
+     "count": 14
+    },
+    {
+     "group": "male",
+     "mean_predicted": 0.7493,
+     "observed_rate": 0.7143,
+     "count": 14
+    },
+    {
+     "group": "male",
+     "mean_predicted": 0.7887,
+     "observed_rate": 0.7692,
+     "count": 13
+    },
+    {
+     "group": "male",
+     "mean_predicted": 0.8371,
+     "observed_rate": 1.0,
+     "count": 14
+    },
+    {
+     "group": "male",
+     "mean_predicted": 0.8786,
+     "observed_rate": 0.9286,
+     "count": 14
+    },
+    {
+     "group": "male",
+     "mean_predicted": 0.9237,
+     "observed_rate": 1.0,
+     "count": 14
+    },
+    {
+     "group": "female",
+     "mean_predicted": 0.4449,
+     "observed_rate": 0.2857,
+     "count": 7
+    },
+    {
+     "group": "female",
+     "mean_predicted": 0.522,
+     "observed_rate": 0.6667,
+     "count": 6
+    },
+    {
+     "group": "female",
+     "mean_predicted": 0.5915,
+     "observed_rate": 0.6667,
+     "count": 6
+    },
+    {
+     "group": "female",
+     "mean_predicted": 0.6311,
+     "observed_rate": 0.8333,
+     "count": 6
+    },
+    {
+     "group": "female",
+     "mean_predicted": 0.663,
+     "observed_rate": 0.5,
+     "count": 6
+    },
+    {
+     "group": "female",
+     "mean_predicted": 0.7075,
+     "observed_rate": 0.6667,
+     "count": 6
+    },
+    {
+     "group": "female",
+     "mean_predicted": 0.7456,
+     "observed_rate": 0.5,
+     "count": 6
+    },
+    {
+     "group": "female",
+     "mean_predicted": 0.791,
+     "observed_rate": 0.8333,
+     "count": 6
+    },
+    {
+     "group": "female",
+     "mean_predicted": 0.8493,
+     "observed_rate": 0.6667,
+     "count": 6
+    },
+    {
+     "group": "female",
+     "mean_predicted": 0.9088,
+     "observed_rate": 0.8571,
+     "count": 7
+    }
+   ]
+  }
+ },
+ "adult_income": {
+  "n_clean": 32537,
+  "n_features": 97,
+  "splits": [
+   19522,
+   6507,
+   6508
+  ],
+  "protected": "sex",
+  "second_attr": "age_group",
+  "model": "xgboost",
+  "favorable_rate": 0.2409257153394597,
+  "base_gap": 0.19630321083388402,
+  "group_fav_rates": {
+   "Female": 0.1095521278572756,
+   "Male": 0.3058553386911596
+  },
+  "label1_rate": 0.2409257153394597,
+  "proxy_top3": [
+   [
+    "relationship",
+    0.222
+   ],
+   [
+    "marital_status",
+    0.1086
+   ],
+   [
+    "hours_per_week",
+    0.042
+   ]
+  ],
+  "intersectional": {
+   "gap": 0.2836440491518883,
+   "eo_gap": 0.2826950460915836,
+   "single": {
+    "attr_a": 0.1625286693119845,
+    "attr_b": 0.22934835159562886
+   },
+   "hi": "Male \u00d7 prime_age (25-60)",
+   "lo": "Female \u00d7 young (<25)",
+   "n_incl": 6,
+   "n_excl": 0,
+   "table": [
+    [
+     "Male \u00d7 prime_age (25-60)",
+     3423,
+     0.2878,
+     0.6463,
+     0.091,
+     true
+    ],
+    [
+     "Female \u00d7 prime_age (25-60)",
+     1517,
+     0.1154,
+     0.6,
+     0.0332,
+     true
+    ],
+    [
+     "Male \u00d7 young (<25)",
+     611,
+     0.0065,
+     0.3636,
+     0.0,
+     true
+    ],
+    [
+     "Female \u00d7 young (<25)",
+     486,
+     0.0041,
+     0.4,
+     0.0,
+     true
+    ],
+    [
+     "Male \u00d7 senior (>60)",
+     321,
+     0.2835,
+     0.6204,
+     0.1127,
+     true
+    ],
+    [
+     "Female \u00d7 senior (>60)",
+     150,
+     0.0467,
+     0.4545,
+     0.0144,
+     true
+    ]
+   ]
+  },
+  "calibration": {
+   "overall": {
+    "brier_score": 0.0886971405060605,
+    "ece": 0.01260846895287291
+   },
+   "gaps": {
+    "brier_gap": 0.060810071410670866,
+    "ece_gap": 0.007420821825818323
+   },
+   "summary": [
+    {
+     "group": "Male",
+     "count": 4355,
+     "brier_score": 0.1088,
+     "ece": 0.0123,
+     "mean_predicted": 0.2998,
+     "observed_rate": 0.3059
+    },
+    {
+     "group": "Female",
+     "count": 2153,
+     "brier_score": 0.048,
+     "ece": 0.0197,
+     "mean_predicted": 0.124,
+     "observed_rate": 0.1096
+    }
+   ],
+   "curves": [
+    {
+     "group": "Male",
+     "mean_predicted": 0.0017,
+     "observed_rate": 0.0,
+     "count": 436
+    },
+    {
+     "group": "Male",
+     "mean_predicted": 0.0099,
+     "observed_rate": 0.0161,
+     "count": 435
+    },
+    {
+     "group": "Male",
+     "mean_predicted": 0.0298,
+     "observed_rate": 0.0275,
+     "count": 436
+    },
+    {
+     "group": "Male",
+     "mean_predicted": 0.072,
+     "observed_rate": 0.0437,
+     "count": 435
+    },
+    {
+     "group": "Male",
+     "mean_predicted": 0.1438,
+     "observed_rate": 0.1313,
+     "count": 419
+    },
+    {
+     "group": "Male",
+     "mean_predicted": 0.2409,
+     "observed_rate": 0.25,
+     "count": 452
+    },
+    {
+     "group": "Male",
+     "mean_predicted": 0.3545,
+     "observed_rate": 0.3678,
+     "count": 435
+    },
+    {
+     "group": "Male",
+     "mean_predicted": 0.4944,
+     "observed_rate": 0.5058,
+     "count": 433
+    },
+    {
+     "group": "Male",
+     "mean_predicted": 0.691,
+     "observed_rate": 0.7397,
+     "count": 438
+    },
+    {
+     "group": "Male",
+     "mean_predicted": 0.9542,
+     "observed_rate": 0.9702,
+     "count": 436
+    },
+    {
+     "group": "Female",
+     "mean_predicted": 0.001,
+     "observed_rate": 0.0,
+     "count": 216
+    },
+    {
+     "group": "Female",
+     "mean_predicted": 0.003,
+     "observed_rate": 0.0,
+     "count": 215
+    },
+    {
+     "group": "Female",
+     "mean_predicted": 0.007,
+     "observed_rate": 0.0047,
+     "count": 215
+    },
+    {
+     "group": "Female",
+     "mean_predicted": 0.0134,
+     "observed_rate": 0.0047,
+     "count": 215
+    },
+    {
+     "group": "Female",
+     "mean_predicted": 0.0222,
+     "observed_rate": 0.014,
+     "count": 215
+    },
+    {
+     "group": "Female",
+     "mean_predicted": 0.0359,
+     "observed_rate": 0.0047,
+     "count": 215
+    },
+    {
+     "group": "Female",
+     "mean_predicted": 0.058,
+     "observed_rate": 0.0417,
+     "count": 216
+    },
+    {
+     "group": "Female",
+     "mean_predicted": 0.1128,
+     "observed_rate": 0.0884,
+     "count": 215
+    },
+    {
+     "group": "Female",
+     "mean_predicted": 0.2669,
+     "observed_rate": 0.2186,
+     "count": 215
+    },
+    {
+     "group": "Female",
+     "mean_predicted": 0.7184,
+     "observed_rate": 0.7176,
+     "count": 216
+    }
+   ]
+  }
+ }
+}

@@ -41,3 +41,12 @@ models/*.joblib
 data/fairlens.db
 reports/*.html
 reports/*.pdf
+*.err
+*.out
+.DS_Store
+.claude/
+scratch_*.py
+paper/*.aux
+paper/*.blg
+paper/*.bbl
+paper/*.synctex.gz

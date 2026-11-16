@@ -1,169 +1,229 @@
-/* Import Google Fonts: Inter (UI) & IBM Plex Mono (Tabular/Numeric) */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+/* FairLens — light theme.
+   One accent colour (teal), cool-grey neutrals, IBM Plex Sans with tabular figures.
+   Base colours for Streamlit's own widgets live in .streamlit/config.toml. */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
-html, body, [class*="css"] {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    color: #f3f4f6;
-    background-color: #0b0f19;
+:root {
+    --fl-brand: #0f766e;
+    --fl-brand-soft: #e6f2f0;
+    --fl-ink: #0f172a;
+    --fl-text: #334155;
+    --fl-muted: #64748b;
+    --fl-line: #e5e7eb;
+    --fl-panel: #f7f8fa;
+    --fl-good: #15803d;
+    --fl-warn: #b45309;
+    --fl-bad: #b42318;
 }
 
-/* Main Container Background */
-.stApp {
-    background-color: #0b0f19;
+html, body, .stApp, [class*="css"], button, input, textarea, select {
+    font-family: 'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif;
+}
+code, pre { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+
+/* Streamlit's header strip (holds the sidebar expand button) is 3.75rem tall.
+   Start content below it and keep it transparent so it never hides the top bar. */
+header[data-testid="stHeader"] { background: transparent; }
+.block-container {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+    max-width: 1240px;
 }
 
-/* Monospace font utility for numbers and figures */
-.tabular-figure, .kpi-val, code {
-    font-family: 'IBM Plex Mono', monospace !important;
+/* ---------- top bar ---------- */
+.fl-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    margin-bottom: 4px;
 }
-
-/* Header Component */
-.main-header {
-    background-color: #111827;
-    border: 1px solid #1f2937;
-    border-radius: 6px;
-    padding: 20px 24px;
-    margin-bottom: 24px;
-}
-
-.main-title {
-    font-size: 22px;
-    font-weight: 700;
-    color: #f9fafb;
-    letter-spacing: -0.3px;
-    margin: 0 0 6px 0;
-    text-transform: uppercase;
-}
-
-.main-subtitle {
-    font-size: 13px;
-    color: #9ca3af;
-    margin: 0;
-}
-
-/* Institutional Flat KPI Metric Cards */
-.kpi-card {
-    background-color: #111827;
-    border: 1px solid #1f2937;
-    border-radius: 6px;
-    padding: 16px 20px;
-    margin-bottom: 12px;
-}
-
-.kpi-label {
-    font-size: 11px;
+.fl-brand, .fl-side-brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 20px;
     font-weight: 600;
-    color: #9ca3af;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
+    color: var(--fl-ink);
+    letter-spacing: -0.01em;
+}
+.fl-mark {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 3px solid var(--fl-brand);
+    border-right-color: transparent;
+    transform: rotate(-45deg);
+    display: inline-block;
+}
+.fl-context {
+    font-size: 13.5px;
+    color: var(--fl-muted);
+}
+.fl-context span { color: var(--fl-text); }
+.fl-context .fl-sep { color: #cbd5e1; margin: 0 8px; }
+
+/* ---------- tabs ---------- */
+.stTabs [data-baseweb="tab-list"] { gap: 28px; }
+.stTabs [data-baseweb="tab"] {
+    height: 42px;
+    padding: 0 2px;
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--fl-muted);
+    background: transparent;
+}
+.stTabs [data-baseweb="tab"]:hover { color: var(--fl-ink); }
+.stTabs [aria-selected="true"] { color: var(--fl-ink) !important; }
+.stTabs [data-baseweb="tab-highlight"] { background-color: var(--fl-brand); height: 2px; }
+.stTabs [data-baseweb="tab-border"] { background-color: var(--fl-line); }
+.stTabs [data-baseweb="tab-panel"] { padding-top: 22px; }
+
+/* ---------- headings ---------- */
+h3.fl-h3 {
+    font-size: 21px;
+    font-weight: 600;
+    color: var(--fl-ink);
+    letter-spacing: -0.01em;
+    margin: 4px 0 4px 0;
+    padding: 0;
+}
+h4.fl-h4 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--fl-ink);
+    margin: 18px 0 4px 0;
+    padding: 0;
+}
+p.fl-sub {
+    font-size: 14px;
+    color: var(--fl-muted);
+    margin: 0 0 16px 0;
+    max-width: 760px;
+    line-height: 1.55;
+}
+hr.fl-hr {
+    border: none;
+    border-top: 1px solid var(--fl-line);
+    margin: 34px 0 22px 0;
 }
 
-.kpi-val {
+/* ---------- metric cards ---------- */
+.fl-cards {
+    display: grid;
+    gap: 14px;
+    margin: 6px 0 18px 0;
+}
+.fl-card {
+    background: #ffffff;
+    border: 1px solid var(--fl-line);
+    border-radius: 10px;
+    padding: 14px 16px 13px 16px;
+    min-width: 0;
+}
+.fl-card-label {
+    font-size: 13px;
+    color: var(--fl-muted);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.fl-card-value {
     font-size: 26px;
     font-weight: 600;
-    color: #f9fafb;
-    margin-bottom: 4px;
+    color: var(--fl-ink);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
 }
-
-.kpi-subtext {
-    font-size: 12px;
-    color: #6b7280;
+.fl-card-value-sm { font-size: 17px; line-height: 1.35; }
+.fl-card-note {
+    font-size: 12.5px;
+    color: var(--fl-muted);
+    margin-top: 5px;
+    font-variant-numeric: tabular-nums;
 }
-
-/* Status Badges */
-.status-badge-green {
-    background-color: rgba(5, 150, 105, 0.12);
-    color: #10b981;
-    border: 1px solid rgba(5, 150, 105, 0.3);
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-    display: inline-block;
-}
-
-.status-badge-red {
-    background-color: rgba(220, 38, 38, 0.12);
-    color: #ef4444;
-    border: 1px solid rgba(220, 38, 38, 0.3);
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-    display: inline-block;
-}
-
-.status-badge-amber {
-    background-color: rgba(217, 119, 6, 0.12);
-    color: #f59e0b;
-    border: 1px solid rgba(217, 119, 6, 0.3);
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-    display: inline-block;
-}
-
-/* Callout Component */
-.insight-card {
-    background-color: #111827;
-    border: 1px solid #1f2937;
-    border-left: 4px solid #2563eb;
-    border-radius: 4px;
-    padding: 14px 18px;
-    margin: 16px 0;
-    color: #e5e7eb;
-    font-size: 13.5px;
-    line-height: 1.6;
-}
-
-.insight-title {
-    font-size: 11px;
-    font-weight: 700;
-    color: #60a5fa;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
-}
-
-/* Tab Navigation Overhaul */
-.stTabs [data-baseweb="tab-list"] {
-    gap: 4px;
-    background-color: #111827;
-    padding: 4px;
-    border-radius: 6px;
-    border: 1px solid #1f2937;
-}
-
-.stTabs [data-baseweb="tab"] {
-    height: 40px;
-    border-radius: 4px;
-    color: #9ca3af;
+.fl-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
     font-weight: 500;
-    font-size: 13px;
+    margin-top: 6px;
 }
+.fl-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; display: inline-block; }
+.fl-good { color: var(--fl-good); }
+.fl-warn { color: var(--fl-warn); }
+.fl-bad { color: var(--fl-bad); }
+.fl-neutral { color: var(--fl-muted); }
 
-.stTabs [aria-selected="true"] {
-    background-color: #1f2937 !important;
-    color: #f9fafb !important;
+/* ---------- findings ---------- */
+.fl-note {
+    background: var(--fl-panel);
+    border-radius: 10px;
+    padding: 13px 16px;
+    margin: 4px 0 22px 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--fl-text);
+    max-width: 980px;
+}
+.fl-note-label {
+    font-size: 12.5px;
     font-weight: 600;
-    border-bottom: 2px solid #2563eb !important;
+    color: var(--fl-brand);
+    margin-bottom: 3px;
+}
+.fl-prose {
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--fl-text);
+    margin-bottom: 18px;
 }
 
-/* Data Tables */
-.stDataFrame {
-    border: 1px solid #1f2937;
-    border-radius: 6px;
+/* ---------- tables & widgets ---------- */
+[data-testid="stDataFrame"] {
+    border: 1px solid var(--fl-line);
+    border-radius: 8px;
+}
+[data-testid="stCaptionContainer"], .stCaption { color: var(--fl-muted); }
+[data-testid="stExpander"] details {
+    border: 1px solid var(--fl-line);
+    border-radius: 10px;
 }
 
-/* Sidebar Section Titles */
-.sidebar-section-title {
-    font-size: 11px;
-    font-weight: 700;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-top: 16px;
-    margin-bottom: 8px;
+/* ---------- sidebar ---------- */
+section[data-testid="stSidebar"] {
+    background: var(--fl-panel);
+    border-right: 1px solid var(--fl-line);
 }
+section[data-testid="stSidebar"] .block-container,
+section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] { padding-top: 1.4rem; }
+.fl-side-brand { font-size: 18px; }
+.fl-side-tag {
+    font-size: 13px;
+    color: var(--fl-muted);
+    margin: 2px 0 22px 0;
+}
+.fl-side-method {
+    margin-top: 26px;
+    padding-top: 16px;
+    border-top: 1px solid var(--fl-line);
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--fl-muted);
+}
+.fl-side-method p { margin: 0 0 8px 0; font-size: 12.5px; }
+.fl-side-h {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--fl-text);
+    margin-bottom: 6px;
+}
+.fl-side-first { margin: 2px 0 14px 0; font-size: 13px; }
+.fl-prose p { margin: 0 0 10px 0; }
+/* hide Streamlit's hover anchor-link icons on headings */
+[data-testid="stHeaderActionElements"], h3.fl-h3 a, h4.fl-h4 a { display: none !important; }

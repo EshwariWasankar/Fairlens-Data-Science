@@ -20,7 +20,7 @@ from src.reporting.model_card import generate_model_card
 def test_compas_labels_treat_recidivism_as_unfavorable():
     lab = get_outcome_labels("compas")
     assert lab["favorable_value"] == 0 and lab["unfavorable_value"] == 1
-    assert "Recidivism" in lab["by_value"][1]
+    assert lab["by_value"][1] == "High risk"
     assert "REJECTED" not in " ".join(map(str, lab.values())).upper()
 
 
@@ -137,6 +137,6 @@ def test_model_card_contains_required_sections():
     for section in ["# Model Card", "## 1. Model Details", "## 2. Intended Use", "## 3. Datasheet",
                     "## 4. Predictive Performance", "## 5. Fairness Evaluation", "## 6. Mitigations", "## 7. Ethical"]:
         assert section in card
-    assert "High Risk (Recidivism Predicted)" in card
+    assert "High risk" in card
     assert "decile_score" in card          # COMPAS leakage note
     assert "ε = 0.01" in card

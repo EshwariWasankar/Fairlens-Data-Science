@@ -1,0 +1,385 @@
+\documentclass[conference]{IEEEtran}
+% FairLens -- IEEE conference paper, formatted to match the group's Eco-Shield paper.
+% Build: `tectonic main.tex` (or pdflatex + bibtex) from paper/.
+% All numbers come from data/verified_benchmark_results.json and paper/paper_stats.json.
+
+\usepackage{newtxtext,newtxmath}
+\usepackage{cite}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.misc}
+\usepackage[hidelinks]{hyperref}
+\usepackage{balance}
+
+\newcommand{\eps}{\varepsilon}
+\newcommand{\DP}{\mathrm{DP}}
+\newcommand{\EO}{\mathrm{EO}}
+% Second row of author blocks in IEEEtran conference mode
+\makeatletter
+\newcommand{\linebreakand}{%
+  \end{@IEEEauthorhalign}\hfill\mbox{}\par
+  \mbox{}\hfill\begin{@IEEEauthorhalign}}
+\makeatother
+% Figure palette (matches the Eco-Shield paper's pastel boxes)
+\definecolor{boxblue}{RGB}{219,232,246}
+\definecolor{edgeblue}{RGB}{52,82,122}
+\definecolor{boxpeach}{RGB}{250,226,206}
+\definecolor{edgepeach}{RGB}{150,90,45}
+\definecolor{boxsand}{RGB}{252,240,205}
+
+\begin{document}
+
+\title{FairLens: A Reproducible Framework for Auditing and Mitigating Demographic Bias in Tabular Classifiers, Evaluated on Three Benchmarks}
+
+% Fixed-width author blocks so every column has the same width and both rows line up.
+\newcommand{\authorbox}[2]{\parbox[t]{0.29\textwidth}{\centering
+  {\normalsize\upshape #1}\\[2pt]
+  {\small\itshape Department of Computer Engineering}\\
+  {\small\itshape Vishwakarma Institute of Technology,}\\
+  {\small\upshape Pune 411 037, Maharashtra, India}\\
+  {\small\upshape #2}}}
+\author{\IEEEauthorblockA{\begin{minipage}{\textwidth}\centering
+\authorbox{Kapil Netaji Vhatkar\textsuperscript{*}}{kapilnv@gmail.com}\hspace{0.035\textwidth}%
+\authorbox{Prachi Dilip Waghmare}{prachiwaghmare2206@gmail.com}\hspace{0.035\textwidth}%
+\authorbox{Arnav Tibdewal}{arnavtibdewal19@gmail.com}\\[12pt]
+\authorbox{Vihan Saraf}{vihanrsaraf@gmail.com}\hspace{0.035\textwidth}%
+\authorbox{Eshwari Pravin Wasankar}{wasankareshwari@gmail.com}\hspace{0.035\textwidth}%
+\parbox[t]{0.29\textwidth}{\mbox{}}
+\end{minipage}}}
+
+\maketitle
+{\renewcommand{\thefootnote}{}\footnotetext{\textsuperscript{*}Corresponding author.}}
+
+\begin{abstract}
+Fairness audits of machine-learning classifiers are increasingly used to justify deployment decisions, yet the numbers they report are only as trustworthy as the statistics and data handling behind them. This paper presents FairLens, an open, dataset-agnostic framework that audits tabular binary classifiers for demographic disparity, ranks proxy features, compares pre-, in- and post-processing mitigation, and explains individual decisions, with every reported disparity accompanied by bootstrap uncertainty. Unlike prior fairness toolkits, positioned against explicitly in Section~I, FairLens treats the audit pipeline itself---leakage control, significance testing, hyperparameter selection and outcome semantics---as the object to get right. We evaluate it on German Credit, COMPAS and Adult Income over ten random train/validation/test splits. Threshold Optimizer and Exponentiated Gradient significantly reduce the demographic-parity gap on COMPAS (paired reductions of 0.216 and 0.208, 95\% intervals excluding zero) and on Adult Income, but on Adult they significantly widen the equalized-odds gap, and on COMPAS the in-processing reduction costs 8.4 accuracy points against 2.3 for post-processing. The COMPAS baseline is almost equally calibrated for African-American and Caucasian defendants (ECE 0.027 vs.\ 0.029) while their selection rates differ by 0.24, and an intersectional race$\times$sex audit reveals a 0.368 gap that single-attribute audits understate. We report these results alongside seven methodological pitfalls found and fixed in our own pipeline, including a bootstrap-mean artifact that inflated one disparity $2.9\times$ and a significance rule that could not detect the absence of bias.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Algorithmic Fairness, Bias Mitigation, Bootstrap Inference, Calibration, Intersectionality, Explainable AI, Reproducibility
+\end{IEEEkeywords}
+
+%=====================================================================
+\section{Introduction}\label{sec:intro}
+%=====================================================================
+Automated classifiers increasingly inform consequential decisions such as credit approval, pre-trial risk assessment and income-based eligibility. Investigative reporting on the COMPAS recidivism instrument~\cite{angwin2016machine} showed that such systems can produce very different error rates across racial groups, and the theoretical work that followed proved that calibration and balanced error rates cannot both hold when base rates differ~\cite{chouldechova2017fair,kleinberg2017inherent}. Whether a model is ``fair'' therefore depends on the criterion chosen, and practitioners need tools that measure several criteria at once and attach uncertainty to each estimate.
+
+Two lines of work address this need. Group-fairness criteria such as demographic parity, equalized odds and equal opportunity~\cite{hardt2016equality} have been paired with mitigation algorithms at each stage of learning: Reweighing before training~\cite{kamiran2012data}, the Exponentiated Gradient reduction during training~\cite{agarwal2018reductions}, and group-specific thresholds after training~\cite{hardt2016equality}. Toolkits such as Fairlearn~\cite{bird2020fairlearn} package these metrics and algorithms, and explanation methods such as SHAP~\cite{lundberg2017unified} and DiCE~\cite{mothilal2020explaining} add feature attributions and counterfactual recourse. More recently, subgroup auditing has shown that disparities can hide at the intersection of attributes~\cite{kearns2018preventing}.
+
+Given this body of work, we do not claim new fairness metrics or mitigation algorithms as novel. FairLens is instead differently positioned: an end-to-end audit depends on many steps outside any single library---how data are cleaned and split, which columns leak the label or the protected attribute, how the tolerance of a fair learner is chosen, how significance is decided and which label counts as favorable---and errors in these steps produce plausible-looking but wrong numbers. FairLens makes each of these steps explicit, configurable and tested.
+
+This paper aims to describe FairLens and, more importantly, to evaluate it honestly on public benchmarks, including the places where our own first implementation was wrong. Our contribution is threefold: (1) a layered audit framework with batch and interactive execution paths that share one set of analysis modules and one results file; (2) a statistically careful evaluation protocol---full-sample point estimates, signed-gap bootstrap significance tests, paired tests of mitigation effects and validation-only selection of the fairness tolerance $\eps$; and (3) a benchmark evaluation on three datasets that reports seven methodological pitfalls we found and fixed---negative results we treat as findings in their own right, not flaws to hide.
+
+Because paired bootstrap tests are computed on a single split and German Credit's test set has only 200 rows, the reported significance decisions should be read as evidence on these benchmarks, not as a guarantee for any deployment.
+
+%=====================================================================
+\section{Methodology}\label{sec:method}
+%=====================================================================
+\subsection{System Overview and Architecture}
+FairLens is implemented in Python on pandas, scikit-learn, XGBoost, Fairlearn~\cite{bird2020fairlearn}, SHAP and DiCE, and follows the four-layer design in Fig.~\ref{fig:sysarch}. The \emph{persistence} layer holds a declarative dataset configuration, the raw benchmark files, a results file, serialized models and a SQLite log of datasets, experiments and proxy analyses. The \emph{core} layer contains six packages---data, analysis, models, fairness, explainability and reporting---that exchange only tabular data and a partition container holding the train/validation/test splits and the train-fitted scaler. None of them depends on the user interface, so the same code serves the dashboard, the batch evaluation, the test suite and the scripts that generate every table and figure in this paper.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize,
+  mod/.style={execute at begin node={\hyphenpenalty=10000\exhyphenpenalty=10000}, draw=edgeblue, fill=boxblue, rounded corners=2pt, align=center, inner sep=2.5pt, text width=#1},
+  mod/.default=5.25cm,
+  store/.style={execute at begin node={\hyphenpenalty=10000\exhyphenpenalty=10000}, draw=edgepeach, fill=boxpeach, rounded corners=2pt, align=center, inner sep=2.5pt, text width=2.95cm, minimum height=0.95cm},
+  lab/.style={rotate=90, font=\scriptsize\bfseries, anchor=center},
+  arr/.style={-{Stealth[length=1.6mm]}, thick, black!70},
+  darr/.style={{Stealth[length=1.6mm]}-{Stealth[length=1.6mm]}, thick, black!70}]
+
+\draw[black!35, rounded corners=2pt] (0,9.35) rectangle (17.6,10.95);
+\node[lab] at (0.4,10.15) {Presentation};
+\node[mod=9.9cm, minimum height=1.15cm] (dash) at (6.25,10.15) {\textbf{Streamlit dashboard}\\[1pt]
+  Overview $\cdot$ Proxies $\cdot$ Fairness (+ intersectional, calibration) $\cdot$\\
+  Mitigation (+ $\varepsilon$ frontier) $\cdot$ Explanations $\cdot$ Report};
+\node[mod=5.3cm, minimum height=1.15cm] (exp) at (14.55,10.15) {\textbf{Exports}\\[1pt] PDF / HTML audit report\\ Model card + datasheet\\ Experiment-history CSV};
+
+\draw[black!35, rounded corners=2pt] (0,7.25) rectangle (17.6,9.05);
+\node[lab] at (0.4,8.15) {Orchestration};
+\node[mod=7.65cm, minimum height=1.25cm] (inter) at (5.1,8.15) {\textbf{Interactive path}\\[1pt]
+  cached data, EDA and models; a routing module serves\\ precomputed metrics only for the benchmarked\\ configuration, otherwise runs the full audit live};
+\node[mod=7.8cm, minimum height=1.25cm] (batch) at (13.35,8.15) {\textbf{Batch path}\\[1pt]
+  model selection over 10 seeds $\cdot$ validation-only $\varepsilon$ sweep $\cdot$\\
+  10-seed mitigation evaluation $\cdot$ paired bootstrap tests $\cdot$ SHAP;\\ writes the results file and the selected models};
+
+\draw[black!35, rounded corners=2pt] (0,3.75) rectangle (17.6,6.85);
+\node[lab] at (0.4,5.3) {Core modules};
+\node[mod, minimum height=1.15cm] (data) at (3.75,6.1) {\textbf{data}\\ loader $\cdot$ cleaner (de-dup, leakage removal) $\cdot$ preprocessor (stratified split, train-only scaler)};
+\node[mod, minimum height=1.15cm] (anal) at (9.3,6.1) {\textbf{analysis}\\ eda (favorable-label rates) $\cdot$ proxy (mutual information with $A$)};
+\node[mod, minimum height=1.15cm] (mdl) at (14.85,6.1) {\textbf{models}\\ trainer (LR, RF, XGBoost) $\cdot$ evaluator (accuracy, F1, ROC-AUC)};
+\node[mod, minimum height=1.15cm] (fair) at (3.75,4.5) {\textbf{fairness}\\ metrics $\cdot$ bootstrap (signed \& paired tests) $\cdot$ mitigators (RW, EG, TO) $\cdot$ intersectional $\cdot$ calibration};
+\node[mod, minimum height=1.15cm] (xai) at (9.3,4.5) {\textbf{explainability}\\ SHAP (global, local) $\cdot$ DiCE recourse $\cdot$ plain-language insights};
+\node[mod, minimum height=1.15cm] (rep) at (14.85,4.5) {\textbf{reporting}\\ PDF/HTML audit report $\cdot$ model card + datasheet};
+
+\draw[black!35, rounded corners=2pt] (0,1.75) rectangle (17.6,3.35);
+\node[lab] at (0.4,2.55) {Persistence};
+\node[store] (cfg) at (2.75,2.55) {\textbf{Configuration}\\ targets, favorable label, protected groups, outcome labels};
+\node[store] (raw) at (6.03,2.55) {\textbf{Raw data}\\ UCI German Credit, Adult; ProPublica COMPAS};
+\node[store] (json) at (9.31,2.55) {\textbf{Results file}\\ single source of truth for dashboard and paper};
+\node[store] (jl) at (12.59,2.55) {\textbf{Model store}\\ baseline and selected mitigated models};
+\node[store] (db) at (15.87,2.55) {\textbf{SQLite log}\\ datasets, experiments, proxy analyses};
+
+\draw[darr] (5.1,9.35) -- (5.1,9.05);
+\draw[darr] (13.35,9.35) -- (13.35,9.05);
+\draw[arr] (5.1,7.25) -- (5.1,6.85);
+\draw[arr] (13.35,7.25) -- (13.35,6.85);
+\draw[darr] (3.75,3.75) -- (3.75,3.35);
+\draw[darr] (9.3,3.75) -- (9.3,3.35);
+\draw[darr] (14.85,3.75) -- (14.85,3.35);
+\end{tikzpicture}
+\caption{FairLens system architecture. Two execution paths share the same core modules: the batch path computes the ten-seed benchmark and stores it in a single results file; the interactive dashboard serves those results for the benchmarked configuration and recomputes everything live for any other dataset, model or protected attribute.}
+\label{fig:sysarch}
+\end{figure*}
+
+The \emph{orchestration} layer provides two execution paths. The batch path performs model selection, the $\eps$ sweep and the ten-seed evaluation, and writes every reported number to the results file. The interactive path runs the full audit on demand, which is required for user-uploaded data and for any dataset--model--attribute combination that was not benchmarked. A routing module serves stored results only when the selection exactly matches the benchmarked configuration, and otherwise recomputes (Section~\ref{sec:pitfalls}, P6). The \emph{presentation} layer is a six-tab dashboard that mirrors the audit pipeline of Fig.~\ref{fig:arch} and exports a PDF report and a model card with an embedded datasheet. Fig.~\ref{fig:ui} shows four of its tabs on German Credit: the sidebar selects the dataset, protected attribute and model, each disparity card carries its signed interval and significance call, and outcome wording follows the dataset configuration.
+
+\begin{figure*}[t]
+\centering
+\setlength{\fboxsep}{0pt}\setlength{\fboxrule}{0.4pt}
+\begin{minipage}[t]{0.49\textwidth}\centering
+\fbox{\includegraphics[width=\dimexpr\linewidth-0.8pt\relax]{figures/ui_overview.jpg}}\\[2pt]
+{\footnotesize (a) Overview: dataset summary and base-rate gap}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.49\textwidth}\centering
+\fbox{\includegraphics[width=\dimexpr\linewidth-0.8pt\relax]{figures/ui_fairness.jpg}}\\[2pt]
+{\footnotesize (b) Fairness: point estimates, signed intervals and significance}
+\end{minipage}\\[6pt]
+\begin{minipage}[t]{0.49\textwidth}\centering
+\fbox{\includegraphics[width=\dimexpr\linewidth-0.8pt\relax]{figures/ui_mitigation.jpg}}\\[2pt]
+{\footnotesize (c) Mitigation: method comparison and $\varepsilon$ frontier}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.49\textwidth}\centering
+\fbox{\includegraphics[width=\dimexpr\linewidth-0.8pt\relax]{figures/ui_explanations.jpg}}\\[2pt]
+{\footnotesize (d) Explanations: SHAP attributions and DiCE recourse}
+\end{minipage}
+\caption{FairLens dashboard on German Credit (protected attribute sex, Random Forest baseline). Each tab mirrors one stage of the audit pipeline in Fig.~\ref{fig:arch}.}
+\label{fig:ui}
+\end{figure*}
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=1.8mm,
+  box/.style={rectangle, rounded corners=2pt, draw=edgeblue, fill=#1, text width=0.95\columnwidth, align=left, inner sep=1.8pt, font=\scriptsize},
+  box/.default=boxblue,
+  arr/.style={-{Stealth[length=1.6mm]}, thick, black!70}]
+\node[box] (d) {\textbf{1 Data hygiene:} whitespace/missing-token normalization, exact de-duplication, label mapping, leakage removal (label aliases, COMPAS score outputs, parents of the protected attribute).};
+\node[box, below=of d] (p) {\textbf{2 Split \& encode:} 60/20/20 train/val/test stratified on outcome$\times$group; one-hot encoding; scaler fit on train only; protected attribute excluded from features.};
+\node[box, below=of p] (a) {\textbf{3 Audit:} proxy mutual information; DP, EO, EOpp, PP with bootstrap intervals and signed-gap tests; intersectional and per-group calibration audits.};
+\node[box=boxpeach, draw=edgepeach, below=of a] (m) {\textbf{4 Mitigate:} Reweighing (pre), Exponentiated Gradient with $\eps$ chosen on validation (in), Threshold Optimizer (post); paired bootstrap of $\Delta$.};
+\node[box, below=of m] (e) {\textbf{5 Explain:} global/local SHAP; DiCE counterfactual recourse toward the \emph{favorable} label with immutable attributes fixed.};
+\node[box=boxsand, draw=edgepeach, below=of e] (r) {\textbf{6 Report:} dashboard, PDF audit report, model card + datasheet, SQLite experiment log, results file.};
+\foreach \u/\v in {d/p,p/a,a/m,m/e,e/r} \draw[arr] (\u) -- (\v);
+\end{tikzpicture}
+\caption{FairLens audit pipeline. Every number shown in the dashboard or in this paper is produced by stages 1--6 and stored in a single results file.}
+\label{fig:arch}
+\end{figure}
+
+\subsection{Benchmark Datasets}
+\subsubsection{Why these benchmarks} We evaluate on German Credit (Statlog) and Adult Income from the UCI Machine Learning Repository and on ProPublica's two-year COMPAS file~\cite{angwin2016machine}. They are public, widely used in fairness research, and cover credit, criminal justice and income. They also differ in label polarity: in COMPAS, label~1 is recidivism, the \emph{unfavorable} outcome, which directly exercises FairLens's configuration-driven outcome semantics. We chose them for comparability with prior work; their known label bias and age are discussed in Section~\ref{sec:limits}.
+
+\subsubsection{Dataset partitions} COMPAS is filtered to $|\texttt{days\_b\_screening\_arrest}|\le 30$ as in the original analysis~\cite{angwin2016machine}. Each dataset is split 60/20/20 into training, validation and test partitions stratified jointly on outcome and protected group, and every experiment is repeated over ten splits (seeds 42--51). Table~\ref{tab:data} summarizes the cleaned datasets. Bootstrap intervals, paired tests, the $\eps$ sweep and the intersectional and calibration audits use the seed-42 split.
+
+\begin{table}[t]
+\centering
+\caption{Benchmark Datasets After Cleaning}
+\label{tab:data}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.12}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Property} & \textbf{German Credit} & \textbf{COMPAS} & \textbf{Adult Income} \\
+\hline
+Rows raw $\to$ clean & 1{,}000 $\to$ 1{,}000 & 7{,}214 $\to$ 6{,}172 & 32{,}561 $\to$ 32{,}537 \\
+Encoded features & 46 & 10 & 97 \\
+Train / val / test & 600/200/200 & 3703/1234/1235 & 19522/6507/6508 \\
+Protected attribute & sex & race & sex \\
+Privileged / unpriv. & male / female & Cauc. / Afr.-Am. & male / female \\
+Favorable outcome & good credit & no recidivism & income $>$\$50K \\
+Favorable rate & 70.0\% & 54.5\% & 24.1\% \\
+\quad privileged & 72.3\% & 60.9\% & 30.6\% \\
+\quad unprivileged & 64.8\% & 47.7\% & 11.0\% \\
+\hline
+\end{tabular}}
+\end{table}
+
+\subsection{Leakage Control and Proxy Analysis}
+\subsubsection{Leakage control} Each dataset is described in a configuration file that states the target column, the favorable label, the protected attributes with their privileged and unprivileged groups, the immutable and actionable features and human-readable outcome labels. Cleaning removes exact duplicate rows and maps the target to $\{0,1\}$. Three leakage controls are enforced: all aliases of the label are dropped; for COMPAS, outputs of the instrument under audit (\texttt{decile\_score}, \texttt{score\_text} and related fields) and post-outcome fields are removed, so the audited model never sees the score it is compared against; and when a protected attribute is derived from another column (e.g., \texttt{sex} from German Credit's \texttt{personal\_status\_sex}), the parent column is dropped. The protected attribute itself is never a model input.
+
+\subsubsection{Proxy analysis} Excluding a protected attribute $A$ does not remove information about it. For each candidate feature $X_j$ we estimate the mutual information $I(X_j;A)$ and rank features as potential proxies.
+
+\subsection{Fairness Metrics and Statistical Inference}
+Let $\hat{Y}\in\{0,1\}$ be the prediction, $Y$ the label and $A$ the protected attribute with privileged group $p$ and unprivileged group $u$. With selection rate $\mathrm{SR}_g=P(\hat{Y}{=}1\mid A{=}g)$ and $\mathrm{TPR}_g,\mathrm{FPR}_g,\mathrm{PPV}_g$ defined as usual,
+\begin{align}
+\DP &= |\mathrm{SR}_p-\mathrm{SR}_u|,\\
+\EO &= \max\big(|\mathrm{TPR}_p-\mathrm{TPR}_u|,\;|\mathrm{FPR}_p-\mathrm{FPR}_u|\big),\\
+\mathrm{EOpp} &= |\mathrm{TPR}_p-\mathrm{TPR}_u|,\qquad \mathrm{PP}=|\mathrm{PPV}_p-\mathrm{PPV}_u|.
+\end{align}
+For attributes with more than two groups and no designated pair, gaps are max--min over groups with at least 30 test members. ``Selection'' refers to label~1; for COMPAS this is \emph{predicted recidivism}.
+
+\subsubsection{Point estimates} Each metric is reported as its value on the full test set, with a 95\% percentile bootstrap interval from $B=500$ resamples; test sets larger than 3{,}000 rows are subsampled to 3{,}000 for the bootstrap. We do not report the bootstrap mean, because for an absolute gap $|\theta|$ it is biased upward, most severely when $\theta\approx 0$ (Section~\ref{sec:pitfalls}).
+
+\subsubsection{Signed-gap significance} An interval for $|\theta|$ essentially never contains zero. We therefore fix the reference pair $(a,b)$ on the full sample, oriented so that $\hat\theta=\mathrm{SR}_a-\mathrm{SR}_b\ge 0$, bootstrap the \emph{signed} difference, and declare a disparity significant only if its 95\% interval excludes zero (analogously for EOpp and PP).
+
+\subsubsection{Paired mitigation test} For a mitigated model we bootstrap $\Delta=\DP_{\text{base}}-\DP_{\text{mit}}$ on \emph{identical} resampled rows ($B=500$) and call the reduction significant only if the 95\% interval of $\Delta$ lies above zero. Pairing removes the between-sample noise that an unpaired comparison would retain.
+
+\subsection{Models and Mitigation}
+We train logistic regression (LR; $C{=}1$, on standardized features), random forest (RF; 100 trees, depth 8) and XGBoost (100 trees, depth 5, learning rate 0.1). For each dataset the baseline is the family with the highest mean validation F1 over ten splits (Table~\ref{tab:select}): RF for German Credit and COMPAS, XGBoost for Adult.
+
+\begin{table}[t]
+\centering
+\caption{Baseline Model Selection: Validation F1 (Mean $\pm$ Std Over 10 Splits)}
+\label{tab:select}
+\renewcommand{\arraystretch}{1.12}
+\footnotesize
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Dataset} & \textbf{LR} & \textbf{RF} & \textbf{XGBoost} \\
+\hline
+German Credit & 0.819 $\pm$ 0.015 & \textbf{0.837 $\pm$ 0.012} & 0.821 $\pm$ 0.016 \\
+COMPAS & 0.614 $\pm$ 0.012 & \textbf{0.632 $\pm$ 0.016} & 0.625 $\pm$ 0.013 \\
+Adult Income & 0.665 $\pm$ 0.009 & 0.622 $\pm$ 0.011 & \textbf{0.705 $\pm$ 0.009} \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Mitigation methods} Reweighing~\cite{kamiran2012data} trains the baseline learner with weights $w(a,y)=P(A{=}a)P(Y{=}y)/P(A{=}a,Y{=}y)$, making $A$ and $Y$ independent in the weighted training data. Exponentiated Gradient (EG)~\cite{agarwal2018reductions} minimizes error subject to the demographic-parity constraint holding within $\eps$, returning a randomized mixture $Q$ of base classifiers (50 trees; depth 5 for RF, 3 for XGBoost; 50 iterations). Threshold Optimizer (TO)~\cite{hardt2016equality} learns group-specific thresholds on the frozen baseline scores using the validation split.
+
+\subsubsection{Seeded randomized predictors} EG and TO make randomized predictions, and Fairlearn draws them with an unseeded generator. FairLens fixes the seed and exposes $Q$'s positive-class probability, so every metric of a model is computed from one prediction vector and ROC-AUC is defined.
+
+\subsubsection{Validation-only selection of $\eps$} We sweep $\eps\in\{0.005,0.01,0.02,0.05,0.1\}$ and choose, on the validation split only, the $\eps$ with the lowest validation DP among those whose validation accuracy is within 5 percentage points (pp) of the baseline; if none qualifies, the $\eps$ with the smallest validation accuracy loss is used. The test split is never used for selection.
+
+\subsection{Intersectional, Calibration and Explanation Audits}
+For two attributes $A$ and $C$, FairLens computes SR, TPR and FPR for every cell $(a,c)$ and reports the max--min gap over cells with $n\ge30$, alongside the single-attribute gaps on the same rows, so that disparities hidden by marginalization~\cite{kearns2018preventing} become visible. Per group it reports the Brier score, the expected calibration error $\mathrm{ECE}=\sum_k \frac{n_k}{n}|\bar{y}_k-\bar{p}_k|$ over 10 equal-width bins, and a quantile-binned reliability curve. Global and local attributions use TreeSHAP for tree models and a linear explainer for LR~\cite{lundberg2017unified}; for individuals who receive the unfavorable prediction, DiCE~\cite{mothilal2020explaining} searches for counterfactuals that reach the favorable label while holding immutable attributes fixed.
+
+%=====================================================================
+\section{Results and Discussion}\label{sec:results}
+%=====================================================================
+\subsection{Baseline Disparities}
+On the seed-42 test split, COMPAS shows a demographic-parity gap of 0.239 between African-American and Caucasian defendants (signed 95\% interval [0.183, 0.292]): the baseline predicts recidivism far more often for African-American defendants. Adult Income shows a gap of 0.163 favoring men (signed interval [0.132, 0.182]). For German Credit the gap is only 0.015 and its signed interval $[-0.086, 0.122]$ contains zero, so no statistically significant disparity can be claimed on its 200-row test set. Across ten splits the baseline DP is $0.247\pm0.020$ (COMPAS), $0.173\pm0.006$ (Adult) and $0.032\pm0.021$ (German Credit). Including all COMPAS race groups with $n\ge30$, the max--min gap rises to 0.309.
+
+\subsection{Mitigation Performance}
+Table~\ref{tab:main} summarizes the ten-split results.
+
+\begin{table*}[t]
+\centering
+\caption{Mitigation Results: Test Metrics as Mean $\pm$ Std Over 10 Splits; $\Delta\DP$ Is the Paired Bootstrap Reduction on the Seed-42 Split (95\% Interval). Bold: Interval Excludes Zero. F1 Refers to Label 1.}
+\label{tab:main}
+\renewcommand{\arraystretch}{1.12}
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{|l|l|c|c|c|c|c|}
+\hline
+\textbf{Dataset (baseline)} & \textbf{Method} & \textbf{F1} & \textbf{Accuracy (\%)} & \textbf{DP} & \textbf{EO} & \textbf{$\Delta\DP$ [95\% interval]} \\
+\hline
+\multirow{4}{*}{German Credit (RF)}
+ & Baseline & 0.829 $\pm$ 0.015 & 72.75 $\pm$ 2.24 & 0.032 $\pm$ 0.021 & 0.074 $\pm$ 0.030 & -- \\
+ & Reweighing & 0.831 $\pm$ 0.010 & 72.95 $\pm$ 1.52 & 0.044 $\pm$ 0.030 & 0.087 $\pm$ 0.025 & $+0.000$ [$-0.080$, 0.092] \\
+ & EG ($\eps{=}0.005$) & 0.829 $\pm$ 0.008 & 72.10 $\pm$ 1.11 & 0.033 $\pm$ 0.011 & 0.078 $\pm$ 0.055 & $+0.006$ [$-0.065$, 0.084] \\
+ & Threshold Opt. & 0.828 $\pm$ 0.019 & 73.95 $\pm$ 3.22 & 0.048 $\pm$ 0.041 & 0.121 $\pm$ 0.074 & $-0.041$ [$-0.143$, 0.095] \\
+\hline
+\multirow{4}{*}{COMPAS (RF)}
+ & Baseline & 0.634 $\pm$ 0.011 & 68.71 $\pm$ 0.79 & 0.247 $\pm$ 0.020 & 0.242 $\pm$ 0.032 & -- \\
+ & Reweighing & 0.629 $\pm$ 0.009 & 68.35 $\pm$ 0.54 & 0.241 $\pm$ 0.020 & 0.232 $\pm$ 0.036 & $+0.002$ [$-0.014$, 0.016] \\
+ & EG ($\eps{=}0.01$) & 0.400 $\pm$ 0.017 & 60.27 $\pm$ 0.64 & 0.059 $\pm$ 0.025 & 0.079 $\pm$ 0.049 & $\mathbf{+0.208}$ \textbf{[0.148, 0.259]} \\
+ & Threshold Opt. & 0.606 $\pm$ 0.020 & 66.40 $\pm$ 1.14 & 0.027 $\pm$ 0.012 & 0.060 $\pm$ 0.024 & $\mathbf{+0.216}$ \textbf{[0.132, 0.268]} \\
+\hline
+\multirow{4}{*}{Adult Income (XGBoost)}
+ & Baseline & 0.697 $\pm$ 0.006 & 86.85 $\pm$ 0.22 & 0.173 $\pm$ 0.006 & 0.094 $\pm$ 0.025 & -- \\
+ & Reweighing & 0.681 $\pm$ 0.006 & 86.52 $\pm$ 0.26 & 0.093 $\pm$ 0.006 & 0.137 $\pm$ 0.026 & $\mathbf{+0.077}$ \textbf{[0.062, 0.092]} \\
+ & EG ($\eps{=}0.1$) & 0.594 $\pm$ 0.012 & 84.31 $\pm$ 0.36 & 0.020 $\pm$ 0.007 & 0.258 $\pm$ 0.028 & $\mathbf{+0.142}$ \textbf{[0.121, 0.161]} \\
+ & Threshold Opt. & 0.640 $\pm$ 0.011 & 85.02 $\pm$ 0.31 & 0.009 $\pm$ 0.006 & 0.310 $\pm$ 0.023 & $\mathbf{+0.144}$ \textbf{[0.106, 0.170]} \\
+\hline
+\end{tabular}
+\end{table*}
+
+On COMPAS, Reweighing leaves the gap essentially unchanged ($\Delta=0.002$, interval includes zero). Both EG and TO remove most of it (mean DP 0.059 and 0.027) and also reduce EO. TO is the better operating point: it loses 2.3\,pp of accuracy against 8.4\,pp for EG, whose F1 for label~1 falls to 0.40 because the constrained mixture predicts recidivism far less often overall.
+
+On Adult Income, all three methods significantly reduce DP; Reweighing halves it at a cost of 0.3\,pp of accuracy, and TO nearly eliminates it (0.009) at 1.8\,pp. However, enforcing equal selection rates when base rates differ by 19.6\,pp (Table~\ref{tab:data}) moves error rates apart: EO rises from 0.094 to 0.258 (EG) and 0.310 (TO). On the seed-42 split the paired change in EO is significant for both ($\Delta\EO=-0.210$, interval $[-0.342,-0.039]$ for EG; $-0.263$, interval $[-0.379,-0.112]$ for TO), i.e., optimizing demographic parity measurably worsens equalized odds.
+
+On German Credit, no method yields a significant change; all intervals span zero, consistent with the absence of a significant baseline disparity.
+\subsection{Fairness--Accuracy Frontier}
+Fig.~\ref{fig:frontier} plots every $\eps$ in the sweep, for both the DP and EO constraints, together with the baseline and the other mitigations. For German Credit, EG under the DP constraint returns the same classifier for $\eps\in[0.005,0.05]$ because the baseline already satisfies the constraint on the training data; only $\eps=0.1$ differs. On COMPAS, no $\eps$ keeps validation accuracy within 5\,pp, so the fallback selects $\eps=0.01$ (a loss of 7.2\,pp on validation). On Adult, all candidates qualify and $\eps=0.1$ attains the lowest validation DP. On both COMPAS and Adult, TO lies on the test-set Pareto frontier while the EG points are dominated; because $\eps$ is selected on validation data, the chosen EG point need not be test-optimal.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/frontier.pdf}
+\caption{Fairness--accuracy trade-off on the seed-42 test split. Circles/squares: Exponentiated Gradient for each $\eps$ under DP/EO constraints; diamonds and triangles: baseline, Reweighing and Threshold Optimizer. Dotted line: Pareto frontier (lower DP and higher accuracy are better). The ringed point is the $\eps$ selected on the validation split.}
+\label{fig:frontier}
+\end{figure*}
+
+\subsection{Intersectional Disparities}
+Fig.~\ref{fig:inter} shows selection rates for intersections with $n\ge30$. On COMPAS, the race$\times$sex gap is 0.368, between African-American men (predicted-recidivism rate 0.548) and Caucasian women (0.179), exceeding both the race-only gap (0.309) and the sex-only gap (0.152); false-positive rates follow the same pattern (0.350 vs.\ 0.141). On Adult, the sex$\times$age gap is 0.284 against 0.163 (sex) and 0.229 (age group): prime-age men have a selection rate of 0.288, whereas young women have 0.004. On German Credit, both ``young'' cells contain fewer than 30 test applicants and are excluded, leaving too little data for an intersectional claim; FairLens reports this explicitly rather than producing an unstable gap.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/intersectional.pdf}
+\caption{Intersectional selection rates of the baseline model (cells with $n\ge30$). For COMPAS, selection means predicted recidivism.}
+\label{fig:inter}
+\end{figure}
+
+\subsection{Calibration by Group}
+Fig.~\ref{fig:calib} shows reliability curves. The COMPAS baseline is almost equally well calibrated for African-American and Caucasian defendants (ECE 0.027 and 0.029; Brier 0.216 and 0.204), even though their selection rates differ by 0.24 and their true-positive rates by 0.22. This is the empirical face of the impossibility results~\cite{kleinberg2017inherent,chouldechova2017fair}: with unequal base rates (Table~\ref{tab:data}), a calibrated score cannot also equalize error rates. On Adult, both sexes are well calibrated (ECE 0.012 for men, 0.020 for women); the lower Brier score for women (0.048 vs.\ 0.109) reflects their lower base rate rather than better discrimination. Calibration audits therefore complement, rather than replace, error-rate audits.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/calibration.pdf}
+\caption{Reliability curves per group (quantile bins, groups with $n\ge30$). The dashed diagonal denotes perfect calibration.}
+\label{fig:calib}
+\end{figure}
+
+\subsection{Proxies and Explanations}
+Mutual-information analysis identifies \texttt{relationship} ($I=0.222$) and \texttt{marital\_status} (0.109) as the strongest sex proxies in Adult; in German Credit, \texttt{age} (0.047) is the top proxy for sex once \texttt{personal\_status\_sex} is removed; in COMPAS, proxies for race are individually weak (\texttt{priors\_count}, 0.026). Global SHAP rankings are dominated by \texttt{priors\_count} and \texttt{age} (COMPAS), \texttt{marital\_status} and \texttt{age} (Adult), and checking-account status and loan duration (German Credit). That \texttt{marital\_status} is both the top sex proxy and the top predictor in Adult explains why removing \texttt{sex} alone still leaves a 0.163 gap.
+
+\subsection{Methodological Pitfalls}\label{sec:pitfalls}
+While auditing FairLens itself we found seven defects. Each produced plausible-looking output, was invisible to a test that only checks that the pipeline runs, and is now covered by a targeted regression test.
+
+\textbf{P1: Bootstrap-mean inflation.} The mean of $|\hat\theta^*|$ over resamples is biased away from zero. German Credit's baseline DP was displayed as 0.043 although the full-sample value is 0.015, a $2.9\times$ inflation that contradicted the group selection rates plotted next to it (0.855 vs.\ 0.870).
+
+\textbf{P2: Significance on the absolute gap.} The same German Credit interval, $[0.002, 0.123]$, excludes zero---as such intervals almost always do---yet the signed interval $[-0.086, 0.122]$ does not. Ad-hoc thresholds on the absolute interval (e.g., a lower bound $>0.02$) do not fix this.
+
+\textbf{P3: Unseeded randomized classifiers.} Five \texttt{predict} calls on one fitted COMPAS EG model gave accuracies between 59.3\% and 61.1\%, a spread larger than the 1.1\,pp separating all $\eps$ candidates in an earlier sweep; accuracy and fairness were also computed on different draws, and because EG exposes no probability score, ROC-AUC silently defaulted to 0.5.
+
+\textbf{P4: Test-set tolerance selection.} Choosing $\eps$ by test accuracy and test DP leaks test information into a hyperparameter. Moving selection to the validation split changed the chosen $\eps$ for COMPAS (0.05 $\to$ 0.01) and Adult (0.005 $\to$ 0.1).
+
+\textbf{P5: Inverted label polarity.} In COMPAS, label~1 is recidivism. Code that assumed ``1 = favorable'' reported the recidivism rate (45.5\%) as the favorable rate (true value 54.5\%), selected \emph{low-risk} individuals as needing recourse, and asked DiCE for counterfactuals that \emph{predict} recidivism.
+
+\textbf{P6: Mismatched cached results.} The dashboard served stored benchmark metrics whenever the default protected attribute was selected, regardless of the chosen model; e.g., Adult with LR displayed the XGBoost DP (0.156) instead of LR's own (0.171).
+
+\textbf{P7: Feature-scale mismatch.} LR is trained on standardized inputs, but local SHAP and DiCE received raw features, producing wrong predictions and attributions until LR was wrapped with its fitted scaler.
+
+Earlier iterations had also suffered from classic leakage (a duplicated label column and COMPAS score outputs used as features), which inflated F1 to 1.0. We view these pitfalls as this paper's most useful negative finding: a fairness audit that is only checked for running to completion can overstate bias, overstate its removal, or explain the wrong decisions.
+
+\subsection{Limitations}\label{sec:limits}
+\textbf{Single-split significance.} Paired bootstrap intervals for mitigation effects are computed on one split; the ten-split standard deviations in Table~\ref{tab:main} give a complementary view of split-to-split variability, but not a significance test.
+
+\textbf{Low power on German Credit.} Its 200-row test set cannot detect small disparities; the null results there are not evidence that the model is fair.
+
+\textbf{Label bias.} All three datasets record historical outcomes that may themselves encode bias; COMPAS's ``recidivism'' is re-arrest, not re-offense, and German Credit and Adult derive from decades-old data.
+
+\textbf{Deployment constraint.} Threshold Optimizer gave the best DP--accuracy trade-off on both datasets with significant disparities, but it requires the protected attribute at decision time, which may be legally or practically unavailable.
+
+\textbf{Scope.} We study binary group comparisons and a single intersection per dataset; richer subgroup classes~\cite{kearns2018preventing} are not covered. The 5\,pp accuracy budget for $\eps$ selection is a policy choice that domain stakeholders should set.
+
+%=====================================================================
+\section{Conclusion and Future Work}
+%=====================================================================
+FairLens shows that an end-to-end fairness audit can report statistically valid, reproducible results across three standard benchmarks: it confirms large and significant disparities on COMPAS and Adult Income, finds no significant disparity on German Credit, identifies Threshold Optimizer as the best trade-off where mitigation is warranted, and surfaces intersectional disparities that single-attribute audits understate. It also documents seven concrete pitfalls that made our own first implementation report wrong numbers, which we believe are under-reported in fairness tooling.
+
+Future work includes repeating the paired significance tests across all ten splits; auditing richer subgroup classes beyond one intersection; evaluating on more recent datasets with less historical label bias; post-processing methods that do not need the protected attribute at decision time; and a user study of how practitioners read the dashboard's significance and calibration views.
+
+%=====================================================================
+\section*{Contributorship}
+%=====================================================================
+All authors contributed to the system design, evaluation, and writing of this paper. All authors read and approved the final manuscript.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

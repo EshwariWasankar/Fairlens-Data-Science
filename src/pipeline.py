@@ -75,7 +75,7 @@ def run_fairlens_pipeline(
         unread_group = prot_cfg.get("unprivileged")
 
     # 6. Train Baseline Model (System Under Audit)
-    baseline_model, cv_f1 = train_model(data, model_type=model_type, dataset_key=dataset_key)
+    baseline_model, cv_f1 = train_model(data, model_type=model_type, dataset_key=dataset_key, save=False)
     X_test, y_test, s_test = get_model_input_data(model_type, data, split="test")
 
     # Predictive Performance

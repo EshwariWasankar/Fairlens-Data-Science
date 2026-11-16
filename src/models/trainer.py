@@ -14,7 +14,8 @@ def train_model(
     data: PreprocessedData,
     model_type: str = "random_forest",
     dataset_key: str = "default",
-    random_state: int = 42
+    random_state: int = 42,
+    save: bool = True
 ) -> Tuple[Any, float]:
     """Trains a classifier on preprocessed data and returns (model, mean_cv_f1_score)."""
     
@@ -41,9 +42,11 @@ def train_model(
     # Fit final model on full training partition
     model.fit(X_train_input, data.y_train)
 
-    # Save trained model artifact
-    save_path = MODELS_DIR / f"{dataset_key}_{model_type}_baseline.joblib"
-    joblib.dump(model, save_path)
+    # Persist the artifact only when asked: live audits for a non-benchmark protected attribute must not
+    # overwrite the benchmark baseline that the dashboard loads for the default configuration.
+    if save:
+        save_path = MODELS_DIR / f"{dataset_key}_{model_type}_baseline.joblib"
+        joblib.dump(model, save_path)
 
     return model, mean_cv_f1
 
