@@ -36,7 +36,7 @@ def clean_dataset(df: pd.DataFrame, dataset_key: str) -> pd.DataFrame:
         # Target: 0 = No Recidivism (Favorable), 1 = Recidivism (Unfavorable)
         if 'two_year_recid' in cleaned_df.columns:
             cleaned_df['target'] = cleaned_df['two_year_recid'].astype(int)
-            cleaned_df.drop(columns=['two_year_recid'], inplace=True, errors='ignore')
+            cleaned_df = cleaned_df.drop(columns=['two_year_recid'], errors='ignore')
 
     elif dataset_key == "german_credit":
         target_col = DATASET_CONFIGS["german_credit"]["target_column"]
@@ -48,7 +48,7 @@ def clean_dataset(df: pd.DataFrame, dataset_key: str) -> pd.DataFrame:
                 mapped_target = cleaned_df[target_col].astype(int)
             cleaned_df['target'] = mapped_target
             if target_col != 'target':
-                cleaned_df.drop(columns=[target_col], inplace=True, errors='ignore')
+                cleaned_df = cleaned_df.drop(columns=[target_col], errors='ignore')
 
         if 'age' in cleaned_df.columns and 'age_group' not in cleaned_df.columns:
             cleaned_df['age_group'] = cleaned_df['age'].apply(lambda a: "older (>25)" if a > 25 else "young (<=25)")
@@ -59,9 +59,13 @@ def clean_dataset(df: pd.DataFrame, dataset_key: str) -> pd.DataFrame:
                 lambda val: 'female' if str(val).strip() in ['A92', 'A95', 'female'] else 'male'
             )
 
+        # UCI codes A201/A202 -> the yes/no groups named in dataset_config.yaml
+        if 'foreign_worker' in cleaned_df.columns:
+            cleaned_df['foreign_worker'] = cleaned_df['foreign_worker'].replace({'A201': 'yes', 'A202': 'no'})
+
         # Explicitly drop personal_status_sex to eliminate 1.0/-1.0 proxy leakage with sex
         if 'personal_status_sex' in cleaned_df.columns:
-            cleaned_df.drop(columns=['personal_status_sex'], inplace=True, errors='ignore')
+            cleaned_df = cleaned_df.drop(columns=['personal_status_sex'], errors='ignore')
 
     elif dataset_key == "adult_income":
         target_col = DATASET_CONFIGS["adult_income"]["target_column"]
@@ -71,7 +75,7 @@ def clean_dataset(df: pd.DataFrame, dataset_key: str) -> pd.DataFrame:
             )
             cleaned_df['target'] = mapped_target
             if target_col != 'target':
-                cleaned_df.drop(columns=[target_col], inplace=True, errors='ignore')
+                cleaned_df = cleaned_df.drop(columns=[target_col], errors='ignore')
 
         for col in ['workclass', 'occupation', 'native_country']:
             if col in cleaned_df.columns and cleaned_df[col].isna().sum() > 0:

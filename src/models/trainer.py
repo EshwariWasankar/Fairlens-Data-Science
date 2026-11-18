@@ -17,7 +17,12 @@ def train_model(
     random_state: int = 42,
     save: bool = True
 ) -> Tuple[Any, float]:
-    """Trains a classifier on preprocessed data and returns (model, mean_cv_f1_score)."""
+    """Trains a classifier on preprocessed data and returns (model, mean_cv_f1_score).
+
+    `save=False` for live/interactive runs: the file `models/<dataset>_<model>_baseline.joblib` is
+    the benchmark model that the dashboard loads, so a run with a different protected attribute or
+    uploaded data must never overwrite it.
+    """
     
     if model_type == "logistic_regression":
         model = LogisticRegression(C=1.0, max_iter=1000, random_state=random_state)
@@ -42,13 +47,19 @@ def train_model(
     # Fit final model on full training partition
     model.fit(X_train_input, data.y_train)
 
-    # Persist the artifact only when asked: live audits for a non-benchmark protected attribute must not
-    # overwrite the benchmark baseline that the dashboard loads for the default configuration.
     if save:
         save_path = MODELS_DIR / f"{dataset_key}_{model_type}_baseline.joblib"
         joblib.dump(model, save_path)
 
     return model, mean_cv_f1
+
+def model_matches_features(model: Any, feature_names: list) -> bool:
+    """True if a (possibly stale) saved model was trained on exactly these feature columns."""
+    names = getattr(model, "feature_names_in_", None)
+    if names is not None:
+        return list(names) == list(feature_names)
+    n = getattr(model, "n_features_in_", None)
+    return n is None or n == len(feature_names)
 
 def raw_feature_model(model: Any, model_type: str, scaler: Any) -> Any:
     """Returns a model that accepts RAW (unscaled) feature frames.

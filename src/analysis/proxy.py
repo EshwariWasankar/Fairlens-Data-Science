@@ -7,7 +7,8 @@ def compute_proxy_leakage(
     df: pd.DataFrame,
     protected_col: str,
     target_col: str = "target",
-    random_state: int = 42
+    random_state: int = 42,
+    drop_known_leakage: bool = True,
 ) -> pd.DataFrame:
     """Quantifies proxy leakage by computing Mutual Information between each non-protected feature and the protected attribute."""
     if protected_col not in df.columns:
@@ -19,7 +20,10 @@ def compute_proxy_leakage(
     s_raw = df_calc[protected_col]
     
     # Drop target and protected attribute (and any ID columns or direct proxy leaks)
-    drop_cols = [protected_col, target_col, 'two_year_recid', 'credit_risk', 'income', 'id', 'name', 'fnlwgt', 'personal_status_sex']
+    drop_cols = [protected_col, target_col]
+    if drop_known_leakage:
+        # label aliases and identifier columns of the benchmark datasets; an uploaded CSV keeps its own columns
+        drop_cols += ['two_year_recid', 'credit_risk', 'income', 'id', 'name', 'fnlwgt', 'personal_status_sex']
     drop_cols.extend([c for c in df_calc.columns if c.endswith('_outlier_flag')])
 
     # Dynamic proxy column dropping based on protected attribute
@@ -32,6 +36,10 @@ def compute_proxy_leakage(
     
     # Convert categorical features to numeric codes for MI calculation
     encoded_features = pd.get_dummies(features_df, drop_first=False)
+    # mutual information cannot handle gaps: fill numeric gaps with the column median (0 if all missing)
+    encoded_features = encoded_features.fillna(encoded_features.median(numeric_only=True)).fillna(0)
+    rows = s_raw.notna()
+    encoded_features, s_raw = encoded_features.loc[rows], s_raw.loc[rows]
     
     # Convert protected attribute to integer codes if categorical or string
     if s_raw.dtype == 'object' or isinstance(s_raw.dtype, (pd.CategoricalDtype, pd.StringDtype)) or pd.api.types.is_string_dtype(s_raw):
@@ -90,7 +98,7 @@ def compute_proxy_leakage(
         "correlation": lambda x: max(x, key=abs)
     }).reset_index()
 
-    agg_results.rename(columns={"base_feature": "feature"}, inplace=True)
+    agg_results = agg_results.rename(columns={"base_feature": "feature"})
     agg_results = agg_results.sort_values(by="mutual_information", ascending=False).reset_index(drop=True)
 
     # Categorize Risk Level

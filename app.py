@@ -12,12 +12,12 @@ from typing import Optional, Any, Tuple
 
 from src.config import DATASET_CONFIGS, REPORTS_DIR, DATA_DIR, MODELS_DIR, get_outcome_labels
 from src.pipeline import run_fairlens_pipeline
-from src.data.loader import validate_custom_csv, load_raw_dataset
+from src.data.loader import validate_custom_csv, load_raw_dataset, binarize_target
 from src.data.cleaner import clean_dataset
 from src.data.preprocessor import preprocess_dataset, PreprocessedData
 from src.analysis.eda import get_dataset_kpis, get_group_disparity_table, get_numeric_correlation_matrix
 from src.analysis.proxy import compute_proxy_leakage
-from src.models.trainer import train_model, get_model_input_data, raw_feature_model
+from src.models.trainer import train_model, get_model_input_data, raw_feature_model, model_matches_features
 from src.fairness.intersectional import compute_intersectional_metrics
 from src.fairness.calibration import compute_group_calibration
 from src.fairness.frontier import pareto_frontier, sweep_points
@@ -97,6 +97,10 @@ def cards(items: list) -> None:
                 + "".join(cells) + "</div>", unsafe_allow_html=True)
 
 
+def _fmt_gap(v) -> str:
+    return "n/a" if v is None or pd.isna(v) else f"{v:.3f}"
+
+
 def divider() -> None:
     st.markdown('<hr class="fl-hr">', unsafe_allow_html=True)
 
@@ -123,6 +127,7 @@ selected_dataset_key = st.sidebar.selectbox(
 custom_df = None
 custom_target = None
 custom_protected = None
+custom_positive = None
 
 if selected_dataset_key == "custom":
     uploaded_file = st.sidebar.file_uploader("CSV file", type=["csv"])
@@ -140,6 +145,14 @@ if selected_dataset_key == "custom":
             if not valid:
                 st.sidebar.error(msg)
                 st.stop()
+            _, _guess = binarize_target(custom_df[custom_target])
+            _target_values = list(pd.unique(custom_df[custom_target].dropna()))
+            custom_positive = st.sidebar.selectbox(
+                "Favorable outcome", options=_target_values, index=_target_values.index(_guess),
+                help="The value of the outcome column that counts as the favorable decision (label 1).")
+            if len(custom_df) < 500:
+                st.sidebar.warning(f"Only {len(custom_df):,} rows: the test split is small, so accuracy and fairness "
+                                   "estimates will vary a lot between splits. Treat them as rough.")
         except Exception as e:
             st.sidebar.error(f"Could not read this CSV: {e}")
             st.stop()
@@ -223,34 +236,20 @@ def load_cached_joblib_file(model_path_str: str) -> Any:
     """Loads pre-trained .joblib model binary from disk using st.cache_resource."""
     return joblib.load(model_path_str)
 
-def _model_matches_features(model: Any, feature_names: tuple) -> bool:
-    """True when a saved model was fitted on exactly the feature set the dashboard feeds it."""
-    names = getattr(model, "feature_names_in_", None)
-    if names is None and hasattr(model, "get_booster"):
-        names = model.get_booster().feature_names
-    if names is not None:
-        return list(names) == list(feature_names)
-    n_in = getattr(model, "n_features_in_", None)
-    return n_in is None or n_in == len(feature_names)
-
-
 @st.cache_resource(show_spinner=False)
-def get_cached_baseline_model(dataset_key: str, model_type: str, feature_names: tuple = ()) -> Any:
-    """Loads the saved baseline classifier, or refits it (without touching disk) if the file is
-    missing, unreadable (e.g. written by a different xgboost version) or fitted on other features."""
-    for cname in (f"{dataset_key}_{model_type}_baseline.joblib", f"default_{model_type}_baseline.joblib"):
-        p = MODELS_DIR / cname
-        if p.exists():
-            try:
-                model = load_cached_joblib_file(str(p))
-            except Exception:
-                continue
-            if not feature_names or _model_matches_features(model, feature_names):
-                return model
+def get_cached_baseline_model(dataset_key: str, model_type: str) -> Any:
+    """Loads pre-trained baseline classifier from disk or fits once if absent."""
     cfg = DATASET_CONFIGS[dataset_key]
     data = get_cached_preprocessed_data(dataset_key, cfg["target_column"], cfg["default_protected_attribute"])
-    model, _ = train_model(data, model_type=model_type, dataset_key=dataset_key, random_state=42, save=False)
+    p = MODELS_DIR / f"{dataset_key}_{model_type}_baseline.joblib"
+    if p.exists():
+        model = joblib.load(p)
+        if model_matches_features(model, data.feature_names):
+            return model
+    # Missing or stale (trained on other columns): retrain the seed-42 benchmark model and repair the file.
+    model, _ = train_model(data, model_type=model_type, dataset_key=dataset_key, random_state=42, save=True)
     return model
+
 @st.cache_resource(show_spinner=False)
 def get_cached_mitigated_model(dataset_key: str, model_type: str, technique: str, eps: Optional[float] = None) -> Optional[Any]:
     """Loads pre-trained mitigated model from disk via st.cache_resource."""
@@ -262,31 +261,31 @@ def get_cached_mitigated_model(dataset_key: str, model_type: str, technique: str
             candidates.append(MODELS_DIR / f"{dataset_key}_{model_type}_exponentiated_gradient_demographic_parity_eps{eps}_seed42.joblib")
         for p in candidates:
             if p.exists():
-                try:
-                    return load_cached_joblib_file(str(p))
-                except Exception:
-                    continue
+                return load_cached_joblib_file(str(p))
     elif technique == "Threshold Optimizer":
         p = MODELS_DIR / f"{dataset_key}_{model_type}_threshold_optimizer.joblib"
         if p.exists():
-            try:
-                return load_cached_joblib_file(str(p))
-            except Exception:
-                return None
+            return load_cached_joblib_file(str(p))
     return None
 
 @st.cache_data(show_spinner=False)
 def get_cached_global_shap(dataset_key: str, model_type: str) -> pd.DataFrame:
     """Computes global SHAP feature importance once and caches result in memory."""
+    base_model = get_cached_baseline_model(dataset_key, model_type)
     cfg = DATASET_CONFIGS[dataset_key]
     data = get_cached_preprocessed_data(dataset_key, cfg["target_column"], cfg["default_protected_attribute"])
-    base_model = get_cached_baseline_model(dataset_key, model_type, tuple(data.X_test.columns))
     X_in = data.X_test_scaled if model_type == "logistic_regression" else data.X_test
     return compute_global_shap_importance(base_model, X_in, data.feature_names)
 
 
 # Execute or retrieve pipeline results
 outcome_labels = get_outcome_labels(selected_dataset_key)
+if custom_positive is not None:
+    # uploaded CSV: use the user's own outcome values (e.g. "Approved" / "Rejected") instead of generic labels
+    _other = next(v for v in pd.unique(custom_df[custom_target].dropna()) if v != custom_positive)
+    outcome_labels = {**outcome_labels, "favorable": str(custom_positive), "unfavorable": str(_other),
+                      "favorable_rate": f"{custom_positive} rate",
+                      "by_value": {1: str(custom_positive), 0: str(_other)}}
 is_benchmark_match = False
 benchmarks = load_precomputed_benchmarks()
 if selected_dataset_key != "custom":
@@ -300,6 +299,7 @@ if selected_dataset_key != "custom":
     # Fast cached EDA and Preprocessing
     kpis, disparity_table, corr_matrix, proxy_df = get_cached_eda(selected_dataset_key, protected_col)
     preproc_data = get_cached_preprocessed_data(selected_dataset_key, target_col, protected_col)
+    baseline_model = get_cached_baseline_model(selected_dataset_key, selected_model_type)
 
     benchmarks = load_precomputed_benchmarks()
     exp_bench = benchmarks.get("experiments", {}).get(selected_dataset_key, {})
@@ -310,7 +310,6 @@ if selected_dataset_key != "custom":
     )
 
     if is_benchmark_match:
-        baseline_model = get_cached_baseline_model(selected_dataset_key, selected_model_type, tuple(preproc_data.X_test.columns))
         # Strictly read the heavy statistical metrics from verified benchmark JSON
         baseline_fairness = exp_bench["baseline_fairness"]
         baseline_pred_metrics = exp_bench["baseline_pred_metrics"]
@@ -384,6 +383,7 @@ else:
             custom_df=custom_df,
             custom_target_col=custom_target,
             custom_protected_col=custom_protected,
+            custom_positive_value=custom_positive,
             model_type=selected_model_type
         )
         kpis = pipeline_results["kpis"]
@@ -570,9 +570,12 @@ with tab3:
         inter["label"] = f"{protected_col} × {second_attr}"
         st.session_state["fl_intersectional"] = inter
         cards([
-            dict(label=f"{protected_col} × {second_attr}", value=f"{inter['gaps']['demographic_parity_diff']:.3f}", note="largest selection-rate gap"),
-            dict(label=f"{protected_col} alone", value=f"{inter['single_attribute_dp']['attr_a']:.3f}", note="same rows"),
-            dict(label=f"{second_attr} alone", value=f"{inter['single_attribute_dp']['attr_b']:.3f}", note="same rows"),
+            dict(label=f"{protected_col} × {second_attr}", value=_fmt_gap(inter['gaps']['demographic_parity_diff']),
+                 note="largest selection-rate gap" if pd.notna(inter['gaps']['demographic_parity_diff']) else "fewer than two groups of 30+"),
+            dict(label=f"{protected_col} alone", value=_fmt_gap(inter['single_attribute_dp']['attr_a']),
+                 note="same rows" if pd.notna(inter['single_attribute_dp']['attr_a']) else "fewer than two groups of 30+"),
+            dict(label=f"{second_attr} alone", value=_fmt_gap(inter['single_attribute_dp']['attr_b']),
+                 note="same rows" if pd.notna(inter['single_attribute_dp']['attr_b']) else "fewer than two groups of 30+"),
         ])
         _it = inter["table"]
         c1, c2 = st.columns([3, 2], gap="large")
@@ -726,7 +729,7 @@ with tab4:
 
 # ------------------------------------------------------------------ Explanations
 with tab5:
-    section("Explanations", f"Which features drive the model, and what would change an individual {subject}'s outcome.")
+    section("Explanations", f"Which features drive the model, and what would change one {subject}'s outcome.")
 
     X_test = preproc_data.X_test
     explain_model = raw_feature_model(pipeline_results["baseline_model"], selected_model_type, preproc_data.scaler)

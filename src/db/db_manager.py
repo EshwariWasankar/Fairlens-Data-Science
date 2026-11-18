@@ -70,7 +70,7 @@ def log_dataset_metadata(dataset_id: str, name: str, target_col: str, protected_
     cursor.execute("""
     INSERT OR REPLACE INTO datasets (dataset_id, name, target_column, protected_attributes, num_records, date_added)
     VALUES (?, ?, ?, ?, ?, ?)
-    """, (dataset_id, name, target_col, json.dumps(protected_attrs), num_records, datetime.now()))
+    """, (dataset_id, name, target_col, json.dumps(protected_attrs), num_records, datetime.now().isoformat(sep=' ', timespec='seconds')))
     
     conn.commit()
     conn.close()
@@ -108,7 +108,7 @@ def log_experiment_run(
         metrics.get("f1_score", 0.0), metrics.get("roc_auc", 0.0),
         dp_data.get("val", 0.0), dp_data.get("ci_low", 0.0), dp_data.get("ci_high", 0.0),
         eo_data.get("val", 0.0), eopp_data.get("val", 0.0), pp_data.get("val", 0.0),
-        p_val, is_sig, datetime.now()
+        p_val, is_sig, datetime.now().isoformat(sep=' ', timespec='seconds')
     ))
 
     conn.commit()

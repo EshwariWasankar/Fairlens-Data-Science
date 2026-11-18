@@ -32,7 +32,8 @@ def preprocess_dataset(
     train_size: float = 0.6,
     val_size: float = 0.2,
     test_size: float = 0.2,
-    random_state: int = 42
+    random_state: int = 42,
+    drop_known_leakage: bool = True
 ) -> PreprocessedData:
     """Preprocesses a cleaned dataframe with joint stratification, feature encoding, and leakage prevention."""
     df_proc = df.copy()
@@ -49,7 +50,10 @@ def preprocess_dataset(
     drop_cols = [target_col, protected_col, 'target']
     
     # Drop all target aliases
-    for c in ['two_year_recid', 'credit_risk', 'income', 'class', 'Default', 'default']:
+    # Benchmark-specific label aliases and leakage fields. Off for user-uploaded data, where a column
+    # called 'income', 'id' or 'start' is an ordinary feature, not a label or a COMPAS output.
+    known_aliases = ['two_year_recid', 'credit_risk', 'income', 'class', 'Default', 'default'] if drop_known_leakage else []
+    for c in known_aliases:
         if c in df_proc.columns:
             drop_cols.append(c)
             
@@ -65,7 +69,7 @@ def preprocess_dataset(
         'type_of_assessment', 'screening_date', 'v_type_of_assessment', 'v_screening_date',
         'fnlwgt', 'personal_status_sex', 'id', 'name'
     ]
-    for c in compas_leakage:
+    for c in (compas_leakage if drop_known_leakage else []):
         if c in df_proc.columns and c != protected_col:
             drop_cols.append(c)
     
@@ -120,6 +124,13 @@ def preprocess_dataset(
     # Align columns across splits
     X_train_df, X_val_df = X_train_df.align(X_val_df, join='left', axis=1, fill_value=0)
     X_train_df, X_test_df = X_train_df.align(X_test_df, join='left', axis=1, fill_value=0)
+
+    # Impute missing numeric values with TRAINING-split medians only (no information from val/test).
+    # Categorical gaps are already handled: get_dummies encodes a missing category as all zeros.
+    train_medians = X_train_df.median(numeric_only=True)
+    X_train_df = X_train_df.fillna(train_medians).fillna(0)
+    X_val_df = X_val_df.fillna(train_medians).fillna(0)
+    X_test_df = X_test_df.fillna(train_medians).fillna(0)
 
     # Scale continuous features using StandardScaler fit ONLY on X_train
     scaler = StandardScaler()

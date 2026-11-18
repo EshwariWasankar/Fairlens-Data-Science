@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from typing import Dict, Any, List, Tuple, Optional
 from src.config import DATASET_CONFIGS
-from src.data.loader import load_raw_dataset
+from src.data.loader import load_raw_dataset, binarize_target
 from src.data.cleaner import clean_dataset
 from src.data.preprocessor import preprocess_dataset, PreprocessedData
 from src.analysis.eda import get_dataset_kpis, get_group_disparity_table, get_numeric_correlation_matrix
@@ -23,7 +23,8 @@ def run_fairlens_pipeline(
     model_type: str = "random_forest",
     custom_df: Optional[pd.DataFrame] = None,
     custom_target_col: Optional[str] = None,
-    custom_protected_col: Optional[str] = None
+    custom_protected_col: Optional[str] = None,
+    custom_positive_value: Any = None
 ) -> Dict[str, Any]:
     """Runs the end-to-end FairLens audit, proxy, mitigation, and explainability pipeline."""
     
@@ -33,6 +34,9 @@ def run_fairlens_pipeline(
         df_raw = custom_df
         target_col = custom_target_col if custom_target_col else "target"
         protected_col = custom_protected_col if custom_protected_col else "sex"
+        df_raw = df_raw.dropna(subset=[target_col]).copy()
+        df_raw[target_col], target_positive_value = binarize_target(df_raw[target_col], positive=custom_positive_value)
+        df_raw[target_col] = df_raw[target_col].astype(int)
         actionable_cols = [c for c in df_raw.columns if c not in [target_col, protected_col]]
         immutable_cols = [protected_col]
     else:
@@ -52,7 +56,8 @@ def run_fairlens_pipeline(
     
     # 3. Preprocess Data
     data: PreprocessedData = preprocess_dataset(
-        df_clean, target_col=target_col, protected_col=protected_col
+        df_clean, target_col=target_col, protected_col=protected_col,
+        drop_known_leakage=(custom_df is None)
     )
 
     # 4. Exploratory Data Analysis
@@ -63,7 +68,8 @@ def run_fairlens_pipeline(
     corr_matrix = get_numeric_correlation_matrix(df_clean)
 
     # 5. Proxy Feature Leakage Analysis
-    proxy_df = compute_proxy_leakage(df_clean, protected_col=protected_col, target_col=eda_target)
+    proxy_df = compute_proxy_leakage(df_clean, protected_col=protected_col, target_col=eda_target,
+                                     drop_known_leakage=(custom_df is None))
     log_proxy_analysis_results(dataset_key, protected_col, proxy_df)
 
     # Extract privileged and unprivileged demographic categories from config if present

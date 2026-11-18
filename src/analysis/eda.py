@@ -104,7 +104,7 @@ def get_numeric_correlation_matrix(df: pd.DataFrame) -> pd.DataFrame:
     num_df = df.select_dtypes(include=[np.number]).copy()
     flag_cols = [c for c in num_df.columns if c.endswith('_outlier_flag')]
     if flag_cols:
-        num_df.drop(columns=flag_cols, inplace=True, errors='ignore')
+        num_df = num_df.drop(columns=flag_cols, errors='ignore')
     if num_df.empty:
         return pd.DataFrame()
     return num_df.corr().round(3)
